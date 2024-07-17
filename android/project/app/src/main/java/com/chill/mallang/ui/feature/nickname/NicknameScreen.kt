@@ -55,7 +55,7 @@ fun NicknameScreen() {
             .addFocusCleaner(focusManager)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.weight(0.2f))
@@ -65,19 +65,7 @@ fun NicknameScreen() {
                 modifier = Modifier.fillMaxHeight(0.17f)
             )
             Spacer(modifier = Modifier.weight(0.1f))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "사용할 닉네임을 입력해 주세요",
-                    style = Typography.headlineMedium
-                )
-                Box(modifier = Modifier.width(3.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.ic_mage),
-                    contentDescription = null
-                )
-            }
+            TextWithIcon(text = "사용할 닉네임을 입력해 주세요", icon = R.drawable.ic_mage)
             Box(modifier = Modifier.height(15.dp))
             CustomTextField(
                 value = nickname,
@@ -148,6 +136,23 @@ fun BlackButton(onClick: () -> Unit, text: String) {
         Text(
             text,
             style = Typography.displayLarge
+        )
+    }
+}
+
+@Composable
+fun TextWithIcon(text: String, icon: Int) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            style = Typography.headlineMedium
+        )
+        Box(modifier = Modifier.width(3.dp))
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = null
         )
     }
 }
