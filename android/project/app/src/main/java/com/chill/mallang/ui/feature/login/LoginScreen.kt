@@ -2,12 +2,12 @@ package com.chill.mallang.ui.feature.login
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.R
@@ -40,19 +41,20 @@ fun LoginScreen(onLoginClick: () -> Unit) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(modifier = Modifier.height(200.dp))
-            Image(painter = painterResource(id = R.drawable.app_title),
+            Spacer(modifier = Modifier.weight(1f))
+            Image(
+                painter = painterResource(id = R.drawable.app_title),
                 contentDescription = null,
                 modifier = Modifier
-                    .height(100.dp)
+                    .fillMaxHeight(0.16f)
                     .fillMaxWidth()
             )
-            Box(modifier = Modifier.height(270.dp))
+            Spacer(modifier = Modifier.weight(1.5f))
             StyledButton(onClick = onLoginClick, text = "구글 계정으로 로그인하기")
+            Spacer(modifier = Modifier.weight(0.6f))
         }
     }
 }
@@ -68,11 +70,12 @@ fun StyledButton(onClick: () -> Unit, text: String) {
         shape = RoundedCornerShape(10.dp),
         border = BorderStroke(1.dp, Gray4),
         modifier = Modifier
-            .width(300.dp)
+            .fillMaxWidth(0.8f)
             .height(48.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
             Image(
@@ -80,8 +83,10 @@ fun StyledButton(onClick: () -> Unit, text: String) {
                 contentDescription = null,
                 modifier = Modifier.width(28.dp)
             )
-            Box(modifier = Modifier.width(35.dp))
-            Text(text, style = Typography.displayLarge)
+            Box(modifier = Modifier.width(10.dp))
+            Text(
+                text, style = Typography.displayLarge
+            )
         }
     }
 }
