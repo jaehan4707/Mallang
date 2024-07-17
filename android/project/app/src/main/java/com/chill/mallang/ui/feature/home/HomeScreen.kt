@@ -65,22 +65,20 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .padding(12.dp)
     ) {
-        Column(modifier) {
-            Row(modifier) { // 유저 아이템 수의 따라 LazyColumn
+        Column {
+            Row { // 유저 아이템 수의 따라 LazyColumn
                 UserItem(
-                    modifier = modifier,
                     icon = R.drawable.ic_stars,
                     label = TestData.USER_ITEM
                 )
                 Spacer(modifier.width(5.dp))
                 UserItem(
-                    modifier = modifier,
                     icon = R.drawable.ic_stars,
                     label = TestData.USER_ITEM
                 )
             }
-            Spacer(modifier = modifier.height(16.dp))
-            SideUserButton(modifier = modifier) // 사이드 버튼
+            Spacer(modifier = Modifier.height(16.dp))
+            SideUserButton() // 사이드 버튼
             UserCharacter( // 유저 캐릭터 or 프로필
                 modifier = modifier,
                 userName = TestData.USER_NAME,
@@ -90,14 +88,14 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
             ModeButton( // 퀴즈 모드 버튼
                 icon = R.drawable.ic_question,
                 label = stringResource(R.string.mode_quiz),
-                modifier = modifier.align(Alignment.End),
+                modifier = Modifier.align(Alignment.End),
                 onClick = { }
             )
             Spacer(modifier.height(16.dp))
             ModeButton( // 점령전 모드 버튼
                 icon = R.drawable.ic_location,
                 label = stringResource(R.string.mode_home),
-                modifier = modifier.align(Alignment.End),
+                modifier = Modifier.align(Alignment.End),
                 onClick = { }
             )
             Spacer(modifier.weight(0.1f))
@@ -106,7 +104,12 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun IconButton(icon: Int, label: String, modifier: Modifier, onClick: () -> Unit) {
+fun IconButton(
+    icon: Int,
+    label: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -131,33 +134,30 @@ private fun IconButton(icon: Int, label: String, modifier: Modifier, onClick: ()
 }
 
 @Composable
-private fun SideUserButton(modifier: Modifier) {
+fun SideUserButton(modifier: Modifier = Modifier) {
     Column(modifier) {
         IconButton(
             icon = R.drawable.ic_setting,
             label = stringResource(R.string.side_button_setting),
-            modifier = modifier,
             onClick = { }
         )
         Spacer(modifier = modifier.size(15.dp))
         IconButton(
             icon = R.drawable.ic_quest,
             label = stringResource(R.string.side_button_quest),
-            modifier = modifier,
             onClick = { })
         Spacer(modifier = modifier.size(15.dp))
         IconButton(
             icon = R.drawable.ic_ranking,
             label = stringResource(R.string.side_button_ranking),
-            modifier = modifier,
             onClick = { })
     }
 }
 
 @Composable
-private fun UserItem(modifier: Modifier, icon: Int, label: String) {
+internal fun UserItem(icon: Int, label: String) {
     Row(
-        modifier = modifier
+        modifier = Modifier
             .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
             .padding(5.dp)
             .height(IntrinsicSize.Min)
@@ -180,7 +180,7 @@ private fun UserItem(modifier: Modifier, icon: Int, label: String) {
 }
 
 @Composable
-private fun UserCharacter(modifier: Modifier, userName: String, userRank: String) {
+fun UserCharacter(modifier: Modifier = Modifier, userName: String, userRank: String) {
     when (userRank) { // 티어별 이미지 할당
         TestData.RANK_1 -> {}
         TestData.RANK_2 -> {}
@@ -226,7 +226,12 @@ private fun UserCharacter(modifier: Modifier, userName: String, userRank: String
 }
 
 @Composable
-private fun ModeButton(icon: Int, label: String, modifier: Modifier, onClick: () -> Unit) {
+fun ModeButton(
+    icon: Int,
+    label: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Column(
         modifier = modifier
             .width(75.dp)
