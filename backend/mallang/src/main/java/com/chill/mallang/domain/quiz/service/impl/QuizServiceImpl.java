@@ -1,9 +1,12 @@
 package com.chill.mallang.domain.quiz.service.impl;
 
 
+import com.chill.mallang.domain.quiz.dto.ChatGPTRequest;
+import com.chill.mallang.domain.quiz.dto.ChatGPTResponse;
 import com.chill.mallang.domain.quiz.dto.QuizDto;
 import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.chill.mallang.domain.quiz.service.QuizService;
+
 import com.theokanning.openai.OpenAiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class QuizServiceImpl implements QuizService {
@@ -24,6 +28,15 @@ public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final OpenAiService openAiService;
     private Logger logger = LoggerFactory.getLogger(QuizServiceImpl.class);
+
+    @Value("${openai.model}")
+    private String model;
+    @Value("${openai.api.url}")
+    private String apiUrl;
+
+    @Autowired
+    private RestTemplate template;
+
 
     @Autowired
     public QuizServiceImpl(QuizRepository quizRepository, OpenAiService openAiService) {
@@ -34,6 +47,10 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public QuizDto createQuizFromPrompt() {
         String prompt = "너는 지금부터 문해력 문제 출제자야. 10대 청소년들이 문해력이 부족한 것에 대해 향상 시키기 위해 간단한 문단을 제공해야해. 난이도를 1~10으로 나눈다면 난이도 1 정도의 수준에서 문제를 만들어줘. 결과는 Json 형식으로 답변해.";
+
+        ChatGPTRequest request = new ChatGPTRequest(model, prompt);
+        ChatGPTResponse chatGPTResponse = template.postForObject(apiUrl, request, ChatGPTResponse.class);
+        System.out.println(chatGPTResponse);
 
         return null;
 

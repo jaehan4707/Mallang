@@ -24,9 +24,4 @@ public class QuizScheduler {
         logger.info("Generate Quiz");
     }
 
-//    @Scheduled(fixedRate = 10000)
-//    public void checkModelList(){
-//        quizService.checkModels();
-//        logger.info("Check Models");
-//    }
 }

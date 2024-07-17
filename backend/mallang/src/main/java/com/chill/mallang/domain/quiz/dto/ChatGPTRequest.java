@@ -9,6 +9,7 @@ import java.util.List;
 public class ChatGPTRequest {
     private String model;
     private List<Message> messages;
+    private int max_tokens = 300;
 
     public ChatGPTRequest(String model, String prompt) {
         this.model = model;
