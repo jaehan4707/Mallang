@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.google.services) // Google 서비스 플러그인
+    kotlin("kapt")
 }
 
 android {
@@ -69,4 +71,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // firebase
+    implementation(libs.play.services.auth)
+    implementation(libs.firebase.auth.ktx)
 }
+
+apply(plugin = "com.google.gms.google-services")
