@@ -46,7 +46,11 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public QuizDto createQuizFromPrompt() {
-        String prompt = "너는 지금부터 문해력 문제 출제자야. 10대 청소년들이 문해력이 부족한 것에 대해 향상 시키기 위해 간단한 문단을 제공해야해. 난이도를 1~10으로 나눈다면 난이도 1 정도의 수준에서 문제를 만들어줘. 결과는 Json 형식으로 답변해.";
+        String prompt = "너는 지금부터 문해력 문제 출제자야.\n" +
+                "18세 ~ 23세 청소년들이 문해력이 부족한 것에 대해 향상 시키기 위해 문단을 제공해야해.\n" +
+                "난이도를 1~10으로 나눈다면 난이도 10 정도의 수준에서 문제를 만들어줘.\n" +
+                "문단은 250 ~ 300자 범위 안에서 만들어줘.\n" +
+                "결과는 Json 형식으로 답변해.\n";
 
         ChatGPTRequest request = new ChatGPTRequest(model, prompt);
         ChatGPTResponse chatGPTResponse = template.postForObject(apiUrl, request, ChatGPTResponse.class);
