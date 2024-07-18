@@ -61,6 +61,11 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
+    public String checkScore() {
+        return "";
+    }
+
+    @Override
     public void checkModels() {
         // write code only here
         String endpoint = "https://api.openai.com/v1/models";
