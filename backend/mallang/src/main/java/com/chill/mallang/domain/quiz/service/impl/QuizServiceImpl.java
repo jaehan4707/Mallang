@@ -4,7 +4,6 @@ package com.chill.mallang.domain.quiz.service.impl;
 import com.chill.mallang.domain.quiz.dto.ChatGPTRequest;
 import com.chill.mallang.domain.quiz.dto.ChatGPTResponse;
 import com.chill.mallang.domain.quiz.dto.QuizDto;
-import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.chill.mallang.domain.quiz.service.QuizService;
 
 import com.theokanning.openai.OpenAiService;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Service
 public class QuizServiceImpl implements QuizService {
 
-    private final QuizRepository quizRepository;
     private final OpenAiService openAiService;
     private Logger logger = LoggerFactory.getLogger(QuizServiceImpl.class);
 
@@ -39,8 +37,7 @@ public class QuizServiceImpl implements QuizService {
 
 
     @Autowired
-    public QuizServiceImpl(QuizRepository quizRepository, OpenAiService openAiService) {
-        this.quizRepository = quizRepository;
+    public QuizServiceImpl(OpenAiService openAiService) {
         this.openAiService = openAiService;
     }
 
