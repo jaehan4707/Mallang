@@ -56,7 +56,11 @@ fun LoginScreen(onLoginClick: () -> Unit) {
 }
 
 @Composable
-fun StyledButton(onClick: () -> Unit, text: String) {
+fun StyledButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    text: String
+) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
@@ -65,7 +69,7 @@ fun StyledButton(onClick: () -> Unit, text: String) {
         ),
         shape = RoundedCornerShape(10.dp),
         border = BorderStroke(1.dp, Gray4),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(0.8f)
             .height(48.dp)
     ) {

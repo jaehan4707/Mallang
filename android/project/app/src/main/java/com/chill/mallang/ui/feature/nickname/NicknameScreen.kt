@@ -1,8 +1,6 @@
 package com.chill.mallang.ui.feature.nickname
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -29,19 +25,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray3
-import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
+import com.chill.mallang.ui.util.addFocusCleaner
 
 @Composable
 fun NicknameScreen() {
@@ -73,7 +69,7 @@ fun NicknameScreen() {
                 focusManager = focusManager
             )
             Box(modifier = Modifier.height(20.dp))
-            BlackButton(onClick = { }, text = "결정하기")
+            LongBlackButton(onClick = { }, text = "결정하기")
             Spacer(modifier = Modifier.weight(0.7f))
         }
     }
@@ -81,6 +77,7 @@ fun NicknameScreen() {
 
 @Composable
 fun CustomTextField(
+    modifier: Modifier = Modifier,
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     focusManager: FocusManager,
@@ -97,7 +94,7 @@ fun CustomTextField(
                 )
             }
         },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(0.8f)
             .height(48.dp),
         shape = RoundedCornerShape(10.dp),
@@ -120,30 +117,14 @@ fun CustomTextField(
 }
 
 @Composable
-fun BlackButton(onClick: () -> Unit, text: String) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            contentColor = White,
-            containerColor = Gray6
-        ),
-        shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(1.dp, Gray4),
-        modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .height(48.dp)
-    ) {
-        Text(
-            text,
-            style = Typography.displayLarge
-        )
-    }
-}
-
-@Composable
-fun TextWithIcon(text: String, icon: Int) {
+fun TextWithIcon(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: Int
+) {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
     ) {
         Text(
             text = text,
@@ -162,18 +143,5 @@ fun TextWithIcon(text: String, icon: Int) {
 fun NicknameScreenPreview() {
     MallangTheme {
         NicknameScreen()
-    }
-}
-
-// 화면 터치로 TextField 포커스 해제
-fun Modifier.addFocusCleaner(
-    focusManager: FocusManager,
-    doOnClear: () -> Unit = {}
-): Modifier {
-    return this.pointerInput(Unit) {
-        detectTapGestures(onTap = {
-            doOnClear()
-            focusManager.clearFocus()
-        })
     }
 }
