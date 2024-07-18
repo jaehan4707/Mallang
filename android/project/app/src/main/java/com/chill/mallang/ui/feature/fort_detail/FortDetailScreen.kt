@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chill.mallang.R
 import com.chill.mallang.ui.theme.MallangTheme
+import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun FortDetailScreen(modifier: Modifier = Modifier){
@@ -100,8 +101,17 @@ fun MainBody(modifier: Modifier = Modifier){
                     contentDescription = "My Image",
                     modifier = Modifier.height(30.dp)
                 )
-                Text(text = "나갱갱", fontSize = 22.sp)
-                Text(text = "98점", fontSize = 22.sp, color = Color.Red)
+                Text(
+                    text = "나갱갱",
+                    style = Typography.displayLarge,
+                    fontSize = 28.sp
+                )
+                Text(
+                    text = "98점",
+                    style = Typography.displayLarge,
+                    fontSize = 28.sp,
+                    color = Color.Red
+                )
             }
         }
     }
@@ -119,12 +129,25 @@ fun MyRecordBody(modifier: Modifier = Modifier){
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(text = "나의 도전", fontWeight = FontWeight.SemiBold)
+                Text(
+                    text = "나의 도전",
+                    style = Typography.displayLarge,
+                    fontSize = 22.sp
+                )
                 Row(
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {
-                    Text(text = "남은 기회: ", fontWeight = FontWeight.SemiBold)
-                    Text(text = "${3}번", color = Color.Red, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        text = "남은 기회: ",
+                        style = Typography.displayLarge,
+                        fontSize = 22.sp
+                    )
+                    Text(
+                        text = "${3}번",
+                        color = Color.Red,
+                        style = Typography.displayLarge,
+                        fontSize = 22.sp
+                    )
                 }
             }
             LazyColumn {
@@ -154,7 +177,11 @@ fun HistorySubBody(modifier: Modifier = Modifier){
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(text = "도전 기록", fontWeight = FontWeight.SemiBold)
+                Text(
+                    text = "도전 기록",
+                    style = Typography.displayLarge,
+                    fontSize = 22.sp
+                )
             }
             LazyColumn {
                 item {
@@ -189,9 +216,24 @@ fun ListItemMyRecord(modifier: Modifier = Modifier){
             , verticalAlignment = Alignment.CenterVertically
             , horizontalArrangement = Arrangement.spacedBy(20.dp)
         ){
-            Text(text = "WIN", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = Color.Blue)
-            Text(text = "98점", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-            Text(text = "1등 달성!", fontSize = 12.sp, color = Color.Red, fontWeight = FontWeight.SemiBold)
+            Text(
+                text = "WIN",
+                fontSize = 24.sp,
+                style = Typography.displayLarge,
+                color = Color.Blue
+            )
+            Text(
+                text = "98점",
+                fontSize = 22.sp,
+                style = Typography.displayLarge,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "1등 달성!",
+                fontSize = 16.sp,
+                style = Typography.displayLarge,
+                color = Color.Red
+            )
         }
     }
 }
@@ -214,9 +256,24 @@ fun ListItemHistory(modifier: Modifier = Modifier){
             , verticalAlignment = Alignment.CenterVertically
             , horizontalArrangement = Arrangement.spacedBy(20.dp)
         ){
-            Text(text = "LOSE", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = Color.Red)
-            Text(text = "짜이한", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-            Text(text = "랑", fontSize = 16.sp, color = Color.Blue, fontWeight = FontWeight.SemiBold)
+            Text(
+                text = "LOSE",
+                fontSize = 24.sp,
+                style = Typography.displayLarge,
+                color = Color.Red
+            )
+            Text(
+                text = "짜이한",
+                fontSize = 22.sp,
+                style = Typography.displayLarge,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "랑",
+                color = Color.Blue,
+                fontSize = 22.sp,
+                style = Typography.displayLarge,
+            )
         }
     }
 }
