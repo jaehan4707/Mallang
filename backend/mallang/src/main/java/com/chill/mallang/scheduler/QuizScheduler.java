@@ -18,10 +18,12 @@ public class QuizScheduler {
         this.quizService = quizService;
     }
 
-    @Scheduled(fixedRate = 10000)
-    public void generateQuiz(){
-        quizService.createQuizFromPrompt();
-        logger.info("Generate Quiz");
-    }
+
+    // 문제 생성 스케쥴러
+//    @Scheduled(fixedRate = 10000)
+//    public void generateQuiz(){
+//        quizService.createQuizFromPrompt();
+//        logger.info("Generate Quiz");
+//    }
 
 }
