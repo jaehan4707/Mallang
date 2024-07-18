@@ -2,6 +2,7 @@ package com.chill.mallang.ui.feature.select
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,19 +20,30 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.R
+import com.chill.mallang.ui.feature.nickname.BlackButton
 import com.chill.mallang.ui.feature.nickname.TextWithIcon
 import com.chill.mallang.ui.theme.BackGround
+import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Red01
 import com.chill.mallang.ui.theme.SkyBlue
@@ -39,6 +51,9 @@ import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun SelectScreen() {
+    var selectedTeam by remember { mutableStateOf<String?>(null) }
+    var showConfirmButton by remember { mutableStateOf(false) }
+
     Surface(
         color = BackGround
     ) {
@@ -46,7 +61,7 @@ fun SelectScreen() {
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.weight(0.15f))
+            Spacer(modifier = Modifier.height(100.dp))
             Image(
                 painter = painterResource(id = R.drawable.ic_title_small),
                 contentDescription = null,
@@ -56,8 +71,8 @@ fun SelectScreen() {
             TextWithIcon(text = "당신의 진영을 선택해 주세요", icon = R.drawable.ic_team)
             Box(modifier = Modifier.height(30.dp))
             PercentageBar(
-                leftPercentage = 45,
-                rightPercentage = 55,
+                leftPercentage = 30,
+                rightPercentage = 70,
                 leftLabel = "말",
                 rightLabel = "랑",
                 leftColor = Red01,
@@ -69,9 +84,29 @@ fun SelectScreen() {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
-                TeamButton(onClick = { }, text = "말", color = Red01)
+                TeamButton(
+                    onClick = {
+                        selectedTeam = "말"
+                        showConfirmButton = true
+                    },
+                    text = "말",
+                    color = Red01,
+                    isSelected = selectedTeam == "말"
+                )
                 Box(modifier = Modifier.width(25.dp))
-                TeamButton(onClick = { }, text = "랑", color = SkyBlue)
+                TeamButton(
+                    onClick = {
+                        selectedTeam = "랑"
+                        showConfirmButton = true
+                    },
+                    text = "랑",
+                    color = SkyBlue,
+                    isSelected = selectedTeam == "랑"
+                )
+            }
+            if (showConfirmButton) {
+                Spacer(modifier = Modifier.weight(0.1f))
+                BlackButton(onClick = { }, text = "결정하기")
             }
             Spacer(modifier = Modifier.weight(0.6f))
         }
@@ -80,7 +115,12 @@ fun SelectScreen() {
 
 // 팀 버튼
 @Composable
-fun TeamButton(onClick: () -> Unit, text: String, color: Color) {
+fun TeamButton(
+    onClick: () -> Unit,
+    text: String,
+    color: Color,
+    isSelected: Boolean
+) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
@@ -91,6 +131,13 @@ fun TeamButton(onClick: () -> Unit, text: String, color: Color) {
         modifier = Modifier
             .width(100.dp)
             .height(48.dp)
+            .then(
+                if (isSelected) Modifier.border(
+                    2.dp,
+                    Gray6,
+                    RoundedCornerShape(13.dp)
+                ) else Modifier
+            )
     ) {
         Text(
             text,
@@ -109,70 +156,46 @@ fun PercentageBar(
     leftColor: Color,
     rightColor: Color
 ) {
-
-
     Column(
         modifier = Modifier
             .padding(horizontal = 30.dp)
     ) {
         Canvas(
             modifier = Modifier
-                .height(10.dp)
                 .fillMaxWidth()
+                .height(15.dp)
         ) {
-            val barWidth = size.width
-            val barHeight = size.height
 
-            val leftWidth = barWidth * (leftPercentage / 100f)
-            val rightWidth = barWidth * (rightPercentage / 100f)
-
-            val leftPath = Path().apply {
-                moveTo(0f, 0f)
-                lineTo(leftWidth - 15.dp.toPx(), 0f)
-                arcTo(
-                    rect = Rect(
-                        leftWidth - 30.dp.toPx(),
-                        0f,
-                        leftWidth,
-                        barHeight
-                    ),
-                    startAngleDegrees = -90f,
-                    sweepAngleDegrees = 180f,
-                    forceMoveTo = false
+            val path = Path().apply {
+                addRoundRect( // 모서리가 둥근 사각형을 path에 추가
+                    RoundRect(
+                        Rect(
+                            offset = Offset(0f, 0f),
+                            size = Size(size.width, 30f)
+                        ),
+                        CornerRadius(15.dp.toPx(), 15.dp.toPx())
+                    )
                 )
-                lineTo(0f, barHeight)
-                close()
             }
 
-            val rightPath = Path().apply {
-                moveTo(leftWidth, 0f)
-                lineTo(leftWidth + rightWidth - 15.dp.toPx(), 0f)
-                arcTo(
-                    rect = Rect(
-                        leftWidth + rightWidth - 30.dp.toPx(),
-                        0f,
-                        leftWidth + rightWidth,
-                        barHeight
-                    ),
-                    startAngleDegrees = 270f,
-                    sweepAngleDegrees = 180f,
-                    forceMoveTo = false
+            clipPath(path) { // path 안쪽에 그리기
+                val barWidth = size.width
+
+                val leftWidth = barWidth * (leftPercentage / 100f)
+                val rightWidth = barWidth * (rightPercentage / 100f)
+
+                drawRect(
+                    color = Red01,
+                    topLeft = Offset(0f, 0f),
+                    size = Size(leftWidth, 30f)
                 )
-                lineTo(leftWidth, barHeight)
-                close()
+
+                drawRect(
+                    color = SkyBlue,
+                    topLeft = Offset(leftWidth, 0f),
+                    size = Size(rightWidth, 30f)
+                )
             }
-
-            drawPath(
-                path = leftPath,
-                color = leftColor,
-                style = Fill
-            )
-
-            drawPath(
-                path = rightPath,
-                color = rightColor,
-                style = Fill
-            )
         }
 
         Spacer(modifier = Modifier.height(5.dp))
