@@ -31,13 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.R
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
-import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -50,7 +48,11 @@ fun LoginScreen(
 ) {
 
     val context = LocalContext.current
-    val webClientId = "433818833663-2dpqd4dsjslmmouh2osab5ntp09dp5q5.apps.googleusercontent.com"
+
+    val webClientId = remember {
+        context.getString(R.string.web_client_id)
+    }
+
     val googleSignInClient = remember {
         GoogleSignIn.getClient(
             context,
@@ -151,13 +153,5 @@ fun GoogleLoginButton(
                 text, style = Typography.displayLarge
             )
         }
-    }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    MallangTheme {
-//        LoginScreen()
     }
 }
