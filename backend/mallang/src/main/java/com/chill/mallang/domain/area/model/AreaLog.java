@@ -1,27 +1,26 @@
 package com.chill.mallang.domain.area.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 public class AreaLog {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-//    private Long user_id;
+    private long arealog_id;
 
     @ManyToOne
-    @JoinColumn(name= "user_id")
-    private User user;
+    @JoinColumn( name = "area_id" )
+    private Area area_id;
 
-    @ManyToOne
-    @JoinColumn(name = "area_id")
-    private Area area;
-
-    private Timestamp created_at;
-
-    private Float score;
+    private long user_id;
+    private LocalDateTime created_at;
+    @NotNull
+    private float score;
 }
