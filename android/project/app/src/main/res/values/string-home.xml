@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mode_home">점령전</string>
+    <string name="mode_quiz">퀴즈</string>
+    <string name="side_button_setting">설정</string>
+    <string name="side_button_quest">퀘스트</string>
+    <string name="side_button_ranking">랭킹</string>
+    <string name="character_message">빠르게 점령해보자</string>
+</resources>
