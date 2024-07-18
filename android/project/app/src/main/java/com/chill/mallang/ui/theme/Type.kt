@@ -23,49 +23,49 @@ private val galmuri11Headline1 = TextStyle(
     fontFamily = galmuri11Family,
     fontWeight = FontWeight.SemiBold,
     fontSize = 28.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 private val galmuri11Headline2 = TextStyle(
     fontFamily = galmuri11Family,
     fontWeight = FontWeight.SemiBold,
     fontSize = 24.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 private val galmuri11Body1 = TextStyle(
     fontFamily = galmuri11Family,
     fontWeight = FontWeight.Medium,
     fontSize = 18.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 private val galmuri11Body2 = TextStyle(
     fontFamily = galmuri11Family,
     fontWeight = FontWeight.Medium,
     fontSize = 16.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 private val galmuri11Body3 = TextStyle(
     fontFamily = omuyPrettyFamily,
     fontWeight = FontWeight.Medium,
     fontSize = 14.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 private val omyuPrettyHeadline1 = TextStyle(
     fontFamily = omuyPrettyFamily,
     fontWeight = FontWeight.SemiBold,
     fontSize = 28.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 private val omyuPrettyHeadline2 = TextStyle(
     fontFamily = omuyPrettyFamily,
     fontWeight = FontWeight.SemiBold,
     fontSize = 24.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 
@@ -73,21 +73,21 @@ private val omyuPrettyBody1 = TextStyle(
     fontFamily = omuyPrettyFamily,
     fontWeight = FontWeight.Medium,
     fontSize = 18.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 private val omyuPrettyBody2 = TextStyle(
     fontFamily = omuyPrettyFamily,
     fontWeight = FontWeight.Medium,
     fontSize = 16.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 private val omyuPrettyBody3 = TextStyle(
     fontFamily = omuyPrettyFamily,
     fontWeight = FontWeight.Medium,
     fontSize = 14.sp,
-    letterSpacing = (-0.007).em
+    letterSpacing = (-0.07).em
 )
 
 
