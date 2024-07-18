@@ -48,36 +48,30 @@ fun FortDetailScreen(modifier: Modifier = Modifier){
 
 @Composable
 fun Header(modifier: Modifier = Modifier, fort_name: String){
-    Surface(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .background(Color.LightGray.copy(alpha = 0.4f))
             .padding(vertical = 7.dp, horizontal = 10.dp)
     ) {
-        Box(
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.LightGray.copy(alpha = 0.4f))
+                .align(Alignment.Center)
+            ,horizontalArrangement = Arrangement.spacedBy(4.dp)
+            , verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                ,horizontalArrangement = Arrangement.spacedBy(4.dp)
-                , verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_location)
-                    , contentDescription = "검정색 마커"
-                    , modifier = Modifier.height(height = 20.dp)
-                )
-                Text(text = fort_name, fontSize = 18.sp)
-            }
             Icon(
-                painter = painterResource(id = R.drawable.ic_exit)
-                , contentDescription = "종료"
-                , modifier = Modifier.align(Alignment.TopEnd)
+                painter = painterResource(id = R.drawable.ic_location)
+                , contentDescription = "검정색 마커"
+                , modifier = Modifier.height(height = 20.dp)
             )
+            Text(text = fort_name, fontSize = 18.sp)
         }
+        Icon(
+            painter = painterResource(id = R.drawable.ic_exit)
+            , contentDescription = "종료"
+            , modifier = Modifier.align(Alignment.TopEnd)
+        )
     }
 }
 
