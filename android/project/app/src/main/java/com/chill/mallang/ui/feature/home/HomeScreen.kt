@@ -59,7 +59,7 @@ object TestData { // 화면 임시 구성할 데이터
 }
 
 @Composable
-private fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxSize()

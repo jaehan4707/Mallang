@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.theme.BackGround
@@ -40,10 +41,9 @@ import com.chill.mallang.ui.theme.Typography
 import com.chill.mallang.ui.util.addFocusCleaner
 
 @Composable
-fun NicknameScreen() {
+fun NicknameScreen(modifier: Modifier = Modifier, onClick: (String) -> Unit = {}) {
     val focusManager = LocalFocusManager.current
     var nickname by remember { mutableStateOf(TextFieldValue("")) }
-
     Surface(
         color = BackGround,
         modifier = Modifier
@@ -69,7 +69,7 @@ fun NicknameScreen() {
                 focusManager = focusManager
             )
             Box(modifier = Modifier.height(20.dp))
-            LongBlackButton(onClick = { }, text = "결정하기")
+            LongBlackButton(onClick = { onClick(nickname.text) }, text = "결정하기")
             Spacer(modifier = Modifier.weight(0.7f))
         }
     }
