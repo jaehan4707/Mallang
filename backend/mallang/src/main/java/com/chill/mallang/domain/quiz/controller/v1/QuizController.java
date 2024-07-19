@@ -22,7 +22,6 @@ public class QuizController {
     @Operation(summary = "퀴즈 상제 정보 조회", description = "특정 퀴즈에 대한 상제 정보를 조회합니다.")
     @GetMapping("/{quizID}")
     public ResponseEntity<Quiz> getQuiz(@PathVariable Long quizID) {
-
         return null;
     }
 

@@ -3,9 +3,10 @@ package com.chill.mallang.domain.quiz.service.impl;
 
 import com.chill.mallang.domain.quiz.dto.ChatGPTRequest;
 import com.chill.mallang.domain.quiz.dto.ChatGPTResponse;
-import com.chill.mallang.domain.quiz.dto.QuizDto;
 import com.chill.mallang.domain.quiz.service.QuizService;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.theokanning.openai.OpenAiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,18 +43,33 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public QuizDto createQuizFromPrompt() {
+    public void createQuizFromPrompt() {
         String prompt = "너는 지금부터 문해력 문제 출제자야.\n" +
                 "18세 ~ 23세 청소년들이 문해력이 부족한 것에 대해 향상 시키기 위해 문단을 제공해야해.\n" +
                 "난이도를 1~10으로 나눈다면 난이도 10 정도의 수준에서 문제를 만들어줘.\n" +
                 "문단은 250 ~ 300자 범위 안에서 만들어줘.\n" +
-                "결과는 Json 형식으로 답변해.\n";
+                "결과는 Json 형식으로 답변해.\n" +
+                "difficulty를 key로 가지면서 난이도를 표현해.\n" +
+                "question을 key로 가지면서 문단을 알려줘";
 
         ChatGPTRequest request = new ChatGPTRequest(model, prompt);
         ChatGPTResponse chatGPTResponse = template.postForObject(apiUrl, request, ChatGPTResponse.class);
-        System.out.println(chatGPTResponse);
 
-        return null;
+        ChatGPTResponse.Choice choice = chatGPTResponse.getChoices().get(0);
+
+        String jsonString = chatGPTResponse.getChoices().get(0).getMessage().getContent();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(jsonString);
+
+            int difficulty = rootNode.get("difficulty").asInt();
+            String question = rootNode.get("question").asText();
+
+            System.out.println("Difficulty: " + difficulty);
+            System.out.println("Question: " + question);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
