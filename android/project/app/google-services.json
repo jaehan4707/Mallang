@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "433818833663",
+    "project_id": "mallang-429704",
+    "storage_bucket": "mallang-429704.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433818833663:android:28c0daa56d8d8959d7b2ca",
+        "android_client_info": {
+          "package_name": "com.chill.mallang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433818833663-3hqpvph2i0ej35g41j9n6accsbd97o73.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chill.mallang",
+            "certificate_hash": "3b63d6ae5c0f47d3e0e744e3f3c543cf05f1c982"
+          }
+        },
+        {
+          "client_id": "433818833663-h4kpi93s330h3n7dq5vqp4luv5026ngu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chill.mallang",
+            "certificate_hash": "91300663707c8ec122bc2f8685fced519aef2b9e"
+          }
+        },
+        {
+          "client_id": "433818833663-qo78uqbqbjf46gf0l5v94da6ko8oo12h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chill.mallang",
+            "certificate_hash": "bf1d3432bd8315fffb392ce9e6ac864bb65fe9d5"
+          }
+        },
+        {
+          "client_id": "433818833663-2dpqd4dsjslmmouh2osab5ntp09dp5q5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC77vJSkUqE41ixyP2yUS_1PmAXDJyk1_M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "433818833663-2dpqd4dsjslmmouh2osab5ntp09dp5q5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
