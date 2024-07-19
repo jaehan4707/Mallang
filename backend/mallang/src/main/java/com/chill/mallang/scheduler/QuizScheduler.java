@@ -17,11 +17,10 @@ public class QuizScheduler {
     public QuizScheduler(QuizService quizService) {
         this.quizService = quizService;
     }
-
-    @Scheduled(fixedRate = 10000)
-    public void generateQuiz(){
-        quizService.createQuizFromPrompt();
-        logger.info("Generate Quiz");
-    }
+//    @Scheduled(fixedRate = 10000)
+//    public void generateQuiz(){
+//        quizService.createQuizFromPrompt();
+//        logger.info("Generate Quiz");
+//    }
 
 }
