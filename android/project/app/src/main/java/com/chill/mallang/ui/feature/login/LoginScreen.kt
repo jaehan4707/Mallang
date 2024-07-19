@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.chill.mallang.BuildConfig
 import com.chill.mallang.R
 import com.chill.mallang.ui.theme.BackGround
@@ -41,13 +42,15 @@ import com.chill.mallang.ui.theme.Typography
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel,
-    onLoginClick: () -> Unit
+    onLoginClick: (LoginUiState) -> Unit
 ) {
-
+    val viewModel: LoginViewModel = hiltViewModel()
     val context = LocalContext.current
     val webClientId = BuildConfig.WEB_CLIENT_ID
 
@@ -105,15 +108,23 @@ fun LoginScreen(
         }
     }
 
-    // 로그인 결과 처리
+//    로그인 결과 처리
     val loginResult by viewModel.loginResult.collectAsState()
     LaunchedEffect(loginResult) {
         loginResult?.let { result ->
-            if (result.isSuccess) {
-                onLoginClick()
-            } else {
-                Toast.makeText(context, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
-            }
+            val account = result.getOrNull()
+            account?.let {
+                onLoginClick(
+                    LoginUiState(
+                        userName = it.displayName,
+                        userEmail = it.email,
+                        userProfileImageUrl = URLEncoder.encode(
+                            it.photoUrl.toString(),
+                            StandardCharsets.UTF_8.toString()
+                        )
+                    )
+                )
+            } ?: Toast.makeText(context, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 }

@@ -1,30 +1,32 @@
 package com.chill.mallang.ui.feature.login
 
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import javax.inject.Inject
 
-class LoginViewModel : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
+
+    private val _loginUiState = MutableStateFlow(LoginUiState())
+    val loginUiState = _loginUiState.asStateFlow()
+
     private val _loginResult = MutableStateFlow<Result<GoogleSignInAccount>?>(null)
     val loginResult: StateFlow<Result<GoogleSignInAccount>?> = _loginResult
 
-    private val auth = FirebaseAuth.getInstance()
-
     fun loginWithGoogle(account: GoogleSignInAccount?) {
-        account?.let { googleAccount ->
-            val credential = GoogleAuthProvider.getCredential(googleAccount.idToken, null)
-            auth.signInWithCredential(credential)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        _loginResult.value = Result.success(googleAccount)
-                    } else {
-                        _loginResult.value =
-                            Result.failure(task.exception ?: Exception("Firebase Auth Failed"))
-                    }
-                }
+        account?.let { account ->
+            _loginResult.value = Result.success(account)
         } ?: run {
             _loginResult.value = Result.failure(Exception("Google Sign-In Failed"))
         }
