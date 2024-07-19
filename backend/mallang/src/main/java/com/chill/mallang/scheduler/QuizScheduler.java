@@ -20,11 +20,11 @@ public class QuizScheduler {
 
 
     // 문제 생성 스케쥴러
-    @Scheduled(fixedRate = 100_000)
-    public void generateQuiz(){
-        logger.info("Start generate quiz");
-        quizService.createQuizFromPrompt();
-        logger.info("Generate Quiz");
-    }
+//    @Scheduled(fixedRate = 100_000)
+//    public void generateQuiz(){
+//        logger.info("Start generate quiz");
+//        quizService.createQuizFromPrompt();
+//        logger.info("Generate Quiz");
+//    }
 
 }
