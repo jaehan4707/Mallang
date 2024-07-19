@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.component.PercentageBar
@@ -41,7 +42,8 @@ import com.chill.mallang.ui.theme.SkyBlue
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
-fun SelectScreen() {
+fun SelectScreen(navigateToMain: () -> Unit = {}, signUp: (String) -> Unit = {}) {
+    val viewModel: SelectViewModel = hiltViewModel()
     var selectedTeam by remember { mutableStateOf<String?>(null) }
     var showConfirmButton by remember { mutableStateOf(false) }
 
@@ -97,7 +99,7 @@ fun SelectScreen() {
             }
             if (showConfirmButton) {
                 Spacer(modifier = Modifier.weight(0.1f))
-                LongBlackButton(onClick = { }, text = "결정하기")
+                LongBlackButton(onClick = { viewModel.login(selectedTeam) }, text = "결정하기")
             }
             Spacer(modifier = Modifier.weight(0.6f))
         }
