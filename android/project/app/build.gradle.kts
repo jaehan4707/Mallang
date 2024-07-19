@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.services) // Google 서비스 플러그인
+    id("kotlin-kapt")
+    alias(libs.plugins.hilt)
 }
 
 val properties = Properties()
@@ -82,6 +84,12 @@ dependencies {
     // firebase
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth.ktx)
+
+    // hilt
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.hilt.compiler)
+    //implementation(libs.plugins.ksp)
 }
 
 apply(plugin = "com.google.gms.google-services")
