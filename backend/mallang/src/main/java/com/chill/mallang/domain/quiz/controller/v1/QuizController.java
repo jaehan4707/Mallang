@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.quiz.controller.v1;
 
+import com.chill.mallang.domain.quiz.model.Quiz;
 import com.chill.mallang.domain.quiz.service.QuizService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,10 +19,16 @@ public class QuizController {
         this.quizService = quizService;
     }
 
+    @Operation(summary = "퀴즈 상제 정보 조회", description = "특정 퀴즈에 대한 상제 정보를 조회합니다.")
+    @GetMapping("/{quizID}")
+    public ResponseEntity<Quiz> getQuiz(@PathVariable Long quizID) {
+        return null;
+    }
+
     @Operation(summary = "퀴즈 정답 제출", description = "특정 퀴즈에 대한 정답을 제출합니다.")
     @PostMapping("/{quizID}/answers")
     public ResponseEntity<?> answerQuiz(@PathVariable Long quizID, @RequestBody String answer) {
 
-        return (ResponseEntity<?>) ResponseEntity.ok();
+        return null;
     }
 }
