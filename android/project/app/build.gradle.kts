@@ -1,6 +1,9 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.google.services) // Google 서비스 플러그인
     id(libs.google.maps.secrets.gradle.get().group!!)
 }
 secrets {
@@ -18,6 +21,9 @@ secrets {
     ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
 }
 
+val properties = Properties()
+properties.load(rootProject.file("local.properties").inputStream())
+
 android {
     namespace = "com.chill.mallang"
     compileSdk = 34
@@ -28,6 +34,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "WEB_CLIENT_ID", properties["default_web_client_id"] as String)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -53,6 +60,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -87,4 +95,10 @@ dependencies {
 
     //google maps sdk
     implementation(libs.google.maps.android.compose)
+
+    // firebase
+    implementation(libs.play.services.auth)
+    implementation(libs.firebase.auth.ktx)
 }
+
+apply(plugin = "com.google.gms.google-services")
