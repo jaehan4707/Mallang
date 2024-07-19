@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.select
+package com.chill.mallang.data.model
 
 data class User(
     val userName: String = "",
