@@ -22,6 +22,14 @@ public class UserController {
         this.userService = userService;
     }
 
+    // 내 정보 조회
+//    @GetMapping
+    // 최종 회원가입
+
+    //
+
+
+    // Test위한 Api
     @GetMapping("/home")
     public String home(@AuthenticationPrincipal OAuth2User principal, Model model) {
         model.addAttribute("name", principal.getAttribute("name"));
