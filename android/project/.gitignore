@@ -14,4 +14,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-/res/values/web_client_id
+/app/src/main/res/values/web_client_id.xml
