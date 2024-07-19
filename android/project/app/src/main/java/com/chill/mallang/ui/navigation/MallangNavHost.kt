@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -30,7 +29,7 @@ fun MallangNavHost(
         composable(
             route = DestinationLogin.route
         ) {
-            LoginScreen(onLoginClick = { loginUiState ->
+            LoginScreen(onLoginSuccess = { loginUiState ->
                 navController.navigate(DestinationNickName.createRoute(loginUiState))
             })
         }
