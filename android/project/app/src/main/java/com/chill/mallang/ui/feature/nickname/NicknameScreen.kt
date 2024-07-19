@@ -44,7 +44,6 @@ import com.chill.mallang.ui.util.addFocusCleaner
 fun NicknameScreen(modifier: Modifier = Modifier, onClick: (String) -> Unit = {}) {
     val focusManager = LocalFocusManager.current
     var nickname by remember { mutableStateOf(TextFieldValue("")) }
-    val viewModel: NickNameViewModel = hiltViewModel()
     Surface(
         color = BackGround,
         modifier = Modifier
