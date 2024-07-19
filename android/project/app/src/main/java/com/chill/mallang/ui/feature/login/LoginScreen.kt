@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.chill.mallang.BuildConfig
 import com.chill.mallang.R
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray4
@@ -48,10 +49,7 @@ fun LoginScreen(
 ) {
 
     val context = LocalContext.current
-
-    val webClientId = remember {
-        context.getString(R.string.web_client_id)
-    }
+    val webClientId = BuildConfig.WEB_CLIENT_ID
 
     val googleSignInClient = remember {
         GoogleSignIn.getClient(
