@@ -41,7 +41,7 @@ object DestinationLogin : ScreenDestinations {
 
 object DestinationMain : ScreenDestinations {
     override val route: String
-        get() = ""
+        get() = "main"
 }
 
 object DestinationMap : ScreenDestinations {
@@ -67,13 +67,9 @@ object DestinationNickName : ScreenDestinationsWithArgument {
     override val route: String
         get() = "nickname"
 
-    fun createRoute(loginUiState: LoginUiState): String {
-        Log.d("jaehan", "createRoute :${loginUiState}")
-        val route =
-            "${this.route}/${loginUiState.userName}/${loginUiState.userEmail}/${loginUiState.userProfileImageUrl}"
-        Log.d("jaehan","route : ${route}")
-        return route
-    }
+    fun createRoute(loginUiState: LoginUiState) =
+        "${this.route}/${loginUiState.userName}/${loginUiState.userEmail}/${loginUiState.userProfileImageUrl}"
+
 }
 
 object DestinationSelect : ScreenDestinationsWithArgument {

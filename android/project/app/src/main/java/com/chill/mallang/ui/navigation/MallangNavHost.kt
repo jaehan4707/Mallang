@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
@@ -64,17 +65,16 @@ fun MallangNavHost(
             val userEmail = navBackStackEntry.arguments?.getString("userEmail")
             val userProfileImageUrl = navBackStackEntry.arguments?.getString("userProfileImageUrl")
             val userNickName = navBackStackEntry.arguments?.getString("userNickName")
-            //
             SelectScreen(navigateToMain = { navController.navigate(DestinationMain.route) },
                 signUp = {
 
                 })
         }
 
-//        composable(
-//            route = DestinationMain.route,
-//        ){
-//            HomeScreen()
-//        }
+        composable(
+            route = DestinationMain.route,
+        ) {
+            HomeScreen(modifier = modifier)
+        }
     }
 }
