@@ -1,9 +1,5 @@
 package com.chill.mallang.ui.feature.home
 
-import android.util.Log
-import android.widget.Space
-import android.widget.TextView
-import androidx.collection.mutableObjectIntMapOf
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,20 +16,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chill.mallang.R
-import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
@@ -107,35 +96,32 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 fun IconButton(
     icon: Int,
     label: String,
-    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable {
-                onClick()
-            }, horizontalAlignment = Alignment.End
+        modifier = Modifier.clickable {
+            onClick()
+        },
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = label
-            )
-            Text(
-                text = label,
-                style = Typography.displayLarge,
-                textAlign = TextAlign.Center
-            )
-        }
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = label
+        )
+        Text(
+            text = label,
+            style = Typography.displayLarge,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
 @Composable
 fun SideUserButton(modifier: Modifier = Modifier) {
-    Column(modifier) {
+    Column(
+        modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.End
+    ) {
         IconButton(
             icon = R.drawable.ic_setting,
             label = stringResource(R.string.side_button_setting),
