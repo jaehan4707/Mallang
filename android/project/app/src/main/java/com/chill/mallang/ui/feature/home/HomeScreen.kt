@@ -3,7 +3,6 @@ package com.chill.mallang.ui.feature.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,7 @@ import com.chill.mallang.ui.theme.Gray2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
+import com.chill.mallang.ui.util.noRippleClickable
 
 
 object TestData { // 화면 임시 구성할 데이터
@@ -73,21 +73,21 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 userName = TestData.USER_NAME,
                 userRank = TestData.USER_RANK
             )
-            Spacer(modifier.weight(0.1f))
+            Spacer(modifier.weight(0.15f))
             ModeButton( // 퀴즈 모드 버튼
                 icon = R.drawable.ic_question,
                 label = stringResource(R.string.mode_quiz),
                 modifier = Modifier.align(Alignment.End),
                 onClick = { }
             )
-            Spacer(modifier.height(16.dp))
+            Spacer(modifier.weight(0.05f))
             ModeButton( // 점령전 모드 버튼
                 icon = R.drawable.ic_location,
                 label = stringResource(R.string.mode_home),
                 modifier = Modifier.align(Alignment.End),
                 onClick = { }
             )
-            Spacer(modifier.weight(0.1f))
+            Spacer(modifier.weight(0.15f))
         }
     }
 }
@@ -99,7 +99,7 @@ fun IconButton(
     onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.clickable {
+        modifier = Modifier.noRippleClickable {
             onClick()
         },
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -222,7 +222,7 @@ fun ModeButton(
         modifier = modifier
             .width(75.dp)
             .height(75.dp)
-            .clickable { onClick() }
+            .noRippleClickable { onClick() }
             .background(color = Gray2, shape = CircleShape)
             .border(width = 2.dp, color = Color.Black, shape = CircleShape),
         verticalArrangement = Arrangement.Center,
