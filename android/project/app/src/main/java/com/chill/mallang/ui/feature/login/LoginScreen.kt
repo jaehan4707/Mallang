@@ -1,8 +1,6 @@
 package com.chill.mallang.ui.feature.login
 
 import android.app.Activity
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -25,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,54 +30,49 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.chill.mallang.BuildConfig
 import com.chill.mallang.R
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Composable
 fun LoginScreen(
-    onLoginClick: (LoginUiState) -> Unit
+    onLoginSuccess: (LoginUiState) -> Unit
 ) {
-    val viewModel: LoginViewModel = hiltViewModel()
     val context = LocalContext.current
-    val webClientId = BuildConfig.WEB_CLIENT_ID
+    val viewModel: LoginViewModel = hiltViewModel()
 
-    val googleSignInClient = remember {
-        GoogleSignIn.getClient(
-            context,
-            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestProfile()
-                .requestIdToken(webClientId)
-                .build()
-        )
+    LaunchedEffect(Unit) {
+        viewModel.initCredentialManager(context)
+        viewModel.initCredentialRequest()
     }
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
+        contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            try {
-                val account = task.getResult(ApiException::class.java)
-                viewModel.loginWithGoogle(account)
-
-                Log.d("nakyung", "email: " + account.email!!)
-                Log.d("nakyung", "name: " + account.displayName!!)
-                Log.d("nakyung", "profile: " + account.photoUrl.toString())
-
-            } catch (e: ApiException) {
-                viewModel.loginWithGoogle(null)
+            result.data?.let {
+                viewModel.getCredential(context)
             }
+        }
+    }
+
+    val loginResult by viewModel.loginResult.collectAsState()
+    LaunchedEffect(loginResult) {
+        loginResult?.let { result ->
+            onLoginSuccess(
+                LoginUiState(
+                    userName = result.displayName,
+                    userEmail = result.email,
+                    userProfileImageUrl = URLEncoder.encode(
+                        result.photoUrl.toString(),
+                        StandardCharsets.UTF_8.toString()
+                    )
+                )
+            )
         }
     }
 
@@ -102,29 +94,9 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.weight(0.4f))
             GoogleLoginButton(onClick = {
-                launcher.launch(googleSignInClient.signInIntent)
+                viewModel.initializeLogin(context, launcher)
             }, text = "구글 계정으로 로그인하기")
             Spacer(modifier = Modifier.weight(0.7f))
-        }
-    }
-
-//    로그인 결과 처리
-    val loginResult by viewModel.loginResult.collectAsState()
-    LaunchedEffect(loginResult) {
-        loginResult?.let { result ->
-            val account = result.getOrNull()
-            account?.let {
-                onLoginClick(
-                    LoginUiState(
-                        userName = it.displayName,
-                        userEmail = it.email,
-                        userProfileImageUrl = URLEncoder.encode(
-                            it.photoUrl.toString(),
-                            StandardCharsets.UTF_8.toString()
-                        )
-                    )
-                )
-            } ?: Toast.makeText(context, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 }
