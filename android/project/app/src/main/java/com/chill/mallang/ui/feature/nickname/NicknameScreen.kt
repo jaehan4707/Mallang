@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.nickname
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,41 +13,47 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
+import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
 import com.chill.mallang.ui.util.addFocusCleaner
 
 @Composable
-fun NicknameScreen(modifier: Modifier = Modifier, onClick: (String) -> Unit = {}) {
+fun NicknameScreen(
+    modifier: Modifier = Modifier,
+    onClick: (String) -> Unit = {}
+) {
+    val nicknameViewModel: NicknameViewModel = hiltViewModel()
+    val nicknameState by nicknameViewModel.nicknameState.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
-    var nickname by remember { mutableStateOf(TextFieldValue("")) }
+
+
     Surface(
         color = BackGround,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .addFocusCleaner(focusManager)
     ) {
@@ -64,12 +71,22 @@ fun NicknameScreen(modifier: Modifier = Modifier, onClick: (String) -> Unit = {}
             TextWithIcon(text = "사용할 닉네임을 입력해 주세요", icon = R.drawable.ic_mage)
             Box(modifier = Modifier.height(15.dp))
             CustomTextField(
-                value = nickname,
-                onValueChange = { nickname = it },
-                focusManager = focusManager
+                modifier = modifier.height(80.dp),
+                onValueChange = {
+                    nicknameViewModel.updateNickname(it)
+                },
+                focusManager = focusManager,
+                nicknameState = nicknameState,
+                onClearPressed = {
+                    Log.d("nakyung", "뭐이ㅏㅁ?>")
+                    nicknameViewModel.clearText()
+                }
             )
             Box(modifier = Modifier.height(20.dp))
-            LongBlackButton(onClick = { onClick(nickname.text) }, text = "결정하기")
+            LongBlackButton(
+                onClick = { onClick(nicknameState.nickname) },
+                text = "결정하기"
+            )
             Spacer(modifier = Modifier.weight(0.7f))
         }
     }
@@ -78,16 +95,19 @@ fun NicknameScreen(modifier: Modifier = Modifier, onClick: (String) -> Unit = {}
 @Composable
 fun CustomTextField(
     modifier: Modifier = Modifier,
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
+    onValueChange: (String) -> Unit,
     focusManager: FocusManager,
-    placeholder: String = "닉네임"
+    placeholder: String = "닉네임",
+    nicknameState: NicknameState,
+    onClearPressed: () -> Unit = {},
 ) {
     OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
+        value = nicknameState.nickname,
+        onValueChange = {
+            onValueChange(it)
+        },
         placeholder = {
-            if (value.text.isEmpty()) {
+            if (nicknameState.nickname.isEmpty()) {
                 Text(
                     text = placeholder,
                     style = Typography.displayMedium
@@ -112,7 +132,22 @@ fun CustomTextField(
             unfocusedPlaceholderColor = Gray3,
             focusedPlaceholderColor = Gray3
         ),
-        textStyle = Typography.displayMedium
+        textStyle = Typography.displayMedium,
+        supportingText = {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = nicknameState.errorMessage ?: "",
+                color = Sub1,
+                style = Typography.displayLarge
+            )
+            Log.d("nakyung", nicknameState.errorMessage.toString())
+        },
+        trailingIcon = {
+            Button(onClick =  onClearPressed ) {
+                Icon(painter = painterResource(id = R.drawable.ic_cancel),
+                    contentDescription = null)
+            }
+        }
     )
 }
 
