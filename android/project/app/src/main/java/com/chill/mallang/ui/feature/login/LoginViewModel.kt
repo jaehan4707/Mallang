@@ -1,6 +1,7 @@
 package com.chill.mallang.ui.feature.login
 
 import android.content.Context
+import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
 import android.widget.Toast
@@ -12,10 +13,15 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.BuildConfig
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -43,6 +49,9 @@ class LoginViewModel @Inject constructor(
     private val _loginResult = MutableStateFlow<FirebaseUser?>(null)
     val loginResult: StateFlow<FirebaseUser?> = _loginResult
 
+    // web client key
+    private val key = BuildConfig.WEB_CLIENT_ID
+
     // firebase 인증 인스턴스
     private val auth = FirebaseAuth.getInstance()
 
@@ -52,14 +61,32 @@ class LoginViewModel @Inject constructor(
     // Credential Request
     private lateinit var request: GetCredentialRequest
 
+    // Google Sign-In Client
+    private lateinit var googleSignInClient: GoogleSignInClient
+
+    // google sign in launcher
+    private var googleSignInLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null
+
+    fun setGoogleSignInLauncher(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
+        googleSignInLauncher = launcher
+    }
+
     // Credential Manager 초기화
     fun initCredentialManager(context: Context) {
         credentialManager = CredentialManager.create(context)
+
+        // Google Sign-In 클라이언트 초기화
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(key)
+            .requestEmail()
+            .requestProfile()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(context, gso)
     }
 
     // CredentialRequest 생성
     fun initCredentialRequest() {
-        request = getGoogleCredentialRequest(BuildConfig.WEB_CLIENT_ID)
+        request = getGoogleCredentialRequest(key)
     }
 
     // Credential Manager 생성 및 Request 받기
@@ -69,7 +96,26 @@ class LoginViewModel @Inject constructor(
                 val credentialResponse = credentialManager.getCredential(context, request)
                 handleSignInResult(credentialResponse)
             } catch (e: Exception) {
-                Toast.makeText(context, "로그인 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "로그인 시작 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun fallbackToGoogleSignIn(googleSignInLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>?) {
+        val signInIntent = googleSignInClient.signInIntent
+        googleSignInLauncher?.launch(signInIntent)
+    }
+
+    fun handleActivityResult(requestCode: Int, data: Intent?) {
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                account?.let {
+                    firebaseAuthWithGoogle(it.idToken!!)
+                }
+            } catch (e: ApiException) {
+                Log.w("loginViewModel", "Google sign in failed", e)
             }
         }
     }
@@ -81,6 +127,7 @@ class LoginViewModel @Inject constructor(
     ): GetCredentialRequest {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setServerClientId(clientId)
+            .setFilterByAuthorizedAccounts(false)
             .setNonce(nonce)
             .build()
 
@@ -92,17 +139,25 @@ class LoginViewModel @Inject constructor(
     // 구글 로그인 화면 띄우는 함수
     fun initializeLogin(
         context: Context,
-        launcher: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>
+        credentialLauncher: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>
     ) {
         viewModelScope.launch {
             try {
                 val intentSender = signInWithGoogle(context, request)
                 if (intentSender != null) {
-                    launcher.launch(IntentSenderRequest.Builder(intentSender).build())
+                    credentialLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "로그인 시작 실패: ${e.message}", Toast.LENGTH_SHORT)
-                    .show()
+                when (e) {
+                    is NoCredentialException -> {
+                        // Credential Manager 실패 시 Google Sign-In API로 폴백
+                        fallbackToGoogleSignIn(googleSignInLauncher)
+                    }
+                    else -> {
+                        Toast.makeText(context, "로그인 시작 실패: ${e.message}", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
             }
         }
     }
@@ -149,20 +204,26 @@ class LoginViewModel @Inject constructor(
     }
 
     // Google ID 토큰을 사용해 Firebase 인증
-    private suspend fun firebaseAuthWithGoogle(idToken: String) {
-        try {
-            val credential = GoogleAuthProvider.getCredential(idToken, null)
-            auth.signInWithCredential(credential).await()
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            try {
+                val credential = GoogleAuthProvider.getCredential(idToken, null)
+                val authResult = auth.signInWithCredential(credential).await()
+                val user = authResult.user
 
-            val user = auth.currentUser
-            user?.let {
-                Log.d("nakyung", user.email!!)
-                Log.d("nakyung", user.photoUrl.toString())
+                user?.let {
+                    Log.d("nakyung", user.email!!)
+                    Log.d("nakyung", user.photoUrl.toString())
+                }
+
+                _loginResult.value = user
+            } catch (e: Exception) {
+                _loginResult.value = null
             }
-
-            _loginResult.value = user
-        } catch (e: Exception) {
-            _loginResult.value = null
         }
+    }
+
+    companion object {
+        const val RC_SIGN_IN = 9001
     }
 }

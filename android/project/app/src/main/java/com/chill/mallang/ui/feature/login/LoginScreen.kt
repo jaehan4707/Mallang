@@ -50,7 +50,8 @@ fun LoginScreen(
         viewModel.initCredentialRequest()
     }
 
-    val launcher = rememberLauncherForActivityResult(
+    // Credential Manager 방식
+    val credentialLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -58,6 +59,17 @@ fun LoginScreen(
                 viewModel.getCredential(context)
             }
         }
+    }
+
+    // Google Sign-In 방식
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.handleActivityResult(LoginViewModel.RC_SIGN_IN, result.data)
+    }
+
+    LaunchedEffect(googleSignInLauncher) {
+        viewModel.setGoogleSignInLauncher(googleSignInLauncher)
     }
 
     val loginResult by viewModel.loginResult.collectAsState()
@@ -94,7 +106,7 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.weight(0.4f))
             GoogleLoginButton(onClick = {
-                viewModel.initializeLogin(context, launcher)
+                viewModel.initializeLogin(context, credentialLauncher)
             }, text = "구글 계정으로 로그인하기")
             Spacer(modifier = Modifier.weight(0.7f))
         }
