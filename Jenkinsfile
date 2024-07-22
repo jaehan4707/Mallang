@@ -22,16 +22,10 @@ pipeline {
                 script {
                     dir('backend/mallang') { // Dockerfile이 backend/mallang 디렉토리에 있는 경우
                         def app = docker.build("${env.IMAGE_NAME}:${env.BUILD_ID}")
-                    }
-                }
-            }
-        }
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                        app.push("${env.BUILD_ID}")
-                        app.push("latest")
+                        docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                            app.push("${env.BUILD_ID}")
+                            app.push("latest")
+                        }
                     }
                 }
             }
