@@ -17,28 +17,41 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.chill.mallang.R
+import androidx.compose.ui.platform.LocalContext
 import com.chill.mallang.ui.util.MultiplePermissionsHandler
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 
 @SuppressLint("MissingPermission")
 @Composable
 fun MapView(
     modifier: Modifier = Modifier,
-    fusedLocationProvider: FusedLocationProviderClient,
     onLocationPermissionDenied: () -> Unit = {}
 ){
-    val singapore = LatLng(1.35, 103.87)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
-    }
+    val context = LocalContext.current
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     var currentLocation by remember { mutableStateOf(MarkerState(LatLng(0.0, 0.0))) }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(currentLocation.position, 10f)
+    }
+    val uiSettings = remember {
+        MapUiSettings(myLocationButtonEnabled = true)
+    }
+    val properties by remember {
+        mutableStateOf(MapProperties(isMyLocationEnabled = true))
+    }
 
     var isMapLoaded by remember {
         mutableStateOf(false)
@@ -47,14 +60,23 @@ fun MapView(
         mutableStateOf(false)
     }
 
+
     MultiplePermissionsHandler(
         permissions = listOf( Manifest.permission.ACCESS_FINE_LOCATION )
     ) { permissionResults ->
         if(permissionResults.all { permissions -> permissions.value }){
             hasPermission = true
-            fusedLocationProvider.lastLocation.addOnSuccessListener { location ->
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
-                    currentLocation.position = LatLng(it.latitude, it.longitude)
+                    currentLocation = MarkerState(LatLng(it.latitude, it.longitude))
+                    CoroutineScope(Dispatchers.Main).launch {
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newCameraPosition(
+                                CameraPosition(LatLng(it.latitude, it.longitude), 15f, 0f, 0f)
+                            ),
+                            1000
+                        )
+                    }
                 }
             }
         } else {
@@ -66,16 +88,12 @@ fun MapView(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            onMapLoaded = { isMapLoaded = true }
+            onMapLoaded = { isMapLoaded = true },
+            uiSettings = uiSettings,
+            properties = properties
         ) {
             Marker(
                 state = currentLocation
-            )
-            MapMarker(
-                state = MarkerState(position = singapore),
-                title = "Singapore",
-                snippet = "Marker in Singapore",
-                iconResourceId = R.drawable.ic_location
             )
         }
         if(!hasPermission || !isMapLoaded) {
