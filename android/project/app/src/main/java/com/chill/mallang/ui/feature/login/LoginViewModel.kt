@@ -3,6 +3,10 @@ package com.chill.mallang.ui.feature.login
 import android.content.Context
 import android.content.IntentSender
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -11,6 +15,7 @@ import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chill.mallang.BuildConfig
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -29,7 +34,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _loginUiState = MutableStateFlow(LoginUiState())
@@ -44,13 +49,36 @@ class LoginViewModel @Inject constructor(
     // Credential Manager 인스턴스
     private lateinit var credentialManager: CredentialManager
 
+    // Credential Request
+    private lateinit var request: GetCredentialRequest
+
     // Credential Manager 초기화
     fun initCredentialManager(context: Context) {
         credentialManager = CredentialManager.create(context)
     }
 
+    // CredentialRequest 생성
+    fun initCredentialRequest() {
+        request = getGoogleCredentialRequest(BuildConfig.WEB_CLIENT_ID)
+    }
+
+    // Credential Manager 생성 및 Request 받기
+    fun getCredential(context: Context) {
+        viewModelScope.launch {
+            try {
+                val credentialResponse = credentialManager.getCredential(context, request)
+                handleSignInResult(credentialResponse)
+            } catch (e: Exception) {
+                Toast.makeText(context, "로그인 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     // Credential Request 얻기
-    fun getGoogleCredentialRequest(clientId: String, nonce: String? = null): GetCredentialRequest {
+    private fun getGoogleCredentialRequest(
+        clientId: String,
+        nonce: String? = null
+    ): GetCredentialRequest {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setServerClientId(clientId)
             .setNonce(nonce)
@@ -61,8 +89,29 @@ class LoginViewModel @Inject constructor(
             .build()
     }
 
-    // Google 로그인
-    suspend fun signInWithGoogle(context: Context, request: GetCredentialRequest): IntentSender? {
+    // 구글 로그인 화면 띄우는 함수
+    fun initializeLogin(
+        context: Context,
+        launcher: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>
+    ) {
+        viewModelScope.launch {
+            try {
+                val intentSender = signInWithGoogle(context, request)
+                if (intentSender != null) {
+                    launcher.launch(IntentSenderRequest.Builder(intentSender).build())
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "로그인 시작 실패: ${e.message}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
+    // Google 로그인 (토큰 인증)
+    private suspend fun signInWithGoogle(
+        context: Context,
+        request: GetCredentialRequest
+    ): IntentSender? {
         return withContext(Dispatchers.IO) {
             try {
                 val result = credentialManager.getCredential(context, request)
@@ -77,7 +126,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun handleSignInResult(credentialResponse: GetCredentialResponse) {
+    private fun handleSignInResult(credentialResponse: GetCredentialResponse) {
         viewModelScope.launch {
             try {
                 when (val credential = credentialResponse.credential) {

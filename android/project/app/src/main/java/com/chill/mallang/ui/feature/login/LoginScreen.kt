@@ -1,9 +1,7 @@
 package com.chill.mallang.ui.feature.login
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -25,22 +23,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.credentials.CredentialManager
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.chill.mallang.BuildConfig
 import com.chill.mallang.R
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
-import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -48,12 +42,12 @@ import java.nio.charset.StandardCharsets
 fun LoginScreen(
     onLoginSuccess: (LoginUiState) -> Unit
 ) {
-    val viewModel: LoginViewModel = hiltViewModel()
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+    val viewModel: LoginViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
         viewModel.initCredentialManager(context)
+        viewModel.initCredentialRequest()
     }
 
     val launcher = rememberLauncherForActivityResult(
@@ -61,16 +55,7 @@ fun LoginScreen(
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.let {
-                val credentialManager = CredentialManager.create(context)
-                val request = viewModel.getGoogleCredentialRequest(BuildConfig.WEB_CLIENT_ID)
-                scope.launch {
-                    try {
-                        val credentialResponse = credentialManager.getCredential(context, request)
-                        viewModel.handleSignInResult(credentialResponse)
-                    } catch (e: Exception) {
-                        Toast.makeText(context, "로그인 실패: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                viewModel.getCredential(context)
             }
         }
     }
@@ -109,20 +94,7 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.weight(0.4f))
             GoogleLoginButton(onClick = {
-                scope.launch {
-                    try {
-                        val request =
-                            viewModel.getGoogleCredentialRequest(BuildConfig.WEB_CLIENT_ID)
-                        val intentSender =
-                            viewModel.signInWithGoogle(context, request)
-                        if (intentSender != null) {
-                            launcher.launch(IntentSenderRequest.Builder(intentSender).build())
-                        }
-                    } catch (e: Exception) {
-                        Toast.makeText(context, "로그인 시작 실패: ${e.message}", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                }
+                viewModel.initializeLogin(context, launcher)
             }, text = "구글 계정으로 로그인하기")
             Spacer(modifier = Modifier.weight(0.7f))
         }
