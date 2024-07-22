@@ -22,6 +22,7 @@ fun MallangNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     NavHost(
+        modifier = modifier,
         navController = navController,
         startDestination = DestinationLogin.route
     ) {
