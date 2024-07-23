@@ -19,7 +19,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -30,7 +29,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.theme.BackGround
@@ -47,9 +45,8 @@ fun NicknameScreen(
     onClick: (String) -> Unit = {}
 ) {
     val nicknameViewModel: NicknameViewModel = hiltViewModel()
-    val nicknameState by nicknameViewModel.nicknameState.collectAsStateWithLifecycle()
+    val nicknameState = nicknameViewModel.nicknameState
     val focusManager = LocalFocusManager.current
-
 
     Surface(
         color = BackGround,
@@ -61,8 +58,6 @@ fun NicknameScreen(
             modifier = modifier,
             focusManager = focusManager,
             uiState = nicknameState,
-            updateNickName = { nicknameViewModel.updateNickname(it) },
-            clearText = { nicknameViewModel.clearText() },
             onClick = { onClick(it) },
         )
     }
@@ -73,8 +68,6 @@ fun NickNameContent(
     modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
     uiState: NicknameState = NicknameState(),
-    updateNickName: (String) -> Unit = {},
-    clearText: () -> Unit = {},
     onClick: (String) -> Unit = {},
 ) {
     Column(
@@ -98,12 +91,12 @@ fun NickNameContent(
         ) {
             CustomTextField(
                 onValueChange = {
-                    updateNickName(it)
+                    uiState.updateNickname(it)
                 },
                 focusManager = focusManager,
                 nicknameState = uiState,
                 onClearPressed = {
-                    clearText()
+                    uiState.clearNickname()
                 }
             )
         }
@@ -173,18 +166,16 @@ fun CustomTextField(
                     )
                 }
             },
-            isError = nicknameState.errorMessage != null
+            isError = nicknameState.errorMessage != ""
         )
-        nicknameState.errorMessage?.let { errorMessage ->
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, start = 4.dp),
-                text = errorMessage,
-                color = Sub1,
-                style = Typography.displayLarge
-            )
-        }
+        Text(
+            text = nicknameState.errorMessage,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, start = 4.dp),
+            color = Sub1,
+            style = Typography.displayMedium
+        )
     }
 }
 
