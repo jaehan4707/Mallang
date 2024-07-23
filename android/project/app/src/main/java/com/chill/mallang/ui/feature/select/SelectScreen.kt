@@ -3,11 +3,9 @@ package com.chill.mallang.ui.feature.select
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +27,8 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.component.PercentageBar
@@ -41,10 +41,15 @@ import com.chill.mallang.ui.theme.SkyBlue
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
-fun SelectScreen() {
+fun SelectScreen(navigateToMain: () -> Unit = {}, signUp: (String) -> Unit = {}) {
+    val viewModel: SelectViewModel = hiltViewModel()
     var selectedTeam by remember { mutableStateOf<String?>(null) }
     var showConfirmButton by remember { mutableStateOf(false) }
+    val isSignUp = viewModel.isSignUp.collectAsStateWithLifecycle()
 
+    if (isSignUp.value) { //회원가입 성공
+        navigateToMain()
+    }
     Surface(
         color = BackGround
     ) {
@@ -52,15 +57,15 @@ fun SelectScreen() {
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(80.dp))
             Image(
                 painter = painterResource(id = R.drawable.ic_title_small),
                 contentDescription = null,
-                modifier = Modifier.fillMaxHeight(0.17f)
+                modifier = Modifier.height(120.dp)
             )
-            Spacer(modifier = Modifier.weight(0.1f))
+            Spacer(modifier = Modifier.weight(0.2f))
             TextWithIcon(text = "당신의 진영을 선택해 주세요", icon = R.drawable.ic_team)
-            Box(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             PercentageBar(
                 leftPercentage = 30,
                 rightPercentage = 70,
@@ -69,7 +74,7 @@ fun SelectScreen() {
                 leftColor = Red01,
                 rightColor = SkyBlue
             )
-            Box(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(35.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -84,7 +89,7 @@ fun SelectScreen() {
                     color = Red01,
                     isSelected = selectedTeam == "말"
                 )
-                Box(modifier = Modifier.width(25.dp))
+                Spacer(modifier = Modifier.width(25.dp))
                 TeamButton(
                     onClick = {
                         selectedTeam = "랑"
@@ -96,10 +101,10 @@ fun SelectScreen() {
                 )
             }
             if (showConfirmButton) {
-                Spacer(modifier = Modifier.weight(0.1f))
-                LongBlackButton(onClick = { }, text = "결정하기")
+                Spacer(modifier = Modifier.height(50.dp))
+                LongBlackButton(onClick = { viewModel.login(selectedTeam) }, text = "결정하기")
             }
-            Spacer(modifier = Modifier.weight(0.6f))
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }

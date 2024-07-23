@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.services) // Google 서비스 플러그인
+    id("kotlin-kapt")
+    alias(libs.plugins.hilt)
     id(libs.google.maps.secrets.gradle.get().group!!)
 }
 secrets {
@@ -82,9 +84,11 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -100,6 +104,16 @@ dependencies {
     // firebase
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth.ktx)
+
+    // hilt
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.hilt.compiler)
+    //implementation(libs.plugins.ksp)
+
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 }
 
 apply(plugin = "com.google.gms.google-services")
