@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.map
 
+import CustomMarkerState
 import android.Manifest
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -26,7 +27,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.CoroutineScope
@@ -38,7 +38,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun MapView(
     modifier: Modifier = Modifier,
-    onLocationPermissionDenied: () -> Unit = {}
+    onLocationPermissionDenied: () -> Unit = {},
+    customMarkers: List<CustomMarkerState> = listOf()
 ){
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -92,9 +93,13 @@ fun MapView(
             uiSettings = uiSettings,
             properties = properties
         ) {
-            Marker(
-                state = currentLocation
-            )
+            if(hasPermission && isMapLoaded){
+                for (marker : CustomMarkerState in customMarkers){
+                    CustomMarkerWithArea(
+                        state = marker
+                    )
+                }
+            }
         }
         if(!hasPermission || !isMapLoaded) {
             AnimatedVisibility(
