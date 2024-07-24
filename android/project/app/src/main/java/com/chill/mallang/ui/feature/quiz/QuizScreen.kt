@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -152,7 +153,7 @@ fun QuizBox(
 fun AnswerList() {
     // 더미 데이터
     val wordList = arrayListOf(
-        ListItem(1, "관목"),
+        ListItem(1, "괄목"),
         ListItem(2, "상대"),
         ListItem(3, "과장"),
         ListItem(4, "시기")
@@ -187,40 +188,48 @@ fun AnswerListItem(
     isSelected: Boolean,
     onItemClick: (ListItem) -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Box (
         modifier = modifier
-            .fillMaxWidth()
-            .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-            .border(2.dp, color = Gray6, shape = RoundedCornerShape(8.dp))
-            .clickable { onItemClick(item) }
+            .shadow(
+                elevation = 5.dp,
+                shape = RoundedCornerShape(8.dp)
+            )
     ) {
-        Box(
-            modifier = Modifier
-                .background(color = Gray6, shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp))
-                .fillMaxHeight()
-                .width(50.dp),
-            contentAlignment = Alignment.Center,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                .fillMaxWidth()
+                .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                .border(2.dp, color = Gray6, shape = RoundedCornerShape(8.dp))
+                .clickable { onItemClick(item) }
         ) {
+            Box(
+                modifier = Modifier
+                    .background(color = Gray6, shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp))
+                    .fillMaxHeight()
+                    .width(50.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "${item.number}",
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    style = Typography.headlineLarge
+                )
+            }
+            Spacer(modifier = Modifier.width(30.dp))
             Text(
-                text = "${item.number}",
-                color = Color.White,
-                textAlign = TextAlign.Center,
+                text = item.word,
+                modifier = Modifier.weight(1f),
                 style = Typography.headlineLarge
             )
-        }
-        Spacer(modifier = Modifier.width(30.dp))
-        Text(
-            text = item.word,
-            modifier = Modifier.weight(1f),
-            style = Typography.headlineLarge
-        )
-        if (isSelected) {
-            Icon(
-                modifier = Modifier.padding(10.dp),
-                painter = painterResource(id = R.drawable.ic_check),
-                contentDescription = null
-            )
+            if (isSelected) {
+                Icon(
+                    modifier = Modifier.padding(10.dp),
+                    painter = painterResource(id = R.drawable.ic_check),
+                    contentDescription = null
+                )
+            }
         }
     }
 }
