@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.map
+package com.chill.mallang.ui.feature.map.mapview
 
 import CustomMarkerState
 import android.content.Context
