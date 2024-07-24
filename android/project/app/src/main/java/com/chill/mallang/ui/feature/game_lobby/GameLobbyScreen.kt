@@ -46,49 +46,12 @@ fun GameLobbyScreen(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .padding(top = 20.dp)
     ) {
-        GameLobby_Header(
-            modifier = Modifier.weight(1F),
-            "Game"
-        )
         GameLobby_MainBody(
             modifier = Modifier.weight(10F)
         )
         GameLobby_GameStartBody(
             modifier = Modifier.weight(2F)
         )
-    }
-}
-
-@Composable
-fun GameLobby_Header(modifier: Modifier = Modifier, label: String) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        IconButton(
-            onClick = { },
-            modifier = Modifier.size(55.dp, 55.dp)
-        ) {
-            Icon(
-                modifier = Modifier.size(45.dp, 45.dp),
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
-        }
-        Text(text = label, style = Typography.titleMedium)
-        IconButton(
-            onClick = {},
-            modifier = Modifier.size(55.dp, 55.dp)
-        ) {
-            Icon(
-                modifier = Modifier.size(45.dp, 45.dp),
-                painter = painterResource(id = R.drawable.ic_home),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
-        }
     }
 }
 
@@ -202,9 +165,8 @@ fun GamePoster(modifier: Modifier = Modifier) {
         ) {
             Text(
                 text = "Game 01",
-                style = Typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp,
+                style = Typography.displayLarge,
+                fontSize = 40.sp,
                 modifier = Modifier
                     .weight(1F)
                     .fillMaxWidth()
@@ -216,6 +178,8 @@ fun GamePoster(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .weight(1F)
                     .fillMaxWidth(),
+                style = Typography.displayLarge,
+                fontSize = 24.sp,
                 textAlign = TextAlign.Center,
             )
         }
