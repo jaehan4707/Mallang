@@ -2,7 +2,6 @@ package com.chill.mallang.domain.area.service;
 
 import com.chill.mallang.domain.area.dto.AreaDTO;
 import com.chill.mallang.domain.area.model.Area;
-import com.chill.mallang.domain.area.repository.AreaLogRepository;
 import com.chill.mallang.domain.area.repository.AreaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +34,7 @@ public class AreaService {
         areaDTO.setLatitude(area.getLatitude());
         areaDTO.setLongitude(area.getLongitude());
         areaDTO.setUser(area.getUser());
+        areaDTO.setAreaLogs(area.getAreaLogs());
         return areaDTO;
     }
 }

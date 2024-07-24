@@ -18,7 +18,7 @@ public class User {
     private String email;
     private String nickname;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "faction")
     private Faction faction;
     private String picture;

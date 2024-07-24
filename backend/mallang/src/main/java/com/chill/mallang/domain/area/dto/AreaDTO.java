@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AreaLogs {
+public class AreaDTO {
     private Long id;
     private String name;
     private double latitude;

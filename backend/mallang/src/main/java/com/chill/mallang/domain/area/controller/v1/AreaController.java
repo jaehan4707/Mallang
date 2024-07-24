@@ -1,7 +1,6 @@
 package com.chill.mallang.domain.area.controller.v1;
 
 import com.chill.mallang.domain.area.dto.AreaDTO;
-import com.chill.mallang.domain.area.model.Area;
 import com.chill.mallang.domain.area.service.AreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

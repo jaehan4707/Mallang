@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.area.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class AreaLog {
 
     @ManyToOne
     @JoinColumn( name = "area" )
+    @JsonBackReference
     private Area area;
 
     private long user;
