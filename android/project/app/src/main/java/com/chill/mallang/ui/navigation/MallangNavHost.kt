@@ -11,6 +11,7 @@ import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.quiz.QuizScreen
+import com.chill.mallang.ui.feature.quiz.WordNoteScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -81,17 +82,24 @@ fun MallangNavHost(
             HomeScreen(
                 modifier = Modifier,
                 navigateToGame = {},
-                navigateToQuiz = { navController.navigate(DestinationQuiz.route) },
+                navigateToWordNote = { navController.navigate(DestinationWordNote.route) },
+            )
+        }
+
+        composable(
+            route = DestinationWordNote.route,
+        ) {
+            WordNoteScreen(
+                modifier = modifier,
+                popUpBackStack = { navController.popBackStack() },
+                navigateToQuiz = { navController.navigate(DestinationQuiz.route) }
             )
         }
 
         composable(
             route = DestinationQuiz.route,
         ) {
-            QuizScreen(
-                modifier = modifier,
-                popUpBackStack = { navController.popBackStack() },
-            )
+            QuizScreen(modifier = modifier)
         }
     }
 }

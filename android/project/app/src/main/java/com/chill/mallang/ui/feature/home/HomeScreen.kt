@@ -55,7 +55,7 @@ object TestData { // 화면 임시 구성할 데이터
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    navigateToQuiz: () -> Unit = {},
+    navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -99,7 +99,7 @@ fun HomeScreen(
                 icon = R.drawable.ic_question,
                 label = stringResource(R.string.mode_quiz),
                 modifier = Modifier.align(Alignment.End),
-                onClick = { navigateToQuiz() }
+                onClick = { navigateToWordNote() }
             )
             Spacer(modifier.weight(0.05f))
             ModeButton( // 점령전 모드 버튼
