@@ -47,7 +47,11 @@ object TestData { // 화면 임시 구성할 데이터
 }
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    navigateToQuiz: () -> Unit = {},
+    navigateToGame: () -> Unit = {},
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -75,14 +79,14 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 icon = R.drawable.ic_question,
                 label = stringResource(R.string.mode_quiz),
                 modifier = Modifier.align(Alignment.End),
-                onClick = { }
+                onClick = { navigateToQuiz() }
             )
             Spacer(modifier.weight(0.05f))
             ModeButton( // 점령전 모드 버튼
                 icon = R.drawable.ic_location,
                 label = stringResource(R.string.mode_home),
                 modifier = Modifier.align(Alignment.End),
-                onClick = { }
+                onClick = { navigateToGame() }
             )
             Spacer(modifier.weight(0.3f))
         }
