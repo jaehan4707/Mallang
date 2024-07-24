@@ -13,13 +13,13 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long user_id;
+    private long id;
 
     private String email;
     private String nickname;
 
     @OneToOne
-    @JoinColumn(name = "faction_id")
-    private Faction faction_id;
+    @JoinColumn(name = "faction")
+    private Faction faction;
     private String picture;
 }

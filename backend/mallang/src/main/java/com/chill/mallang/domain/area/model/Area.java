@@ -15,7 +15,7 @@ public class Area {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long area_id;
+    private Long id;
 
     @NotNull
     private String name;
@@ -25,6 +25,7 @@ public class Area {
     private double longitude;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user_id;
+    @JoinColumn(name = "user")
+    private User user;
+
 }
