@@ -2,6 +2,7 @@ package com.chill.mallang.ui.feature.quiz
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +24,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -61,36 +61,33 @@ fun WordNoteScreen(
     )
     BackHandler(onBack = { isBackPressed.value = true })
 
-    Surface(
+    Box(
         modifier = modifier
             .fillMaxWidth()
+            .background(color = Color.White)
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                QuizList(wordList = wordList)
-            }
-            Button(
-                onClick = { navigateToQuiz() },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                    .widthIn(min = 180.dp) // 버튼의 최소 너비
-                    .heightIn(min = 80.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Gray6
-                ),
-                shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp)
-            ) {
-                Text(
-                    text = "퀴즈 풀기      >",
-                    style = Typography.headlineLarge
-                )
-            }
+            QuizList(wordList = wordList)
+        }
+        Button(
+            onClick = { navigateToQuiz() },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset(y = (-30).dp) // 버튼을 20dp 위로 올
+                .widthIn(min = 180.dp) // 버튼의 최소 너비
+                .heightIn(min = 80.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Gray6
+            ),
+            shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp)
+        ) {
+            Text(
+                text = "퀴즈 풀기      >",
+                style = Typography.headlineLarge
+            )
         }
     }
 }
