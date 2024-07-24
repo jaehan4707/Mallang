@@ -2,7 +2,9 @@ package com.chill.mallang.domain.area.controller.v1;
 
 import com.chill.mallang.domain.area.dto.AreaDTO;
 import com.chill.mallang.domain.area.service.AreaService;
+import com.chill.mallang.domain.user.dto.TryCountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,6 @@ public class AreaController {
     // 점령지 전체 조회
     @GetMapping
     public List<AreaDTO> getAllAreas() {
-
         return areaService.getAllAreas();
     }
 
@@ -29,6 +30,18 @@ public class AreaController {
 
         return areaService.getAreaById(id);
     }
+
+    // 2. 사용자 잔여 도전 횟수 조회
+    @GetMapping("/try_count/{userId}")
+    public TryCountDTO getUserTryCountById(@PathVariable Long id) {
+        return areaService.getUserTryCountById(id);
+    }
+
+
+    // 1. 점령자 대표 유저 정보 조회
+
+
+    // 3. 도전 기록 조회
 
 
 }
