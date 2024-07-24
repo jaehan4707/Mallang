@@ -19,7 +19,9 @@ class NicknameState() {
     private val nicknameRegex = "^[가-힣a-zA-Z]{2,10}$".toRegex() // 정규식
 
     var nickname by mutableStateOf("")
+        private set
     var errorMessage by mutableStateOf("")
+        private set
 
     fun updateNickname(newNickname: String) {
         nickname = newNickname
