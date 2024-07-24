@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.quiz
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -153,13 +152,13 @@ fun QuizBox(
 fun AnswerList() {
     // 더미 데이터
     val wordList = arrayListOf(
-        ListItem(1, "괄목"),
-        ListItem(2, "상대"),
-        ListItem(3, "과장"),
-        ListItem(4, "시기")
+        QuizItem(1, "괄목"),
+        QuizItem(2, "상대"),
+        QuizItem(3, "과장"),
+        QuizItem(4, "시기")
     )
 
-    var selectedItem by remember { mutableStateOf<ListItem?>(null) }
+    var selectedItem by remember { mutableStateOf<QuizItem?>(null) }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -174,7 +173,6 @@ fun AnswerList() {
                 isSelected = item == selectedItem,
                 onItemClick = { clickedItem ->
                     selectedItem = if (selectedItem == clickedItem) null else clickedItem
-                    Log.d("nakyung", "clicked: $selectedItem")
                 }
             )
         }
@@ -184,9 +182,9 @@ fun AnswerList() {
 @Composable
 fun AnswerListItem(
     modifier: Modifier = Modifier,
-    item: ListItem,
+    item: QuizItem,
     isSelected: Boolean,
-    onItemClick: (ListItem) -> Unit
+    onItemClick: (QuizItem) -> Unit
 ) {
     Box (
         modifier = modifier
@@ -241,8 +239,3 @@ fun QuizPreview() {
         QuizScreen()
     }
 }
-
-data class ListItem(
-    val number: Int,
-    val word: String
-)
