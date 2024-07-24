@@ -26,15 +26,15 @@ public class AreaService {
         return area.map(this::convertToDto).orElse(null);
     }
 
-    //DTO 변환 메서드
+    //DTO 변환
     private AreaDTO convertToDto(Area area) {
-        AreaDTO areaDTO = new AreaDTO();
-        areaDTO.setId(area.getId());
-        areaDTO.setName(area.getName());
-        areaDTO.setLatitude(area.getLatitude());
-        areaDTO.setLongitude(area.getLongitude());
-        areaDTO.setUser(area.getUser());
-        areaDTO.setAreaLogs(area.getAreaLogs());
-        return areaDTO;
+        return AreaDTO.builder()
+                .id(area.getId())
+                .name(area.getName())
+                .latitude(area.getLatitude())
+                .longitude(area.getLongitude())
+                .user(area.getUser())
+                .areaLogs(area.getAreaLogs())
+                .build();
     }
 }

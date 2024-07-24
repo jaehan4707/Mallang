@@ -19,12 +19,14 @@ public class AreaController {
     // 점령지 전체 조회
     @GetMapping
     public List<AreaDTO> getAllAreas() {
+
         return areaService.getAllAreas();
     }
 
     // 특정 점령지 조회
     @GetMapping("/{id}")
     public AreaDTO getAreaById(@PathVariable Long id) {
+
         return areaService.getAreaById(id);
     }
 
