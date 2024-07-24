@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.area.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -13,13 +14,14 @@ import java.time.LocalDateTime;
 public class AreaLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long arealog_id;
+    private long id;
 
     @ManyToOne
-    @JoinColumn( name = "area_id" )
-    private Area area_id;
+    @JoinColumn( name = "area" )
+    @JsonBackReference
+    private Area area;
 
-    private long user_id;
+    private long user;
     private LocalDateTime created_at;
     @NotNull
     private float score;

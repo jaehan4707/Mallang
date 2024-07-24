@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long answer_id;
+    private long id;
 
     @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    private Quiz quiz_id;
+    @JoinColumn(name = "quiz")
+    private Quiz quiz;
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user_id;
+    @JoinColumn(name = "user")
+    private User user;
 
     private String answer;
     private float score;

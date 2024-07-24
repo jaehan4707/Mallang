@@ -15,7 +15,7 @@ public class Faction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long faction_id;
+    private long id;
 
     @NotNull
     private String name;
