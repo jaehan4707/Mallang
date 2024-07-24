@@ -76,6 +76,12 @@ private val omyuPrettyBody1 = TextStyle(
     letterSpacing = (-0.07).em
 )
 
+private val omyuPrettyBody = TextStyle(
+    fontFamily = omuyPrettyFamily,
+    fontWeight = FontWeight.Medium,
+    fontSize = 18.sp
+)
+
 private val omyuPrettyBody2 = TextStyle(
     fontFamily = omuyPrettyFamily,
     fontWeight = FontWeight.Medium,
@@ -102,4 +108,5 @@ val Typography = Typography(
     displayLarge = omyuPrettyBody1,
     displayMedium = omyuPrettyBody2,
     displaySmall = omyuPrettyBody3,
+    labelLarge = omyuPrettyBody
 )
