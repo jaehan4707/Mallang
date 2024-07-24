@@ -68,6 +68,13 @@ private val omyuPrettyHeadline2 = TextStyle(
     letterSpacing = (-0.07).em
 )
 
+private val omyuPrettyHeadline3 = TextStyle(
+    fontFamily = omuyPrettyFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 20.sp,
+    letterSpacing = (-0.04).em
+)
+
 
 private val omyuPrettyBody1 = TextStyle(
     fontFamily = omuyPrettyFamily,
@@ -102,6 +109,7 @@ val Typography = Typography(
     titleMedium = galmuri11Headline2,
     headlineLarge = omyuPrettyHeadline1,
     headlineMedium = omyuPrettyHeadline2,
+    headlineSmall = omyuPrettyHeadline3,
     bodyLarge = galmuri11Body1,
     bodyMedium = galmuri11Body2,
     bodySmall = galmuri11Body3,
