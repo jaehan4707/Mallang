@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long quiz_id;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "area_id")
-    private Area area_id;
+    @JoinColumn(name = "area")
+    private Area area;
 
     @NotNull
     private String question;
