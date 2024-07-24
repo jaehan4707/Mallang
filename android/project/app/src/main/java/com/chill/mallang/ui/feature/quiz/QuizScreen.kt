@@ -1,181 +1,224 @@
 package com.chill.mallang.ui.feature.quiz
 
-import androidx.compose.foundation.BorderStroke
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.R
+import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
+import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun QuizScreen(
     modifier: Modifier = Modifier
 ) {
-    // 더미 데이터
-    val wordList = arrayListOf("괄목", "상대", "과장", "과장", "시기", "괄목", "상대", "과장", "시기")
-
-    Surface(
+    Box(
         modifier = modifier
+            .fillMaxSize()
+            .background(color = Color.White)
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.height(15.dp))
+            Header(label = "Quiz")
+            Box(modifier = Modifier.height(15.dp))
+            QuizBox(
+                systemMessage = "빈칸을 채워 주세요",
+                quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다."
+            )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                AnswerList()
+            }
+        }
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset(y = (-30).dp) // 버튼을 20dp 위로 올
+                .widthIn(min = 180.dp) // 버튼의 최소 너비
+                .heightIn(min = 80.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Gray6
+            ),
+            shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp)
+        ) {
+            Text(
+                text = "제출하기      >",
+                style = Typography.headlineLarge
+            )
+        }
+    }
+}
+
+@Composable
+fun QuizBox(
+    systemMessage: String,
+    quizScript: String
+) {
+    Box(
+        modifier = Modifier
+            .padding(12.dp)
+            .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
             .fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+        Column(
+            modifier = Modifier.padding(horizontal = 30.dp, vertical = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(modifier = Modifier.height(15.dp))
-                Header(label = "Quiz")
-                Box(modifier = Modifier.height(15.dp))
-                QuizList(wordList = wordList)
-            }
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                    .widthIn(min = 180.dp) // 버튼의 최소 너비
-                    .heightIn(min = 80.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Gray6
-                ),
-                shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "퀴즈 풀기      >",
+                    text = "Q.",
                     style = Typography.headlineLarge
                 )
-            }
-        }
-    }
-}
-
-@Composable
-fun QuizList(wordList: List<String>) {
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp // 휴대폰 스크린 높이
-    val headerHeight = 55.dp // Header 높이
-    val itemHeight = 30.dp // QuizListItem의 높이
-    val itemSpacing = 10.dp // 아이템 사이 간격
-    val padding = 15.dp // 패딩
-
-    var totalItems =
-        (((screenHeight - (padding * 2 + headerHeight)) / (itemHeight + itemSpacing)) - 1).toInt()
-
-    // 만약 사용자 단어 개수가 저 개수를 넘으면 totalItems = wordList.size
-    if (totalItems <= wordList.size) {
-        totalItems = wordList.size
-    }
-
-    Box(
-        modifier = Modifier.padding(12.dp)
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .border(
-                    border = BorderStroke(width = 2.dp, color = Gray6),
-                    shape = RoundedCornerShape(2.dp)
+                Box(modifier = Modifier.width(10.dp))
+                Text(
+                    text = systemMessage,
+                    style = Typography.headlineMedium
                 )
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            items(totalItems) { index ->
-                if (index < wordList.size) {
-                    QuizListItem(number = index + 1, word = wordList[index])
-                } else {
-                    QuizListItem(number = 0, word = "")
-                }
             }
-        }
-    }
-}
-
-@Composable
-fun Header(label: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        IconButton(
-            onClick = { /* 뒤로가기 */ },
-            modifier = Modifier.size(55.dp, 55.dp)
-        ) {
-            Icon(
-                modifier = Modifier.size(45.dp, 45.dp),
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = null,
-                tint = Color.Unspecified
+            Box(modifier = Modifier.height(15.dp))
+            Spacer(
+                modifier = Modifier
+                    .height(2.dp)
+                    .fillMaxWidth()
+                    .background(Gray3)
             )
-        }
-        Text(text = label, style = Typography.titleMedium)
-        IconButton(
-            onClick = { /* 홈으로 가기 */ },
-            modifier = Modifier.size(55.dp, 55.dp)
-        ) {
-            Icon(
-                modifier = Modifier.size(45.dp, 45.dp),
-                painter = painterResource(id = R.drawable.ic_home),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
-        }
-    }
-}
-
-@Composable
-fun QuizListItem(number: Int, word: String) {
-    Box(modifier = Modifier.height(7.dp))
-    Row {
-        Box(modifier = Modifier.width(4.dp))
-        if (number != 0) {
+            Box(modifier = Modifier.height(15.dp))
             Text(
-                text = "$number.",
-                style = Typography.labelLarge // 자간 조절 안 한 폰트
+                text = quizScript,
+                style = Typography.headlineSmall
             )
         }
-        Box(modifier = Modifier.width(4.dp))
-        Text(
-            text = word,
-            style = Typography.displayLarge // 자간 조절한 폰트
-        )
     }
-    Box(modifier = Modifier.height(4.dp))
-    HorizontalDivider(thickness = 2.dp, color = Gray6)
+}
+
+@Composable
+fun AnswerList() {
+    // 더미 데이터
+    val wordList = arrayListOf(
+        ListItem(1, "관목"),
+        ListItem(2, "상대"),
+        ListItem(3, "과장"),
+        ListItem(4, "시기")
+    )
+
+    var selectedItem by remember { mutableStateOf<ListItem?>(null) }
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(15.dp),
+        modifier = Modifier
+            .padding(12.dp)
+            .fillMaxSize()
+    ) {
+        items(wordList) { item ->
+            AnswerListItem(
+                modifier = Modifier.fillParentMaxHeight(0.13f),
+                item = item,
+                isSelected = item == selectedItem,
+                onItemClick = { clickedItem ->
+                    selectedItem = if (selectedItem == clickedItem) null else clickedItem
+                    Log.d("nakyung", "clicked: $selectedItem")
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun AnswerListItem(
+    modifier: Modifier = Modifier,
+    item: ListItem,
+    isSelected: Boolean,
+    onItemClick: (ListItem) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, color = Gray6, shape = RoundedCornerShape(8.dp))
+            .clickable { onItemClick(item) }
+    ) {
+        Box(
+            modifier = Modifier
+                .background(color = Gray6, shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp))
+                .fillMaxHeight()
+                .width(50.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "${item.number}",
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                style = Typography.headlineLarge
+            )
+        }
+        Spacer(modifier = Modifier.width(30.dp))
+        Text(
+            text = item.word,
+            modifier = Modifier.weight(1f),
+            style = Typography.headlineLarge
+        )
+        if (isSelected) {
+            Icon(
+                modifier = Modifier.padding(10.dp),
+                painter = painterResource(id = R.drawable.ic_check),
+                contentDescription = null
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun QuizPreview() {
-    QuizScreen()
+    MallangTheme {
+        QuizScreen()
+    }
 }
+
+data class ListItem(
+    val number: Int,
+    val word: String
+)
