@@ -1,6 +1,7 @@
 package com.chill.mallang.ui.feature.quiz
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
@@ -45,8 +47,23 @@ import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun QuizScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    popUpBackStack: () -> Unit = {},
 ) {
+
+    val isBackPressed = remember { mutableStateOf(false) }
+    BackConfirmHandler(
+        isBackPressed = isBackPressed.value,
+        onConfirm = {
+            isBackPressed.value = false
+            popUpBackStack()
+        },
+        onDismiss = {
+            isBackPressed.value = false
+        }
+    )
+    BackHandler(onBack = { isBackPressed.value = true })
+
     Box(
         modifier = modifier
             .fillMaxSize()

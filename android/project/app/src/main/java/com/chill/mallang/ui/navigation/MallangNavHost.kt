@@ -99,7 +99,10 @@ fun MallangNavHost(
         composable(
             route = DestinationQuiz.route,
         ) {
-            QuizScreen(modifier = modifier)
+            QuizScreen(
+                modifier = modifier,
+                popUpBackStack = { navController.popBackStack() }
+            )
         }
     }
 }
