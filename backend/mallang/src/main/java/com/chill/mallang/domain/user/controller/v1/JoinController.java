@@ -20,11 +20,17 @@ public class JoinController {
     public String AA(){
         return "보기";
     }
+
     @PostMapping("/join")
     public String joinProcess(JoinDTO joinDTO) {
         System.out.println("실행시작");
         joinService.joinProcess(joinDTO);
         return "ok";
+    }
+
+    @PostMapping("/test")
+    public String test(){
+        return null;
     }
 
 }
