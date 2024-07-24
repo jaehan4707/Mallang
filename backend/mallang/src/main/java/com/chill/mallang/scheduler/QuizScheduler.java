@@ -18,7 +18,6 @@ public class QuizScheduler {
         this.quizService = quizService;
     }
 
-
     // 문제 생성 스케쥴러
     @Scheduled(fixedRate = 100_000)
     public void generateQuiz(){
