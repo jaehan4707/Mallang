@@ -3,24 +3,27 @@ package com.chill.mallang.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
+import com.chill.mallang.ui.feature.quiz.QuizScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Composable
 fun MallangNavHost(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    startDestination: String,
 ) {
-    val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -75,7 +78,20 @@ fun MallangNavHost(
         composable(
             route = DestinationMain.route,
         ) {
-            HomeScreen(modifier = modifier)
+            HomeScreen(
+                modifier = Modifier,
+                navigateToGame = {},
+                navigateToQuiz = { navController.navigate(DestinationQuiz.route) },
+            )
+        }
+
+        composable(
+            route = DestinationQuiz.route,
+        ) {
+            QuizScreen(
+                modifier = modifier,
+                popUpBackStack = { navController.popBackStack() },
+            )
         }
     }
 }

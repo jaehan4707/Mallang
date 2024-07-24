@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Mallang</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="confirm_dialog_default_message">이전화면으로 돌아가시겠습니까?</string>
+    <string name="mallang">말랑</string>
+    <string name="positive_button_message">네</string>
+    <string name="nagative_button_message">아니요</string>
+    <string name="app_exit_message">앱을 종료하시겠습니까?</string>
 </resources>

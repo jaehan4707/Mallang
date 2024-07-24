@@ -106,3 +106,8 @@ object DestinationUserDetail : ScreenDestinationsWithArgument {
         navArgument(name = arg) { type = NavType.LongType }
     )
 }
+
+object DestinationQuiz : ScreenDestinations {
+    override val route: String
+        get() = "quiz"
+}

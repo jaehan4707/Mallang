@@ -1,5 +1,7 @@
 package com.chill.mallang.ui.feature.home
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,9 +21,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -29,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.theme.Gray2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
@@ -47,7 +53,25 @@ object TestData { // 화면 임시 구성할 데이터
 }
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    navigateToQuiz: () -> Unit = {},
+    navigateToGame: () -> Unit = {},
+) {
+    val context = LocalContext.current
+    val isBackPressed = remember { mutableStateOf(false) }
+    BackConfirmHandler(
+        isBackPressed = isBackPressed.value,
+        onConfirm = {
+            isBackPressed.value = false
+            (context as Activity).finish()
+        },
+        onDismiss = {
+            isBackPressed.value = false
+        },
+        content = stringResource(R.string.app_exit_message)
+    )
+    BackHandler(onBack = { isBackPressed.value = true })
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -75,14 +99,14 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 icon = R.drawable.ic_question,
                 label = stringResource(R.string.mode_quiz),
                 modifier = Modifier.align(Alignment.End),
-                onClick = { }
+                onClick = { navigateToQuiz() }
             )
             Spacer(modifier.weight(0.05f))
             ModeButton( // 점령전 모드 버튼
                 icon = R.drawable.ic_location,
-                label = stringResource(R.string.mode_home),
+                label = stringResource(R.string.mode_game),
                 modifier = Modifier.align(Alignment.End),
-                onClick = { }
+                onClick = { navigateToGame() }
             )
             Spacer(modifier.weight(0.3f))
         }
