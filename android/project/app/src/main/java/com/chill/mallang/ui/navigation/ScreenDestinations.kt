@@ -107,6 +107,11 @@ object DestinationUserDetail : ScreenDestinationsWithArgument {
     )
 }
 
+object DestinationWordNote : ScreenDestinations {
+    override val route: String
+        get() = "wordNote"
+}
+
 object DestinationQuiz : ScreenDestinations {
     override val route: String
         get() = "quiz"
