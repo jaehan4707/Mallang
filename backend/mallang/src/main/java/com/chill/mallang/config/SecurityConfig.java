@@ -32,8 +32,12 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/v1/user/login", "/", "api/v1/user/join").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/","/swagger-ui/**", "/api-docs/**")
+                        .permitAll()
+                        .requestMatchers("api/v1/user/login", "api/v1/user/join")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
