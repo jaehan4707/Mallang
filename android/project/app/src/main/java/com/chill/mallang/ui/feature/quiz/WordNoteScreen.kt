@@ -1,7 +1,7 @@
 package com.chill.mallang.ui.feature.quiz
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +26,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,20 +36,34 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun WordNoteScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    popUpBackStack: () -> Unit = {},
+    navigateToQuiz: () -> Unit = {},
 ) {
     // 더미 데이터
     val wordList = arrayListOf("괄목", "상대", "과장", "과장", "시기", "괄목", "상대", "과장", "시기")
+    val isBackPressed = remember { mutableStateOf(false) }
+    BackConfirmHandler(
+        isBackPressed = isBackPressed.value,
+        onConfirm = {
+            isBackPressed.value = false
+            popUpBackStack()
+        },
+        onDismiss = {
+            isBackPressed.value = false
+        }
+    )
+    BackHandler(onBack = { isBackPressed.value = true })
 
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = Color.White)
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
@@ -56,13 +72,10 @@ fun WordNoteScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(modifier = Modifier.height(15.dp))
-                Header(label = "Quiz")
-                Box(modifier = Modifier.height(15.dp))
                 QuizList(wordList = wordList)
             }
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navigateToQuiz() },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .offset(y = (-30).dp) // 버튼을 20dp 위로 올
@@ -123,14 +136,19 @@ fun QuizList(wordList: List<String>) {
 }
 
 @Composable
-fun Header(label: String) {
+fun TopAppBar(
+    modifier: Modifier = Modifier,
+    label: String,
+    popUpBackStack: () -> Unit,
+    navigateToHome: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
-            onClick = { /* 뒤로가기 */ },
+            onClick = { popUpBackStack() },
             modifier = Modifier.size(55.dp, 55.dp)
         ) {
             Icon(
@@ -142,7 +160,7 @@ fun Header(label: String) {
         }
         Text(text = label, style = Typography.titleMedium)
         IconButton(
-            onClick = { /* 홈으로 가기 */ },
+            onClick = { navigateToHome() },
             modifier = Modifier.size(55.dp, 55.dp)
         ) {
             Icon(
