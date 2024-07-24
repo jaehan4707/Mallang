@@ -22,4 +22,8 @@ public class User {
     @JoinColumn(name = "faction_id")
     private Faction faction_id;
     private String picture;
+
+    // pwd
+    // access token
+
 }
