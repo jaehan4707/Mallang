@@ -85,9 +85,10 @@ fun MapView(
         }
     }
 
-    Box {
+    Box(
+        modifier = modifier.fillMaxSize(),
+    ) {
         GoogleMap(
-            modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             onMapLoaded = { isMapLoaded = true },
             uiSettings = uiSettings,

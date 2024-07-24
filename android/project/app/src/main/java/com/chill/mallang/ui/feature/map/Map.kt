@@ -23,7 +23,9 @@ fun Map(
     }
 
     Column(modifier = modifier.fillMaxSize()){
-        MapView()
+        MapView(
+            modifier = Modifier.weight(1f)
+        )
         MapScaffold()
     }
 }
