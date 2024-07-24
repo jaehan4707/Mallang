@@ -16,6 +16,7 @@ public class JoinController {
         this.joinService = joinService;
     }
     @GetMapping("/join")
+    //API 확인용
     public String AA(){
         return "보기";
     }
