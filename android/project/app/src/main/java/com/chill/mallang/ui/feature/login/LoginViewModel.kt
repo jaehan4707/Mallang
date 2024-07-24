@@ -18,6 +18,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.BuildConfig
+import com.chill.mallang.data.repository.remote.FirebaseRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -25,35 +26,33 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.play.integrity.internal.s
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
 
-    private val _loginUiState = MutableStateFlow(LoginUiState())
+    private val _loginUiState = MutableStateFlow<LoginUiState>(LoginUiState.Loading)
     val loginUiState = _loginUiState.asStateFlow()
 
-    private val _loginResult = MutableStateFlow<FirebaseUser?>(null)
-    val loginResult: StateFlow<FirebaseUser?> = _loginResult
-
-    // web client key
-    private val key = BuildConfig.WEB_CLIENT_ID
-
     // firebase 인증 인스턴스
-    private val auth = FirebaseAuth.getInstance()
+    private var auth: FirebaseAuth? = null
 
     // Credential Manager 인스턴스
     private lateinit var credentialManager: CredentialManager
@@ -64,8 +63,28 @@ class LoginViewModel @Inject constructor(
     // Google Sign-In Client
     private lateinit var googleSignInClient: GoogleSignInClient
 
+
+    init {
+        getFirebaseAuthInstance()
+        getCurrentUser()
+    }
+
     // google sign in launcher
     private var googleSignInLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            firebaseRepository.getCurrentUser().collectLatest { authUser ->
+                authUser?.let {
+                    _loginUiState.value = LoginUiState.AuthLogin
+                }
+            }
+        }
+    }
+
+    private fun getFirebaseAuthInstance() {
+        auth = firebaseRepository.getFirebaseInstance()
+    }
 
     fun setGoogleSignInLauncher(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
         googleSignInLauncher = launcher
@@ -77,7 +96,7 @@ class LoginViewModel @Inject constructor(
 
         // Google Sign-In 클라이언트 초기화
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(key)
+            .requestIdToken(BuildConfig.WEB_CLIENT_ID)
             .requestEmail()
             .requestProfile()
             .build()
@@ -86,7 +105,7 @@ class LoginViewModel @Inject constructor(
 
     // CredentialRequest 생성
     fun initCredentialRequest() {
-        request = getGoogleCredentialRequest(key)
+        request = getGoogleCredentialRequest(BuildConfig.WEB_CLIENT_ID)
     }
 
     // Credential Manager 생성 및 Request 받기
@@ -96,7 +115,7 @@ class LoginViewModel @Inject constructor(
                 val credentialResponse = credentialManager.getCredential(context, request)
                 handleSignInResult(credentialResponse)
             } catch (e: Exception) {
-                Toast.makeText(context, "로그인 시작 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                _loginUiState.value = LoginUiState.Error(errorMessage = e.message ?: "")
             }
         }
     }
@@ -153,10 +172,8 @@ class LoginViewModel @Inject constructor(
                         // Credential Manager 실패 시 Google Sign-In API로 폴백
                         fallbackToGoogleSignIn(googleSignInLauncher)
                     }
-                    else -> {
-                        Toast.makeText(context, "로그인 시작 실패: ${e.message}", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+
+                    else -> _loginUiState.value = LoginUiState.Error(errorMessage = e.message ?: "")
                 }
             }
         }
@@ -198,27 +215,26 @@ class LoginViewModel @Inject constructor(
                     else -> throw Exception("Unexpected credential type")
                 }
             } catch (e: Exception) {
-                _loginResult.value = null
+                _loginUiState.value = LoginUiState.Error(
+                    errorMessage = e.message ?: ""
+                )
             }
         }
     }
 
     // Google ID 토큰을 사용해 Firebase 인증
     private fun firebaseAuthWithGoogle(idToken: String) {
-        viewModelScope.launch {
-            try {
-                val credential = GoogleAuthProvider.getCredential(idToken, null)
-                val authResult = auth.signInWithCredential(credential).await()
-                val user = authResult.user
-
-                user?.let {
-                    Log.d("nakyung", user.email!!)
-                    Log.d("nakyung", user.photoUrl.toString())
+        val state = _loginUiState.value
+        viewModelScope.launch(Dispatchers.IO) {
+            firebaseRepository.firebaseAuthWithGoogle(idToken).collectLatest { authUser ->
+                authUser?.let { user ->
+                    _loginUiState.value = LoginUiState.Success(
+                        idToken = user.getIdToken(true).toString(),
+                        userName = user.displayName,
+                        userEmail = user.email,
+                        userProfileImageUrl = user.photoUrl.toString(),
+                    )
                 }
-
-                _loginResult.value = user
-            } catch (e: Exception) {
-                _loginResult.value = null
             }
         }
     }

@@ -1,10 +1,8 @@
 package com.chill.mallang.ui.navigation
 
-import android.util.Log
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.chill.mallang.ui.feature.login.LoginUiState
 
 /**
  * 기본 라우팅 인터페이스
@@ -33,10 +31,6 @@ interface ScreenDestinationsWithArgument : ScreenDestinations {
 object DestinationLogin : ScreenDestinations {
     override val route: String
         get() = "login"
-
-    fun createRoute(loginUiState: LoginUiState): String {
-        return ""
-    }
 }
 
 object DestinationMain : ScreenDestinations {
@@ -67,8 +61,12 @@ object DestinationNickName : ScreenDestinationsWithArgument {
     override val route: String
         get() = "nickname"
 
-    fun createRoute(loginUiState: LoginUiState) =
-        "${this.route}/${loginUiState.userName}/${loginUiState.userEmail}/${loginUiState.userProfileImageUrl}"
+    fun createRoute(
+        userName: String,
+        userEmail: String,
+        userProfileImageUrl: String,
+    ) =
+        "${this.route}/${userName}/${userEmail}/${userProfileImageUrl}"
 
 }
 
