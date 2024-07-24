@@ -111,3 +111,9 @@ object DestinationQuiz : ScreenDestinations {
     override val route: String
         get() = "quiz"
 }
+
+object DestinationGameLobby : ScreenDestinations {
+    override val route: String
+        get() = "GameLobby"
+
+}
