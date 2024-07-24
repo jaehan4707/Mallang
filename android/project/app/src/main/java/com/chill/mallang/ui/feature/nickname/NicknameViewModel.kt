@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.chill.mallang.ui.util.ErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -19,7 +20,9 @@ class NicknameState() {
     private val nicknameRegex = "^[가-힣a-zA-Z]{2,10}$".toRegex() // 정규식
 
     var nickname by mutableStateOf("")
+        private set
     var errorMessage by mutableStateOf("")
+        private set
 
     fun updateNickname(newNickname: String) {
         nickname = newNickname
@@ -33,10 +36,10 @@ class NicknameState() {
 
     private fun generateErrorMsg(newNickname: String): String {
         return when {
-            newNickname.isEmpty() -> "닉네임을 입력해 주세요"
-            newNickname.length < 2 -> "닉네임은 2글자 이상이어야 합니다"
-            newNickname.length > 10 -> "닉네임은 10글자 이하여야 합니다"
-            !nicknameRegex.matches(newNickname) -> "닉네임은 한글 및 영문만 사용 가능합니다"
+            newNickname.isEmpty() -> ErrorMessage.EMPTY_MESSAGE
+            newNickname.length < 2 -> ErrorMessage.TOO_SHORT
+            newNickname.length > 10 -> ErrorMessage.TOO_LONG
+            !nicknameRegex.matches(newNickname) -> ErrorMessage.INVALID_CHAR
             else -> ""
         }
     }
