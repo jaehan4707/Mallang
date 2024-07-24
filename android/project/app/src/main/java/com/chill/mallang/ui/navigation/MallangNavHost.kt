@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
@@ -80,7 +81,7 @@ fun MallangNavHost(
         ) {
             HomeScreen(
                 modifier = Modifier,
-                navigateToGame = {},
+                navigateToGame = { navController.navigate(DestinationGameLobby.route) },
                 navigateToQuiz = { navController.navigate(DestinationQuiz.route) },
             )
         }
@@ -91,6 +92,14 @@ fun MallangNavHost(
             QuizScreen(
                 modifier = modifier,
                 popUpBackStack = { navController.popBackStack() },
+            )
+        }
+
+        composable(
+            route = DestinationGameLobby.route,
+        ) {
+            GameLobbyScreen(
+                modifier = modifier,
             )
         }
     }
