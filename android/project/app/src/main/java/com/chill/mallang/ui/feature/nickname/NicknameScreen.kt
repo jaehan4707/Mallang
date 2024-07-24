@@ -19,17 +19,16 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.theme.BackGround
@@ -46,9 +45,8 @@ fun NicknameScreen(
     onClick: (String) -> Unit = {}
 ) {
     val nicknameViewModel: NicknameViewModel = hiltViewModel()
-    val nicknameState by nicknameViewModel.nicknameState.collectAsStateWithLifecycle()
+    val nicknameState = nicknameViewModel.nicknameState
     val focusManager = LocalFocusManager.current
-
 
     Surface(
         color = BackGround,
@@ -56,43 +54,58 @@ fun NicknameScreen(
             .fillMaxSize()
             .addFocusCleaner(focusManager)
     ) {
+        NickNameContent(
+            modifier = modifier,
+            focusManager = focusManager,
+            uiState = nicknameState,
+            onClick = { onClick(it) },
+        )
+    }
+}
+
+@Composable
+fun NickNameContent(
+    modifier: Modifier = Modifier,
+    focusManager: FocusManager = LocalFocusManager.current,
+    uiState: NicknameState = NicknameState(),
+    onClick: (String) -> Unit = {},
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(80.dp))
+        Image(
+            painter = painterResource(id = R.drawable.ic_title_small),
+            contentDescription = null,
+            modifier = Modifier.height(120.dp)
+        )
+        Spacer(modifier = Modifier.weight(0.2f))
+        TextWithIcon(text = "사용할 닉네임을 입력해 주세요", icon = R.drawable.ic_mage)
+        Spacer(modifier = Modifier.height(30.dp))
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(80.dp))
-            Image(
-                painter = painterResource(id = R.drawable.ic_title_small),
-                contentDescription = null,
-                modifier = Modifier.height(120.dp)
+            CustomTextField(
+                onValueChange = {
+                    uiState.updateNickname(it)
+                },
+                focusManager = focusManager,
+                nicknameState = uiState,
+                onClearPressed = {
+                    uiState.clearNickname()
+                }
             )
-            Spacer(modifier = Modifier.weight(0.2f))
-            TextWithIcon(text = "사용할 닉네임을 입력해 주세요", icon = R.drawable.ic_mage)
-            Spacer(modifier = Modifier.height(30.dp))
-            Column (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                CustomTextField(
-                    onValueChange = {
-                        nicknameViewModel.updateNickname(it)
-                    },
-                    focusManager = focusManager,
-                    nicknameState = nicknameState,
-                    onClearPressed = {
-                        nicknameViewModel.clearText()
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            LongBlackButton(
-                onClick = { onClick(nicknameState.nickname) },
-                text = "결정하기"
-            )
-            Spacer(modifier = Modifier.weight(1f))
         }
+        Spacer(modifier = Modifier.height(20.dp))
+        LongBlackButton(
+            onClick = { onClick(uiState.nickname) },
+            text = "결정하기"
+        )
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
@@ -148,22 +161,21 @@ fun CustomTextField(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_cancel),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = Color.Unspecified
                     )
                 }
             },
-            isError = nicknameState.errorMessage != null
+            isError = nicknameState.errorMessage != ""
         )
-        nicknameState.errorMessage?.let { errorMessage ->
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, start = 4.dp),
-                text = errorMessage,
-                color = Sub1,
-                style = Typography.displayLarge
-            )
-        }
+        Text(
+            text = nicknameState.errorMessage,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, start = 4.dp),
+            color = Sub1,
+            style = Typography.displayMedium
+        )
     }
 }
 
@@ -193,6 +205,6 @@ fun TextWithIcon(
 @Composable
 fun NicknameScreenPreview() {
     MallangTheme {
-        NicknameScreen()
+        NickNameContent()
     }
 }

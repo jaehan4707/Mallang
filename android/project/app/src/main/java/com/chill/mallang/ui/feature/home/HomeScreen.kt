@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,7 +51,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(12.dp)
+            .padding(horizontal = 15.dp)
     ) {
         Column {
             Row { // 유저 아이템 수의 따라 LazyColumn
@@ -66,14 +65,12 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     label = TestData.USER_ITEM
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
             SideUserButton() // 사이드 버튼
             UserCharacter( // 유저 캐릭터 or 프로필
                 modifier = modifier,
                 userName = TestData.USER_NAME,
                 userRank = TestData.USER_RANK
             )
-            Spacer(modifier.weight(0.15f))
             ModeButton( // 퀴즈 모드 버튼
                 icon = R.drawable.ic_question,
                 label = stringResource(R.string.mode_quiz),
@@ -87,7 +84,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.align(Alignment.End),
                 onClick = { }
             )
-            Spacer(modifier.weight(0.15f))
+            Spacer(modifier.weight(0.3f))
         }
     }
 }
@@ -113,6 +110,7 @@ fun IconButton(
             style = Typography.displayLarge,
             textAlign = TextAlign.Center
         )
+        Spacer(modifier = Modifier.height(5.dp))
     }
 }
 
@@ -127,12 +125,10 @@ fun SideUserButton(modifier: Modifier = Modifier) {
             label = stringResource(R.string.side_button_setting),
             onClick = { }
         )
-        Spacer(modifier = modifier.size(15.dp))
         IconButton(
             icon = R.drawable.ic_quest,
             label = stringResource(R.string.side_button_quest),
             onClick = { })
-        Spacer(modifier = modifier.size(15.dp))
         IconButton(
             icon = R.drawable.ic_ranking,
             label = stringResource(R.string.side_button_ranking),
