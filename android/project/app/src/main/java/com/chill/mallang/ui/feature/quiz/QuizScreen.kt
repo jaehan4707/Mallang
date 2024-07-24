@@ -42,7 +42,11 @@ import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
+import com.chill.mallang.ui.theme.Green1
+import com.chill.mallang.ui.theme.Green2
 import com.chill.mallang.ui.theme.MallangTheme
+import com.chill.mallang.ui.theme.Sub1
+import com.chill.mallang.ui.theme.Sub2
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
@@ -75,13 +79,10 @@ fun QuizScreen(
                 systemMessage = "빈칸을 채워 주세요",
                 quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다."
             )
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) {
-                AnswerList()
-            }
+            Spacer(modifier = Modifier.weight(1f))
+            AnswerList(
+                isResultScreen = false
+            )
         }
         Button(
             onClick = { /*TODO*/ },
@@ -149,7 +150,11 @@ fun QuizBox(
 }
 
 @Composable
-fun AnswerList() {
+fun AnswerList(
+    isResultScreen: Boolean,
+    userAnswer: QuizItem? = null,
+    systemAnswer: QuizItem? = null
+) {
     // 더미 데이터
     val wordList = arrayListOf(
         QuizItem(1, "괄목"),
@@ -167,10 +172,15 @@ fun AnswerList() {
             .fillMaxSize()
     ) {
         items(wordList) { item ->
+            val isAnswer = item.word == systemAnswer?.word
+
             AnswerListItem(
                 modifier = Modifier.fillParentMaxHeight(0.13f),
                 item = item,
                 isSelected = item == selectedItem,
+                isAnswer = isAnswer, // 정답 아이템
+                isResultScreen = isResultScreen,
+                userAnswer = userAnswer,
                 onItemClick = { clickedItem ->
                     selectedItem = if (selectedItem == clickedItem) null else clickedItem
                 }
@@ -184,9 +194,26 @@ fun AnswerListItem(
     modifier: Modifier = Modifier,
     item: QuizItem,
     isSelected: Boolean,
-    onItemClick: (QuizItem) -> Unit
+    isAnswer: Boolean,
+    isResultScreen: Boolean,
+    userAnswer: QuizItem? = null,
+    onItemClick: (QuizItem) -> Unit = {}
 ) {
-    Box (
+    // 배경색
+    val backgroundColor = when {
+        isResultScreen && userAnswer?.word == item.word && !isAnswer -> Sub2
+        isResultScreen && isAnswer -> Green2
+        else -> Color.White
+    }
+
+    // 번호, 테두리 색상
+    val borderColor = when {
+        isResultScreen && userAnswer?.word == item.word && !isAnswer -> Sub1
+        isResultScreen && isAnswer -> Green1
+        else -> Gray6
+    }
+
+    Box(
         modifier = modifier
             .shadow(
                 elevation = 5.dp,
@@ -197,13 +224,16 @@ fun AnswerListItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier
                 .fillMaxWidth()
-                .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                .border(2.dp, color = Gray6, shape = RoundedCornerShape(8.dp))
+                .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
+                .border(2.dp, color = borderColor, shape = RoundedCornerShape(8.dp))
                 .clickable { onItemClick(item) }
         ) {
             Box(
                 modifier = Modifier
-                    .background(color = Gray6, shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp))
+                    .background(
+                        color = borderColor,
+                        shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
+                    )
                     .fillMaxHeight()
                     .width(50.dp),
                 contentAlignment = Alignment.Center,
@@ -221,7 +251,13 @@ fun AnswerListItem(
                 modifier = Modifier.weight(1f),
                 style = Typography.headlineLarge
             )
-            if (isSelected) {
+            if (!isResultScreen && isSelected) {
+                Icon(
+                    modifier = Modifier.padding(10.dp),
+                    painter = painterResource(id = R.drawable.ic_check),
+                    contentDescription = null
+                )
+            } else if (isResultScreen && userAnswer?.word == item.word) {
                 Icon(
                     modifier = Modifier.padding(10.dp),
                     painter = painterResource(id = R.drawable.ic_check),
@@ -230,6 +266,13 @@ fun AnswerListItem(
             }
         }
     }
+}
+
+@Composable
+fun SubmitButton(
+    title: String
+) {
+    
 }
 
 @Preview(showBackground = true, showSystemUi = true)
