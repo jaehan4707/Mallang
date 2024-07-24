@@ -1,0 +1,29 @@
+package com.chill.mallang.domain.user.controller.v1;
+
+import com.chill.mallang.domain.user.dto.JoinDTO;
+import com.chill.mallang.domain.user.service.JoinService;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@ResponseBody
+@RequestMapping("api/v1/user")
+public class JoinController {
+
+    private final JoinService joinService;
+
+    public JoinController(JoinService joinService) {
+
+        this.joinService = joinService;
+    }
+    @GetMapping("/join")
+    public String AA(){
+        return "보기";
+    }
+    @PostMapping("/join")
+    public String joinProcess(JoinDTO joinDTO) {
+        System.out.println("실행시작");
+        joinService.joinProcess(joinDTO);
+        return "ok";
+    }
+
+}
