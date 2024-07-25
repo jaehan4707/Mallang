@@ -65,8 +65,9 @@ public class QuizServiceImpl implements QuizService {
             int difficulty = rootNode.get("difficulty").asInt();
             String question = rootNode.get("question").asText();
 
-            System.out.println("Difficulty: " + difficulty);
-            System.out.println("Question: " + question);
+            logger.info(Integer.toString(difficulty));
+            logger.info(question);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -27,8 +27,13 @@ public class QuizController {
 
     @Operation(summary = "퀴즈 정답 제출", description = "특정 퀴즈에 대한 정답을 제출합니다.")
     @PostMapping("/{quizID}/answers")
-    public ResponseEntity<?> answerQuiz(@PathVariable Long quizID, @RequestBody String answer) {
+    public ResponseEntity<?> postQuizAnswer(@PathVariable Long quizID, @RequestBody String answer) {
+        return null;
+    }
 
+    @Operation(summary = "정답 확인", description = "특정 문제의 AI 기준 정답 확인")
+    @GetMapping("/{quizID}/corret-answer")
+    public ResponseEntity<?> getQuizAnswer(@PathVariable Long quizID) {
         return null;
     }
 }
