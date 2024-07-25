@@ -25,6 +25,8 @@ public class Quiz {
     @NotNull
     private int difficulty;
     @NotNull
+    private String answer;
+    @NotNull
     private LocalDateTime created_at;
 
     private LocalDateTime updated_at;
