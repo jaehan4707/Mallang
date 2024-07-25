@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "swagger-ui/**", "api-docs/**","api/v1/user/login", "api/v1/user/join", "login", "/")
+                        .requestMatchers( "swagger-ui/**", "api-docs/**","api/v1/user/login", "api/v1/user/join", "login")
                         .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class) // JWTFilter 추가
