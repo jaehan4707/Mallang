@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -53,6 +52,8 @@ import com.chill.mallang.ui.theme.Typography
 fun QuizScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
+    submitQuiz: (Int) -> Unit = {},
+    navigateToQuizResult: (Int) -> Unit = {}
 ) {
 
     val isBackPressed = remember { mutableStateOf(false) }
@@ -85,7 +86,9 @@ fun QuizScreen(
             )
         }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                navigateToQuizResult(1)
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .offset(y = (-30).dp) // 버튼을 20dp 위로 올
@@ -152,18 +155,18 @@ fun QuizBox(
 @Composable
 fun AnswerList(
     isResultScreen: Boolean,
-    userAnswer: QuizItem? = null,
-    systemAnswer: QuizItem? = null
+    userAnswer: Int? = null,
+    systemAnswer: Int? = null
 ) {
     // 더미 데이터
     val wordList = arrayListOf(
-        QuizItem(1, "괄목"),
-        QuizItem(2, "상대"),
-        QuizItem(3, "과장"),
-        QuizItem(4, "시기")
+        "괄목",
+        "상대",
+        "과장",
+        "시기"
     )
 
-    var selectedItem by remember { mutableStateOf<QuizItem?>(null) }
+    var selectedItem by remember { mutableStateOf<Int?>(null) }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -171,13 +174,15 @@ fun AnswerList(
             .padding(12.dp)
             .fillMaxSize()
     ) {
-        items(wordList) { item ->
-            val isAnswer = item.word == systemAnswer?.word
+        items(wordList.size) { index ->
+            val isAnswer = index + 1 == systemAnswer
 
             AnswerListItem(
                 modifier = Modifier.fillParentMaxHeight(0.13f),
-                item = item,
-                isSelected = item == selectedItem,
+                index = index,
+                word = wordList[index],
+                selectIndex = index + 1,
+                isSelected = selectedItem == index + 1,
                 isAnswer = isAnswer, // 정답 아이템
                 isResultScreen = isResultScreen,
                 userAnswer = userAnswer,
@@ -192,23 +197,25 @@ fun AnswerList(
 @Composable
 fun AnswerListItem(
     modifier: Modifier = Modifier,
-    item: QuizItem,
+    index: Int,
+    word: String,
+    selectIndex: Int,
     isSelected: Boolean,
     isAnswer: Boolean,
     isResultScreen: Boolean,
-    userAnswer: QuizItem? = null,
-    onItemClick: (QuizItem) -> Unit = {}
+    userAnswer: Int? = null,
+    onItemClick: (Int) -> Unit = {}
 ) {
     // 배경색
     val backgroundColor = when {
-        isResultScreen && userAnswer?.word == item.word && !isAnswer -> Sub2
+        isResultScreen && userAnswer == selectIndex && !isAnswer -> Sub2
         isResultScreen && isAnswer -> Green2
         else -> Color.White
     }
 
     // 번호, 테두리 색상
     val borderColor = when {
-        isResultScreen && userAnswer?.word == item.word && !isAnswer -> Sub1
+        isResultScreen && userAnswer == selectIndex && !isAnswer -> Sub1
         isResultScreen && isAnswer -> Green1
         else -> Gray6
     }
@@ -226,7 +233,7 @@ fun AnswerListItem(
                 .fillMaxWidth()
                 .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
                 .border(2.dp, color = borderColor, shape = RoundedCornerShape(8.dp))
-                .clickable { onItemClick(item) }
+                .clickable { onItemClick(selectIndex) }
         ) {
             Box(
                 modifier = Modifier
@@ -239,7 +246,7 @@ fun AnswerListItem(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "${item.number}",
+                    text = "${index + 1}",
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     style = Typography.headlineLarge
@@ -247,7 +254,7 @@ fun AnswerListItem(
             }
             Spacer(modifier = Modifier.width(30.dp))
             Text(
-                text = item.word,
+                text = word,
                 modifier = Modifier.weight(1f),
                 style = Typography.headlineLarge
             )
@@ -257,7 +264,7 @@ fun AnswerListItem(
                     painter = painterResource(id = R.drawable.ic_check),
                     contentDescription = null
                 )
-            } else if (isResultScreen && userAnswer?.word == item.word) {
+            } else if (isResultScreen && userAnswer == index) {
                 Icon(
                     modifier = Modifier.padding(10.dp),
                     painter = painterResource(id = R.drawable.ic_check),
@@ -266,13 +273,6 @@ fun AnswerListItem(
             }
         }
     }
-}
-
-@Composable
-fun SubmitButton(
-    title: String
-) {
-    
 }
 
 @Preview(showBackground = true, showSystemUi = true)
