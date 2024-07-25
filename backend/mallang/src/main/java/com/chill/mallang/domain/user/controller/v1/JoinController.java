@@ -1,7 +1,10 @@
 package com.chill.mallang.domain.user.controller.v1;
 
 import com.chill.mallang.domain.user.dto.JoinDTO;
+import com.chill.mallang.domain.user.dto.JoinResponseDTO;
 import com.chill.mallang.domain.user.service.JoinService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,16 +18,12 @@ public class JoinController {
 
         this.joinService = joinService;
     }
-    @GetMapping("/join")
-    //API 확인용
-    public String AA(){
-        return "보기";
-    }
     @PostMapping("/join")
-    public String joinProcess(JoinDTO joinDTO) {
+    public ResponseEntity<JoinResponseDTO> joinProcess(@RequestBody JoinDTO joinDTO) {
         System.out.println("실행시작");
-        joinService.joinProcess(joinDTO);
-        return "ok";
+        JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinDTO);
+
+        return new ResponseEntity<>(joinResponseDTO, HttpStatus.CREATED);
     }
 
 }
