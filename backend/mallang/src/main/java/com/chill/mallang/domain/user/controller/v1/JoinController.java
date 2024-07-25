@@ -15,16 +15,16 @@ public class JoinController {
 
         this.joinService = joinService;
     }
-//    @GetMapping("/join")
-//    //API 확인용
-//    public String AA(){
-//        return "보기";
-//    }
-//    @PostMapping("/join")
-//    public String joinProcess(JoinDTO joinDTO) {
-//        System.out.println("실행시작");
-//        joinService.joinProcess(joinDTO);
-//        return "ok";
-//    }
+    @GetMapping("/join")
+    //API 확인용
+    public String AA(){
+        return "보기";
+    }
+    @PostMapping("/join")
+    public String joinProcess(JoinDTO joinDTO) {
+        System.out.println("실행시작");
+        joinService.joinProcess(joinDTO);
+        return "ok";
+    }
 
 }

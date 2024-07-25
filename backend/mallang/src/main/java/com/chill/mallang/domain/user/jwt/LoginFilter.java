@@ -5,11 +5,14 @@ import com.chill.mallang.domain.user.dto.CustomUserDetails;
 import com.chill.mallang.domain.user.dto.LoginRequest;
 import com.chill.mallang.domain.user.oauth.CustomOAuthToken;
 import com.chill.mallang.domain.user.service.CustomUserDetailsService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -22,6 +25,8 @@ import java.util.Iterator;
 
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
@@ -49,23 +54,33 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            // JSON 데이터를 파싱하여 email과 token을 가져옵니다.
-            System.out.printf("시작");
+            logger.info("시작");
             ObjectMapper objectMapper = new ObjectMapper();
-            System.out.printf("objectMapper :"+ objectMapper);
-            LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
-            System.out.printf("loginRequest :" + loginRequest);
+
+            // 요청 데이터 로깅
+            String requestBody = new String(request.getInputStream().readAllBytes());
+            logger.info("Request Body: " + requestBody);
+
+            // JSON 데이터 파싱
+            LoginRequest loginRequest = objectMapper.readValue(requestBody, LoginRequest.class);
+            logger.info("loginRequest success");
             String loginRequestEmail = loginRequest.getEmail();
             String loginRequestToken = loginRequest.getToken();
-            System.out.printf("login" + loginRequestEmail);
-            if (loginRequestEmail == null ||loginRequestToken == null) {
+            logger.info("logintoken : " + loginRequestToken);
+
+            if (loginRequestEmail == null || loginRequestToken == null) {
                 throw new MissingCredentialsException("이메일 또는 OAuth 토큰이 누락되었습니다.");
             }
 
             CustomOAuthToken authToken = new CustomOAuthToken(loginRequestEmail, loginRequestToken);
+            logger.info("authToken :" + authToken);
             return authenticationManager.authenticate(authToken);
-        } catch (IOException | java.io.IOException e) {
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("JSON 파싱 중 오류가 발생했습니다. 입력 데이터를 확인하세요.", e);
+        } catch (IOException e) {
             throw new RuntimeException("요청을 처리하는 동안 오류가 발생했습니다.", e);
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -73,15 +88,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
+        logger.info("detail :"+userDetails);
         String username = userDetails.getUsername();
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
-        long secondsInAYear = 365L * 24 * 60 * 60;
-        long tokenValidityInSeconds = 150L * secondsInAYear;
+
         String token = jwtUtil.createJwt(username, role, 60 * 60 * 10L);
         response.addHeader("Authorization", "Bearer " + token);
     }

@@ -1,11 +1,14 @@
 package com.chill.mallang.domain.user.oauth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
 public class CustomOAuthToken extends AbstractAuthenticationToken {
+    private static final Logger logger = LoggerFactory.getLogger(CustomOAuthToken.class);
     private final Object principal;
     private String token;
 
@@ -22,7 +25,9 @@ public class CustomOAuthToken extends AbstractAuthenticationToken {
         super(authorities);
         this.principal = principal;
         this.token = token;
+        logger.info("커스텀 토근 :"+ token);
         setAuthenticated(true);
+        logger.info("커스텀 토근 :"+ this.isAuthenticated());
     }
 
     @Override
@@ -35,3 +40,5 @@ public class CustomOAuthToken extends AbstractAuthenticationToken {
         return principal;
     }
 }
+
+

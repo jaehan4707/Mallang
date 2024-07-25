@@ -1,7 +1,11 @@
 package com.chill.mallang.domain.user.oauth;
 
+import com.chill.mallang.domain.user.dto.CustomUserDetails;
+import com.chill.mallang.domain.user.jwt.LoginFilter;
 import com.chill.mallang.domain.user.service.CustomUserDetailsService;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomOAuthProvider implements AuthenticationProvider {
-
+    private static final Logger logger = LoggerFactory.getLogger(CustomOAuthProvider.class);
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
@@ -22,12 +26,16 @@ public class CustomOAuthProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String token = (String) authentication.getCredentials();
+        logger.info("프로바이더 :"+token);
 
         try {
             JsonNode userInfo = googleOAuthService.getUserInfo(token);
+            logger.info("userInfo :"+userInfo);
             String email = userInfo.get("email").asText();
-
+            logger.info("userinfo2 :"+ email);
+            logger.info("userinfo3"+ userDetailsService.loadUserByUsername(email).toString());
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            logger.info("아이"+userDetails.toString());
             return new CustomOAuthToken(userDetails, token, userDetails.getAuthorities());
         } catch (Exception e) {
             throw new BadCredentialsException("Invalid OAuth token", e);

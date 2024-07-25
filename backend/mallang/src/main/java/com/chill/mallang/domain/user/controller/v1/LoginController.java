@@ -7,7 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user")
+//@RequestMapping("/api/v1/user")
 public class LoginController {
 
     @Autowired
@@ -19,9 +19,9 @@ public class LoginController {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    @GetMapping("/login")
-    public String loginP(){
-        return "ok";
-    }
+//    @GetMapping("/login")
+//    public String loginP(){
+//        return "ok";
+//    }
 
 }
