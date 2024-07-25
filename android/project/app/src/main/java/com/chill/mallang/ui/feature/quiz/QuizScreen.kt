@@ -177,8 +177,10 @@ fun AnswerList(
         items(wordList.size) { index ->
             val isAnswer = index + 1 == systemAnswer
 
+            val fraction = if (!isResultScreen) 0.13f else 0.15f
+
             AnswerListItem(
-                modifier = Modifier.fillParentMaxHeight(0.13f),
+                modifier = Modifier.fillParentMaxHeight(fraction),
                 index = index,
                 word = wordList[index],
                 selectIndex = index + 1,
