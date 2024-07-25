@@ -43,8 +43,10 @@ public class JoinFilter extends AbstractAuthenticationProcessingFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
-        String jwtToken = jwtUtil.createJwt(authResult.getName(), "ROLE_USER", 60 * 60 * 10L);
-        response.setHeader("Authentication", "Bearer " + jwtToken);
+        long secondsInAYear = 365L * 24 * 60 * 60;
+        long tokenValidityInSeconds = 150L * secondsInAYear;
+        String jwtToken = jwtUtil.createJwt(authResult.getName(), "ROLE_USER", tokenValidityInSeconds);
+        response.setHeader("Authorization", "Bearer " + jwtToken);
     }
 
     @Override

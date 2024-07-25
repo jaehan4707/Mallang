@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/api/v1/user/login", "/api/v1/user/join", "/api/v1/user/admin").permitAll()
+                                .requestMatchers("/api/v1/user/login", "/api/v1/user/join").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
