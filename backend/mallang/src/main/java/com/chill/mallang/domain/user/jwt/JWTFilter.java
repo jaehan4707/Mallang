@@ -26,38 +26,46 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         logger.info(request.toString());
-        //request에서 Authorization 헤더를 찾음
-        String authorization= request.getHeader("Authorization");
+        // 특정 URL 패턴 예외 처리
+        String path = request.getRequestURI();
+        System.out.println(path);
+        if (path.equals("api/v1/user/join") || path.equals("api/v1/user/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // request에서 Authorization 헤더를 찾음
+        String authorization = request.getHeader("Authorization");
         System.out.println(authorization);
-        //Authorization 헤더 검증
+
+        // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        //Bearer 부분 제거 후 순수 토큰만 획득
+
+        // Bearer 부분 제거 후 순수 토큰만 획득
         String token = authorization.split(" ")[1];
 
-        //토큰 소멸 시간 검증
+        // 토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
             filterChain.doFilter(request, response);
-
-            //조건이 해당되면 메소드 종료 (필수)
             return;
         }
 
-        //토큰에서 email 획득
+        // 토큰에서 email 획득
         String email = jwtUtil.getEmail(token);
         String role = jwtUtil.getRole(token);
 
-        //userEntity를 생성하여 값 set
+        // userEntity를 생성하여 값 set
         User user = new User();
         user.setEmail(email);
         user.setRole(role);
 
-        //UserDetails에 회원 정보 객체 담기
+        // UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
-        //스프링 시큐리티 인증 토큰 생성
+        // 스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         // 스프링 시큐리티 컨텍스트에 인증 정보 설정
         SecurityContextHolder.getContext().setAuthentication(authToken);

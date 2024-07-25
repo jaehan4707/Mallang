@@ -2,21 +2,17 @@ package com.chill.mallang.domain.user.jwt;
 
 import com.chill.mallang.domain.user.dto.JoinRequestDTO;
 import com.chill.mallang.domain.user.dto.JoinResponseDTO;
-import com.chill.mallang.domain.user.service.CustomUserDetailsService;
 import com.chill.mallang.domain.user.service.JoinService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.slf4j.Logger;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
+import java.io.IOException;
 
 public class JoinFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -27,8 +23,8 @@ public class JoinFilter extends UsernamePasswordAuthenticationFilter {
         this.joinService = joinService;
         setFilterProcessesUrl("/api/v1/user/join");
     }
-
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+    
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 

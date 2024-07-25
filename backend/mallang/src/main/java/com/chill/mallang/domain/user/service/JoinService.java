@@ -29,7 +29,7 @@ public class JoinService {
     public JoinResponseDTO joinProcess(JoinRequestDTO joinRequestDTO) {
         try {
             JsonNode userInfo = googleOAuthService.getUserInfo(joinRequestDTO.getToken());
-
+            logger.info("userInfo :"+userInfo);
             String email = userInfo.get("email").asText();
             String nickname = joinRequestDTO.getNickname();
             String picture = joinRequestDTO.getPicture();
