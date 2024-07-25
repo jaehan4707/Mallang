@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/user")
+//사용자정보 조회용 컨트롤러
 public class UserController {
     private final UserService userService;
 

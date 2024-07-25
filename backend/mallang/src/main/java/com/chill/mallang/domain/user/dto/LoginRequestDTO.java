@@ -1,6 +1,6 @@
 package com.chill.mallang.domain.user.dto;
 
-public class LoginRequest {
+public class LoginRequestDTO {
     private String email;
     private String token;
 

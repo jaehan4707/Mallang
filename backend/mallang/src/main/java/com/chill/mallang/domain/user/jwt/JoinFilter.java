@@ -1,6 +1,6 @@
 package com.chill.mallang.domain.user.jwt;
 
-import com.chill.mallang.domain.user.dto.LoginRequestDTO;
+import com.chill.mallang.domain.user.dto.JoinRequestDTO;
 import com.chill.mallang.domain.user.oauth.CustomOAuthToken;
 import com.chill.mallang.domain.user.service.CustomUserDetailsService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -16,14 +16,18 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-public class LoginFilter extends AbstractAuthenticationProcessingFilter {
-    private static final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
+public class JoinFilter extends AbstractAuthenticationProcessingFilter {
+    private static final Logger logger = LoggerFactory.getLogger(JoinFilter.class);
+
     private final JWTUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
 
-    public LoginFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+    public JoinFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         super(defaultFilterProcessesUrl);
+        logger.info(defaultFilterProcessesUrl);
         setAuthenticationManager(authenticationManager);
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
@@ -31,26 +35,11 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
-        try {
-            // 요청 본문을 읽어 LoginRequest 객체로 변환
-            LoginRequestDTO loginRequest = new ObjectMapper().readValue(request.getInputStream(), new TypeReference<LoginRequestDTO>(){});
-
-            // 디버깅 로그 추가
-            System.out.println("Received login request: " + loginRequest);
-
-            String email = loginRequest.getEmail();
-            String token = loginRequest.getToken();
-
-            // ID 토큰을 CustomOAuthToken으로 래핑하여 인증 매니저에 전달
-            return getAuthenticationManager().authenticate(new CustomOAuthToken(token));
-        } catch (IOException e) {
-            // JSON 파싱 오류 처리
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Invalid request body");
-            return null;
-        }
+        logger.info(request.toString());
+        JoinRequestDTO joinRequest = new ObjectMapper().readValue(request.getInputStream(), new TypeReference<JoinRequestDTO>(){});
+        String idToken = joinRequest.getToken();
+        return getAuthenticationManager().authenticate(new CustomOAuthToken(idToken));
     }
-
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
@@ -64,3 +53,4 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         response.getWriter().write("Authentication failed: " + failed.getMessage());
     }
 }
+

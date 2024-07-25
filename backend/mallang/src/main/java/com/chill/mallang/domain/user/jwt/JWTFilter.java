@@ -16,30 +16,35 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JWTFilter.class);
     private final JWTUtil jwtUtil;
-    public JWTFilter(JWTUtil jwtUtil) {
 
+    public JWTFilter(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         logger.info(request.toString());
+
         // 특정 URL 패턴 예외 처리
         String path = request.getRequestURI();
-        System.out.println(path);
-//        if (path.equals("api/v1/user/join") || path.equals("api/v1/user/login")) {
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
+        String fullPath = request.getRequestURL().toString();
+        System.out.println("jwt필터 path: " + path);
+        System.out.println("jwt필터 full path: " + fullPath);
+
+        if (path.equals("/api/v1/user/join") || path.equals("/api/v1/user/login")) {
+            System.out.println("Skipping JWT filter for path: " + path);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // request에서 Authorization 헤더를 찾음
-        String authorization = request.getHeader("Authentication");
-        System.out.println(authorization);
+        String authorization = request.getHeader("Authorization");
+        System.out.println("Authorization header: " + authorization);
 
         // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
@@ -48,7 +53,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         // Bearer 부분 제거 후 순수 토큰만 획득
-        String token = authorization.split(" ")[1];
+        String token = authorization.substring(7);
 
         // 토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
@@ -72,7 +77,8 @@ public class JWTFilter extends OncePerRequestFilter {
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         // 스프링 시큐리티 컨텍스트에 인증 정보 설정
         SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
     }
-
 }

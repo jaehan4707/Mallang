@@ -2,6 +2,7 @@ package com.chill.mallang.config;
 
 import com.chill.mallang.domain.user.jwt.JWTFilter;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
+import com.chill.mallang.domain.user.jwt.JoinFilter;
 import com.chill.mallang.domain.user.jwt.LoginFilter;
 import com.chill.mallang.domain.user.oauth.CustomOAuthProvider;
 import com.chill.mallang.domain.user.oauth.GoogleOAuthService;
@@ -47,20 +48,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // 로그인과 회원가입 요청에 대해서만 LoginFilter가 동작하도록 설정
+        // 로그인과 회원가입 요청에 대해서만 LoginFilter와 JoinFilter가 먼저 동작하도록 설정
         http
                 .csrf(csrf -> csrf.disable())
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("api/v1/user/login", "api/v1/user/join", "api/v1/user/admin").permitAll()
+                                .requestMatchers("/api/v1/user/login", "/api/v1/user/join", "/api/v1/user/admin").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(new LoginFilter("api/v1/user/login", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new LoginFilter("api/v1/user/join", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JoinFilter("/api/v1/user/join", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginFilter("/api/v1/user/login", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
