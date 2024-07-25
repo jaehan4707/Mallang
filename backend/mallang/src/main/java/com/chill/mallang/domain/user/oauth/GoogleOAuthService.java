@@ -1,51 +1,40 @@
 package com.chill.mallang.domain.user.oauth;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 
-// 구글로 토큰 검정
 @Service
 public class GoogleOAuthService {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomOAuthProvider.class);
-    private static final String TOKEN_INFO_URL = "https://oauth2.googleapis.com/tokeninfo?id_token=";
-
     @Value("${google.client.id}")
-    private String clientId;
+    private String clientId; // 구글 클라이언트 ID
 
-    public JsonNode getUserInfo(String idToken) throws Exception {
-        return getUserInfoFromToken(idToken);
-    }
+    /**
+     * ID 토큰을 검증하고 페이로드를 반환합니다.
+     *
+     * @param idTokenString 클라이언트로부터 받은 ID 토큰 문자열
+     * @return ID 토큰이 유효하면 페이로드를 반환하고, 그렇지 않으면 null을 반환
+     * @throws GeneralSecurityException 토큰 검증 중 발생하는 보안 예외
+     * @throws IOException 토큰 검증 중 발생하는 입출력 예외
+     */
+    public GoogleIdToken.Payload verifyToken(String idTokenString) throws GeneralSecurityException, IOException {
+        // GoogleIdTokenVerifier 객체 생성
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
+                .setAudience(Collections.singletonList(clientId))
+                .build();
 
-    private JsonNode getUserInfoFromToken(String idToken) throws Exception {
-        URI tokenInfoUri = new URI(TOKEN_INFO_URL + idToken);
-        logger.info(tokenInfoUri.toString());
-        HttpURLConnection conn = (HttpURLConnection) tokenInfoUri.toURL().openConnection();
-        conn.setRequestMethod("GET");
+        // ID 토큰 검증
+        GoogleIdToken idToken = verifier.verify(idTokenString);
 
-        int responseCode = conn.getResponseCode();
-        logger.info("구글 jsonnode", responseCode);
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            in.close();
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readTree(content.toString());
-        } else {
-            throw new IllegalArgumentException("Failed to retrieve user info: " + responseCode);
-        }
+        // 유효한 토큰일 경우 페이로드 반환, 그렇지 않으면 null 반환
+        return idToken != null ? idToken.getPayload() : null;
     }
 }

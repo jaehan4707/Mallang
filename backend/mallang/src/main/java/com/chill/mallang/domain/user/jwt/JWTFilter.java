@@ -11,10 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
+@Component
 public class JWTFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JWTFilter.class);
@@ -29,13 +32,13 @@ public class JWTFilter extends OncePerRequestFilter {
         // 특정 URL 패턴 예외 처리
         String path = request.getRequestURI();
         System.out.println(path);
-        if (path.equals("api/v1/user/join") || path.equals("api/v1/user/login")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        if (path.equals("api/v1/user/join") || path.equals("api/v1/user/login")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
         // request에서 Authorization 헤더를 찾음
-        String authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader("Authentication");
         System.out.println(authorization);
 
         // Authorization 헤더 검증

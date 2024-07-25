@@ -2,8 +2,8 @@ package com.chill.mallang.domain.user.controller.v1;
 
 import com.chill.mallang.domain.user.dto.JoinRequestDTO;
 import com.chill.mallang.domain.user.dto.JoinResponseDTO;
-import com.chill.mallang.domain.user.jwt.JoinFilter;
 import com.chill.mallang.domain.user.service.JoinService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,10 +22,10 @@ public class JoinController {
         this.joinService = joinService;
     }
     @PostMapping("/join")
-    public ResponseEntity<JoinResponseDTO> joinProcess(@RequestBody JoinRequestDTO joinRequestDTO) {
+    public ResponseEntity<JoinResponseDTO> joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO) {
         logger.info("joindto 리퀘 :"+joinRequestDTO);
         JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinRequestDTO);
-        logger.info("joindto :"+joinResponseDTO);
+        logger.info("joindto :"+ joinResponseDTO);
         return new ResponseEntity<>(joinResponseDTO, HttpStatus.CREATED);
     }
 

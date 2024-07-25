@@ -1,108 +1,42 @@
 package com.chill.mallang.domain.user.jwt;
 
-
-import com.chill.mallang.domain.user.dto.CustomUserDetails;
-import com.chill.mallang.domain.user.dto.LoginRequest;
 import com.chill.mallang.domain.user.oauth.CustomOAuthToken;
 import com.chill.mallang.domain.user.service.CustomUserDetailsService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.io.IOException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
-import java.util.Collection;
-import java.util.Iterator;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
-public class LoginFilter extends UsernamePasswordAuthenticationFilter {
-
-    private static final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
-    private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final CustomUserDetailsService userDetailsService;
 
-    @Autowired
-    private CustomUserDetails userDetails;
-
-    private CustomUserDetailsService customUserDetailsService;
-
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, CustomUserDetailsService customUserDetailsService) {
-
-        this.authenticationManager = authenticationManager;
+    public LoginFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+        super(defaultFilterProcessesUrl);
+        setAuthenticationManager(authenticationManager);
         this.jwtUtil = jwtUtil;
-        this.customUserDetailsService = customUserDetailsService;
-        setFilterProcessesUrl("/login");
-    }
-
-    // 예외 처리 위한 클래스
-    public class MissingCredentialsException extends AuthenticationException {
-        public MissingCredentialsException(String msg) {
-            super(msg);
-        }
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        try {
-            logger.info("시작");
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            // 요청 데이터 로깅
-            String requestBody = new String(request.getInputStream().readAllBytes());
-            logger.info("Request Body: " + requestBody);
-
-            // JSON 데이터 파싱
-            LoginRequest loginRequest = objectMapper.readValue(requestBody, LoginRequest.class);
-            logger.info("loginRequest success");
-            String loginRequestEmail = loginRequest.getEmail();
-            String loginRequestToken = loginRequest.getToken();
-            logger.info("logintoken : " + loginRequestToken);
-
-            if (loginRequestEmail == null || loginRequestToken == null) {
-                throw new MissingCredentialsException("이메일 또는 OAuth 토큰이 누락되었습니다.");
-            }
-
-            CustomOAuthToken authToken = new CustomOAuthToken(loginRequestEmail, loginRequestToken);
-            logger.info("authToken :" + authToken);
-            return authenticationManager.authenticate(authToken);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 파싱 중 오류가 발생했습니다. 입력 데이터를 확인하세요.", e);
-        } catch (IOException e) {
-            throw new RuntimeException("요청을 처리하는 동안 오류가 발생했습니다.", e);
-        } catch (java.io.IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
+        Map<String, String> credentials = new ObjectMapper().readValue(request.getInputStream(), HashMap.class);
+        String idToken = credentials.get("token");
+        return getAuthenticationManager().authenticate(new CustomOAuthToken(idToken));
     }
 
-    //로그인 성공시 실행하는 메소드 (여기서 JWT를 발급하면 됨)
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        logger.info("detail :"+userDetails);
-        String username = userDetails.getUsername();
-        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-
-        String role = auth.getAuthority();
-        long secondsInAYear = 365L * 24 * 60 * 60;
-        long tokenValidityInSeconds = 150L * secondsInAYear;
-        String token = jwtUtil.createJwt(username, role, tokenValidityInSeconds);
-        response.addHeader("Authorization", "Bearer " + token);
-    }
-
-    //로그인 실패시 실행하는 메소드
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        response.setStatus(401);
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
+        String jwtToken = jwtUtil.createJwt(authResult.getName(), "ROLE_USER", 60 * 60 * 10L);
+        response.setHeader("Authentication", "Bearer " + jwtToken);
     }
 }
