@@ -290,7 +290,7 @@ fun AnswerListItem(
                     modifier = Modifier.weight(1f),
                     style = Typography.headlineLarge
                 )
-                if (isSelected) {
+                if (!isResultScreen && isSelected) {
                     Icon(
                         modifier = Modifier.padding(10.dp),
                         painter = painterResource(id = R.drawable.ic_check),
@@ -310,7 +310,7 @@ fun AnswerListItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(expandedHeight)
-                    .background(color = Color.White)
+                    .background(color = Color.Unspecified)
             ) {
                 Text(
                     text = meaning,
