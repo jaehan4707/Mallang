@@ -6,7 +6,10 @@ import lombok.Setter;
 @Getter
 @Setter
 //회원가입
-public class JoinDTO {
+public class JoinRequestDTO {
+
+    private String token;
+
     private String email;
 
     private String nickname;
@@ -17,7 +20,7 @@ public class JoinDTO {
 
     private Integer try_count;
 
-    public JoinDTO(){
+    public JoinRequestDTO(){
         this.try_count = 3;
     }
 }

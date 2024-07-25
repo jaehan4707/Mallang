@@ -1,6 +1,6 @@
 package com.chill.mallang.domain.user.controller.v1;
 
-import com.chill.mallang.domain.user.dto.JoinDTO;
+import com.chill.mallang.domain.user.dto.JoinRequestDTO;
 import com.chill.mallang.domain.user.dto.JoinResponseDTO;
 import com.chill.mallang.domain.user.service.JoinService;
 import org.springframework.http.HttpStatus;
@@ -19,8 +19,8 @@ public class JoinController {
         this.joinService = joinService;
     }
     @PostMapping("/join")
-    public ResponseEntity<JoinResponseDTO> joinProcess(@RequestBody JoinDTO joinDTO) {
-        JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinDTO);
+    public ResponseEntity<JoinResponseDTO> joinProcess(@RequestBody JoinRequestDTO joinRequestDTO) {
+        JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinRequestDTO);
 
         return new ResponseEntity<>(joinResponseDTO, HttpStatus.CREATED);
     }

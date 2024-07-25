@@ -2,9 +2,11 @@ package com.chill.mallang.config;
 
 import com.chill.mallang.domain.user.jwt.JWTFilter;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
+import com.chill.mallang.domain.user.jwt.JoinFilter;
 import com.chill.mallang.domain.user.jwt.LoginFilter;
 import com.chill.mallang.domain.user.oauth.CustomOAuthProvider;
 import com.chill.mallang.domain.user.service.CustomUserDetailsService;
+import com.chill.mallang.domain.user.service.JoinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,12 +32,15 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final CustomOAuthProvider customOAuthProvider;
 
+    private final JoinService joinService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService, CustomOAuthProvider customOAuthProvider) {
+
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService, CustomOAuthProvider customOAuthProvider, JoinService joinService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.customOAuthProvider = customOAuthProvider;
+        this.joinService = joinService;
     }
 
     // AuthenticationManager Bean 등록
@@ -61,10 +66,10 @@ public class SecurityConfig {
                         .requestMatchers( "swagger-ui/**", "api-docs/**","api/v1/user/login", "api/v1/user/join", "login")
                         .permitAll()
                         .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class) // JWTFilter 추가
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .addFilterBefore(new JoinFilter(joinService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
