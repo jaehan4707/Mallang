@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional; //두 객체를 비교할 때 null 체크를 자동으로 처리
 
+// 점령지 상세정보 1. 점령자 대표 유저 정보 조회
 @Service
 public class AreaTopUserService {
     @Autowired

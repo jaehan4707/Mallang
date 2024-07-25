@@ -32,16 +32,11 @@ public class AreaService {
         return area.map(this::convertToDto).orElse(null);
     }
 
-    // 2. 사용자 잔여 도전 횟수 조회
+    // 점령지 상세정보 2. 사용자 잔여 도전 횟수 조회
     public TryCountDTO getUserTryCountById(Long id){
         Optional<User> user = userRepository.findById(id);
         return user.map(this::convertToCountDto).orElse(null);
     }
-
-    // 1. 점령자 대표 유저 정보 조회
-
-
-    // 3. 도전 기록 조회
 
     //DTO 변환
     private AreaDTO convertToDto(Area area) {

@@ -5,6 +5,7 @@ import com.chill.mallang.domain.area.dto.AreaTopUserDTO;
 import com.chill.mallang.domain.area.service.AreaService;
 import com.chill.mallang.domain.area.service.AreaTopUserService;
 import com.chill.mallang.domain.user.dto.TryCountDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/areas")
+@Tag(name = "Area API",description = "점령지 상세정보 API")
 public class AreaController {
     private static final Logger logger = LoggerFactory.getLogger(AreaController.class);
 
@@ -35,7 +37,7 @@ public class AreaController {
     }
 
     // 2. 사용자 잔여 도전 횟수 조회
-    @GetMapping("/try_count/{userId}")
+    @GetMapping("/try-count/{userId}")
     public ResponseEntity<TryCountDTO> getUserTryCountById(@PathVariable Long userId) {
         try {
             TryCountDTO tryCount = areaService.getUserTryCountById(userId);
@@ -48,7 +50,7 @@ public class AreaController {
     // 3. 도전 기록 조회
 
 
-    // 4. 그냥 기본 기능
+    // 4. 그냥 기본 기능 (test용)
 
     // 점령지 전체 조회
     @GetMapping
