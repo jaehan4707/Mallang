@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
@@ -53,37 +54,42 @@ fun QuizResultScreen(
     BackHandler(onBack = { isBackPressed.value = true })
 
     // 사용자가 고른 정답
-    val userData = 1
+    val userData = 2
 
     // 정답 데이터
     val systemData = 1
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(color = Color.White)
     ) {
-        val title = if (userData == systemData) "정답!" else "오답!"
-        val titleColor = if (title == "정답!") Green1 else Sub1
+        Column(
+            modifier = modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val title = if (userData == systemData) "정답!" else "오답!"
+            val titleColor = if (title == "정답!") Green1 else Sub1
 
-        Text(
-            modifier = Modifier.padding(vertical = 20.dp),
-            text = title,
-            style = Typography.headlineLarge,
-            fontSize = 40.sp,
-            color = titleColor
-        )
-        QuizBoxWithUnderline(
-            systemMessage = "빈칸을 채워 주세요",
-            quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-            underline = "괄목"
-        )
-        AnswerList(
-            isResultScreen = true,
-            userAnswer = userData,
-            systemAnswer = systemData
-        )
+            Text(
+                modifier = Modifier.padding(vertical = 10.dp),
+                text = title,
+                style = Typography.headlineLarge,
+                fontSize = 40.sp,
+                color = titleColor
+            )
+            QuizBoxWithUnderline(
+                systemMessage = "빈칸을 채워 주세요",
+                quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
+                underline = "괄목"
+            )
+            AnswerList(
+                isResultScreen = true,
+                userAnswer = userData,
+                systemAnswer = systemData
+            )
+        }
     }
 }
 
@@ -130,8 +136,10 @@ fun QuizBoxWithUnderline(
                     val startIndex = quizScript.indexOf(underline)
                     if (startIndex != -1) {
                         append(quizScript.substring(0, startIndex))
-                        withStyle(style = SpanStyle(
-                            textDecoration = TextDecoration.Underline)
+                        withStyle(
+                            style = SpanStyle(
+                                textDecoration = TextDecoration.Underline
+                            )
                         ) {
                             append(underline)
                         }
