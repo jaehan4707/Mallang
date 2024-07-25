@@ -35,7 +35,7 @@ import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
-fun ResultScreen(
+fun QuizResultScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {}
 ) {
@@ -52,11 +52,11 @@ fun ResultScreen(
     )
     BackHandler(onBack = { isBackPressed.value = true })
 
-    // 사용자가 고른 정답 더미 데이터
-    val userData = QuizItem(4, "시기")
+    // 사용자가 고른 정답
+    val userData = 1
 
     // 정답 데이터
-    val systemData = QuizItem(1, "괄목")
+    val systemData = 1
 
     Column(
         modifier = modifier
@@ -64,14 +64,14 @@ fun ResultScreen(
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val title = if (userData.word == systemData.word) "정답!" else "오답!"
+        val title = if (userData == systemData) "정답!" else "오답!"
         val titleColor = if (title == "정답!") Green1 else Sub1
 
         Text(
             modifier = Modifier.padding(vertical = 20.dp),
             text = title,
             style = Typography.headlineLarge,
-            fontSize = 60.sp,
+            fontSize = 40.sp,
             color = titleColor
         )
         QuizBoxWithUnderline(
@@ -150,6 +150,6 @@ fun QuizBoxWithUnderline(
 @Composable
 fun ResultPreview() {
     MallangTheme {
-        ResultScreen()
+        QuizResultScreen()
     }
 }
