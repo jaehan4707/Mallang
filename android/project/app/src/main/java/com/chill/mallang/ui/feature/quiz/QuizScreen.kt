@@ -1,6 +1,10 @@
 package com.chill.mallang.ui.feature.quiz
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -160,13 +165,14 @@ fun AnswerList(
 ) {
     // 더미 데이터
     val wordList = arrayListOf(
-        "괄목",
-        "상대",
-        "과장",
-        "시기"
+        "괄목" to "눈을 비비고 볼 정도로 매우 놀라다.",
+        "상대" to "서로 마주 대하다.",
+        "과장" to "사실보다 지나치게 불려서 말하거나 표현하다.",
+        "시기" to "때나 경우."
     )
 
     var selectedItem by remember { mutableStateOf<Int?>(null) }
+    var isExpandedItem by remember { mutableStateOf<Int?>(null) }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -176,20 +182,25 @@ fun AnswerList(
     ) {
         items(wordList.size) { index ->
             val isAnswer = index + 1 == systemAnswer
-
             val fraction = if (!isResultScreen) 0.13f else 0.15f
 
             AnswerListItem(
                 modifier = Modifier.fillParentMaxHeight(fraction),
                 index = index,
-                word = wordList[index],
+                word = wordList[index].first,
+                meaning = wordList[index].second,
                 selectIndex = index + 1,
                 isSelected = selectedItem == index + 1,
                 isAnswer = isAnswer, // 정답 아이템
+                isExpanded = isExpandedItem == index + 1,
                 isResultScreen = isResultScreen,
                 userAnswer = userAnswer,
                 onItemClick = { clickedItem ->
-                    selectedItem = if (selectedItem == clickedItem) null else clickedItem
+                    if (!isResultScreen) {
+                        selectedItem = clickedItem
+                    } else {
+                        isExpandedItem = if (isExpandedItem == clickedItem) null else clickedItem
+                    }
                 }
             )
         }
@@ -201,9 +212,11 @@ fun AnswerListItem(
     modifier: Modifier = Modifier,
     index: Int,
     word: String,
+    meaning: String,
     selectIndex: Int,
     isSelected: Boolean,
     isAnswer: Boolean,
+    isExpanded: Boolean,
     isResultScreen: Boolean,
     userAnswer: Int? = null,
     onItemClick: (Int) -> Unit = {}
@@ -222,55 +235,91 @@ fun AnswerListItem(
         else -> Gray6
     }
 
-    Box(
-        modifier = modifier
-            .shadow(
-                elevation = 5.dp,
-                shape = RoundedCornerShape(8.dp)
-            )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+    // 뜻 확장 및 애니메이션 효과
+    val expandTransition = updateTransition(targetState = isExpanded, label = "expandTransition")
+    val expandedHeight by expandTransition.animateDp(
+        label = "expandedHeight",
+        transitionSpec = { tween(durationMillis = 200) }
+    ) { expanded ->
+        if (expanded) 40.dp else 0.dp
+    }
+
+    val alpha by expandTransition.animateFloat(
+        label = "alpha",
+        transitionSpec = { tween(durationMillis = 200) }
+    ) { expanded ->
+        if (expanded) 1f else 0f
+    }
+
+    Column {
+        Box(
             modifier = modifier
-                .fillMaxWidth()
-                .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
-                .border(2.dp, color = borderColor, shape = RoundedCornerShape(8.dp))
-                .clickable { onItemClick(selectIndex) }
+                .shadow(
+                    elevation = 5.dp,
+                    shape = RoundedCornerShape(8.dp)
+                )
         ) {
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = borderColor,
-                        shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
-                    )
-                    .fillMaxHeight()
-                    .width(50.dp),
-                contentAlignment = Alignment.Center,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
+                    .border(2.dp, color = borderColor, shape = RoundedCornerShape(8.dp))
+                    .clickable { onItemClick(selectIndex) }
             ) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = borderColor,
+                            shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
+                        )
+                        .fillMaxHeight()
+                        .width(50.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "${index + 1}",
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        style = Typography.headlineLarge
+                    )
+                }
+                Spacer(modifier = Modifier.width(30.dp))
                 Text(
-                    text = "${index + 1}",
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
+                    text = word,
+                    modifier = Modifier.weight(1f),
                     style = Typography.headlineLarge
                 )
+                if (isSelected) {
+                    Icon(
+                        modifier = Modifier.padding(10.dp),
+                        painter = painterResource(id = R.drawable.ic_check),
+                        contentDescription = null
+                    )
+                } else if (isResultScreen && userAnswer == index + 1) {
+                    Icon(
+                        modifier = Modifier.padding(10.dp),
+                        painter = painterResource(id = R.drawable.ic_check),
+                        contentDescription = null
+                    )
+                }
             }
-            Spacer(modifier = Modifier.width(30.dp))
-            Text(
-                text = word,
-                modifier = Modifier.weight(1f),
-                style = Typography.headlineLarge
-            )
-            if (!isResultScreen && isSelected) {
-                Icon(
-                    modifier = Modifier.padding(10.dp),
-                    painter = painterResource(id = R.drawable.ic_check),
-                    contentDescription = null
-                )
-            } else if (isResultScreen && userAnswer == index + 1) {
-                Icon(
-                    modifier = Modifier.padding(10.dp),
-                    painter = painterResource(id = R.drawable.ic_check),
-                    contentDescription = null
+        }
+        if (isExpanded) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(expandedHeight)
+                    .background(color = Color.White)
+            ) {
+                Text(
+                    text = meaning,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .alpha(alpha),
+                    style = Typography.displayMedium,
+                    textAlign = TextAlign.Left
                 )
             }
         }
