@@ -296,12 +296,30 @@ fun AnswerListItem(
                         painter = painterResource(id = R.drawable.ic_check),
                         contentDescription = null
                     )
-                } else if (isResultScreen && userAnswer == index + 1) {
+                } else if (!isResultScreen && userAnswer == index + 1) {
                     Icon(
                         modifier = Modifier.padding(10.dp),
                         painter = painterResource(id = R.drawable.ic_check),
                         contentDescription = null
                     )
+                }
+                if (isResultScreen) {
+                    when (isExpanded) {
+                        false -> {
+                            Icon(
+                                modifier = Modifier.padding(10.dp),
+                                painter = painterResource(id = R.drawable.ic_down),
+                                contentDescription = null
+                            )
+                        }
+                        true -> {
+                            Icon(
+                                modifier = Modifier.padding(10.dp),
+                                painter = painterResource(id = R.drawable.ic_up),
+                                contentDescription = null
+                            )
+                        }
+                    }
                 }
             }
         }
