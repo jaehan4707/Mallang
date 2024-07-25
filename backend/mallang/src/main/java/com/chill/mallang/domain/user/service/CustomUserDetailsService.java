@@ -2,7 +2,6 @@ package com.chill.mallang.domain.user.service;
 
 import com.chill.mallang.domain.user.dto.CustomUserDetails;
 import com.chill.mallang.domain.user.model.User;
-import com.chill.mallang.domain.user.oauth.CustomOAuthProvider;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

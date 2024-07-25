@@ -43,7 +43,6 @@ public class GoogleOAuthService {
             }
             in.close();
             ObjectMapper mapper = new ObjectMapper();
-            System.out.println("googld mapper :"+ mapper);
             return mapper.readTree(content.toString());
         } else {
             throw new IllegalArgumentException("Failed to retrieve user info: " + responseCode);

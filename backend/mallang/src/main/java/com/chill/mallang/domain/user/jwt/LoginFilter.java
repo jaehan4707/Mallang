@@ -33,14 +33,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Autowired
     private CustomUserDetails userDetails;
 
-
-    private CustomUserDetailsService userDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
 
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, CustomUserDetailsService customUserDetailsService) {
 
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = customUserDetailsService;
+        this.customUserDetailsService = customUserDetailsService;
         setFilterProcessesUrl("/login");
     }
 

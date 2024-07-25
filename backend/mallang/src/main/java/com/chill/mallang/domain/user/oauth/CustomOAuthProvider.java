@@ -1,7 +1,5 @@
 package com.chill.mallang.domain.user.oauth;
 
-import com.chill.mallang.domain.user.dto.CustomUserDetails;
-import com.chill.mallang.domain.user.jwt.LoginFilter;
 import com.chill.mallang.domain.user.service.CustomUserDetailsService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
@@ -32,10 +30,7 @@ public class CustomOAuthProvider implements AuthenticationProvider {
             JsonNode userInfo = googleOAuthService.getUserInfo(token);
             logger.info("userInfo :"+userInfo);
             String email = userInfo.get("email").asText();
-            logger.info("userinfo2 :"+ email);
-            logger.info("userinfo3"+ userDetailsService.loadUserByUsername(email).toString());
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            logger.info("아이"+userDetails.toString());
             return new CustomOAuthToken(userDetails, token, userDetails.getAuthorities());
         } catch (Exception e) {
             throw new BadCredentialsException("Invalid OAuth token", e);

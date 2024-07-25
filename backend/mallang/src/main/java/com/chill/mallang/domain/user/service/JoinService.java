@@ -25,19 +25,16 @@ public class JoinService {
 //        Long faction_id = joinDTO.getFaction_id();
         String picture = joinDTO.getPicture();
         Integer try_acount = joinDTO.getTry_count();
-
+        // 이메일 중복 확인
         Boolean isExist = userRepository.existsByEmail(email);
 
-        if(isExist){
-            // 클라이언트에게 던져줄 로직짜기
-            System.out.println("이메일 중복");
-        }
+//        if(isExist){
+//        }
 
         User data = new User();
         logger.info(data.toString());
         data.setEmail(email);
         data.setNickname(nickname);
-//        data.setFaction_id(faction_id);
         data.setPicture(picture);
         data.setTry_count(try_acount);
         data.setRole("ROLE_USER");

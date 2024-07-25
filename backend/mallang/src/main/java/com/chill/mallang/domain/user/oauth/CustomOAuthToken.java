@@ -27,7 +27,6 @@ public class CustomOAuthToken extends AbstractAuthenticationToken {
         this.token = token;
         logger.info("커스텀 토근 :"+ token);
         setAuthenticated(true);
-        logger.info("커스텀 토근 :"+ this.isAuthenticated());
     }
 
     @Override

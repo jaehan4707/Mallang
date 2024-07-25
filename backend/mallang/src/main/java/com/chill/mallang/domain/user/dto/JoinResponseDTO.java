@@ -16,6 +16,4 @@ public class JoinResponseDTO {
     public JoinResponseDTO() {
         this.try_count = 3;
     }
-
-    // Getters and Setters
 }

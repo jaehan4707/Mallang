@@ -11,9 +11,7 @@ public class CustomUserDetails implements UserDetails {
     private final User user;
 
     public CustomUserDetails(User user){
-        System.out.println("user"+user);
         this.user = user;
-        System.out.println("커스텀디테일 :"+user.getEmail());
     }
 
     @Override

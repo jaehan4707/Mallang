@@ -20,7 +20,6 @@ public class JoinController {
     }
     @PostMapping("/join")
     public ResponseEntity<JoinResponseDTO> joinProcess(@RequestBody JoinDTO joinDTO) {
-        System.out.println("실행시작");
         JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinDTO);
 
         return new ResponseEntity<>(joinResponseDTO, HttpStatus.CREATED);
