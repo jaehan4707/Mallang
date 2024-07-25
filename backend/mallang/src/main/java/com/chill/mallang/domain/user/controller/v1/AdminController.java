@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
     @GetMapping("/admin")
     public String adminP(){
-        return "ADMIN";
+        return "잘되나";
     }
 
 }
