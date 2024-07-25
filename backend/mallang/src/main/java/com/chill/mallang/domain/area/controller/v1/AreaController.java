@@ -1,7 +1,9 @@
 package com.chill.mallang.domain.area.controller.v1;
 
 import com.chill.mallang.domain.area.dto.AreaDTO;
+import com.chill.mallang.domain.area.dto.AreaTopUserDTO;
 import com.chill.mallang.domain.area.service.AreaService;
+import com.chill.mallang.domain.area.service.AreaTopUserService;
 import com.chill.mallang.domain.user.dto.TryCountDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +25,14 @@ public class AreaController {
     @Autowired
     private AreaService areaService;
 
-    // 1. 점령자 대표 유저 정보 조회
+    @Autowired
+    private AreaTopUserService areaTopUserService;
 
+    // 1. 점령자 대표 유저 정보 조회
+    @GetMapping("/{area}/{userTeam}")
+    public AreaTopUserDTO getAreaInfo(@PathVariable Long area, @PathVariable Long userTeam) {
+        return areaTopUserService.getAreaInfo(area, userTeam);
+    }
 
     // 2. 사용자 잔여 도전 횟수 조회
     @GetMapping("/try_count/{userId}")
