@@ -264,7 +264,7 @@ fun AnswerListItem(
                     painter = painterResource(id = R.drawable.ic_check),
                     contentDescription = null
                 )
-            } else if (isResultScreen && userAnswer == index) {
+            } else if (isResultScreen && userAnswer == index + 1) {
                 Icon(
                     modifier = Modifier.padding(10.dp),
                     painter = painterResource(id = R.drawable.ic_check),
