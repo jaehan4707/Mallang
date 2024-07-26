@@ -23,8 +23,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val isShownShowAppBar = when (currentDestination?.route?.substringBefore("/")) {
-        DestinationLogin.route, DestinationSelect.route, DestinationNickName.route, DestinationMain.route, null -> {
+    val title = currentDestination?.route?.substringBefore("/") ?: ""
+    val isShownShowAppBar = when (title) {
+        DestinationLogin.route, DestinationSelect.route, DestinationNickName.route, DestinationMain.route, "" -> {
             false
         }
 
@@ -53,7 +54,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         Column(modifier = Modifier.padding(innerPadding)) {
             if (isShownShowAppBar) {
                 TopAppBar(
-                    label = "${currentDestination?.route}",
+                    label = title,
                     popUpBackStack = { isBackPressed.value = true },
                     navigateToHome = {
                         navController.popBackStack(

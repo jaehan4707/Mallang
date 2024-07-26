@@ -1,7 +1,10 @@
 package com.chill.mallang.ui.feature.quiz
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,7 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,6 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -42,13 +46,19 @@ import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
+import com.chill.mallang.ui.theme.Green1
+import com.chill.mallang.ui.theme.Green2
 import com.chill.mallang.ui.theme.MallangTheme
+import com.chill.mallang.ui.theme.Sub1
+import com.chill.mallang.ui.theme.Sub2
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun QuizScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
+    submitQuiz: (Int) -> Unit = {},
+    navigateToQuizResult: (Int) -> Unit = {}
 ) {
 
     val isBackPressed = remember { mutableStateOf(false) }
@@ -75,16 +85,15 @@ fun QuizScreen(
                 systemMessage = "빈칸을 채워 주세요",
                 quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다."
             )
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) {
-                AnswerList()
-            }
+            Spacer(modifier = Modifier.weight(1f))
+            AnswerList(
+                isResultScreen = false
+            )
         }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                navigateToQuizResult(1)
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .offset(y = (-30).dp) // 버튼을 20dp 위로 올
@@ -149,16 +158,21 @@ fun QuizBox(
 }
 
 @Composable
-fun AnswerList() {
+fun AnswerList(
+    isResultScreen: Boolean,
+    userAnswer: Int? = null,
+    systemAnswer: Int? = null
+) {
     // 더미 데이터
     val wordList = arrayListOf(
-        ListItem(1, "관목"),
-        ListItem(2, "상대"),
-        ListItem(3, "과장"),
-        ListItem(4, "시기")
+        "괄목" to "눈을 비비고 볼 정도로 매우 놀라다.",
+        "상대" to "서로 마주 대하다.",
+        "과장" to "사실보다 지나치게 불려서 말하거나 표현하다.",
+        "시기" to "때나 경우."
     )
 
-    var selectedItem by remember { mutableStateOf<ListItem?>(null) }
+    var selectedItem by remember { mutableStateOf<Int?>(null) }
+    var isExpandedItem by remember { mutableStateOf<Int?>(null) }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -166,14 +180,27 @@ fun AnswerList() {
             .padding(12.dp)
             .fillMaxSize()
     ) {
-        items(wordList) { item ->
+        items(wordList.size) { index ->
+            val isAnswer = index + 1 == systemAnswer
+            val fraction = if (!isResultScreen) 0.13f else 0.15f
+
             AnswerListItem(
-                modifier = Modifier.fillParentMaxHeight(0.13f),
-                item = item,
-                isSelected = item == selectedItem,
+                modifier = Modifier.fillParentMaxHeight(fraction),
+                index = index,
+                word = wordList[index].first,
+                meaning = wordList[index].second,
+                selectIndex = index + 1,
+                isSelected = selectedItem == index + 1,
+                isAnswer = isAnswer, // 정답 아이템
+                isExpanded = isExpandedItem == index + 1,
+                isResultScreen = isResultScreen,
+                userAnswer = userAnswer,
                 onItemClick = { clickedItem ->
-                    selectedItem = if (selectedItem == clickedItem) null else clickedItem
-                    Log.d("nakyung", "clicked: $selectedItem")
+                    if (!isResultScreen) {
+                        selectedItem = clickedItem
+                    } else {
+                        isExpandedItem = if (isExpandedItem == clickedItem) null else clickedItem
+                    }
                 }
             )
         }
@@ -183,44 +210,136 @@ fun AnswerList() {
 @Composable
 fun AnswerListItem(
     modifier: Modifier = Modifier,
-    item: ListItem,
+    index: Int,
+    word: String,
+    meaning: String,
+    selectIndex: Int,
     isSelected: Boolean,
-    onItemClick: (ListItem) -> Unit
+    isAnswer: Boolean,
+    isExpanded: Boolean,
+    isResultScreen: Boolean,
+    userAnswer: Int? = null,
+    onItemClick: (Int) -> Unit = {}
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-            .border(2.dp, color = Gray6, shape = RoundedCornerShape(8.dp))
-            .clickable { onItemClick(item) }
-    ) {
+    // 배경색
+    val backgroundColor = when {
+        isResultScreen && userAnswer == selectIndex && !isAnswer -> Sub2
+        isResultScreen && isAnswer -> Green2
+        else -> Color.White
+    }
+
+    // 번호, 테두리 색상
+    val borderColor = when {
+        isResultScreen && userAnswer == selectIndex && !isAnswer -> Sub1
+        isResultScreen && isAnswer -> Green1
+        else -> Gray6
+    }
+
+    // 뜻 확장 및 애니메이션 효과
+    val expandTransition = updateTransition(targetState = isExpanded, label = "expandTransition")
+    val expandedHeight by expandTransition.animateDp(
+        label = "expandedHeight",
+        transitionSpec = { tween(durationMillis = 200) }
+    ) { expanded ->
+        if (expanded) 40.dp else 0.dp
+    }
+
+    val alpha by expandTransition.animateFloat(
+        label = "alpha",
+        transitionSpec = { tween(durationMillis = 200) }
+    ) { expanded ->
+        if (expanded) 1f else 0f
+    }
+
+    Column {
         Box(
-            modifier = Modifier
-                .background(color = Gray6, shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp))
-                .fillMaxHeight()
-                .width(50.dp),
-            contentAlignment = Alignment.Center,
+            modifier = modifier
+                .shadow(
+                    elevation = 5.dp,
+                    shape = RoundedCornerShape(8.dp)
+                )
         ) {
-            Text(
-                text = "${item.number}",
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                style = Typography.headlineLarge
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
+                    .border(2.dp, color = borderColor, shape = RoundedCornerShape(8.dp))
+                    .clickable { onItemClick(selectIndex) }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = borderColor,
+                            shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
+                        )
+                        .fillMaxHeight()
+                        .width(50.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "${index + 1}",
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        style = Typography.headlineLarge
+                    )
+                }
+                Spacer(modifier = Modifier.width(30.dp))
+                Text(
+                    text = word,
+                    modifier = Modifier.weight(1f),
+                    style = Typography.headlineLarge
+                )
+                if (!isResultScreen && isSelected) {
+                    Icon(
+                        modifier = Modifier.padding(10.dp),
+                        painter = painterResource(id = R.drawable.ic_check),
+                        contentDescription = null
+                    )
+                } else if (!isResultScreen && userAnswer == index + 1) {
+                    Icon(
+                        modifier = Modifier.padding(10.dp),
+                        painter = painterResource(id = R.drawable.ic_check),
+                        contentDescription = null
+                    )
+                }
+                if (isResultScreen) {
+                    when (isExpanded) {
+                        false -> {
+                            Icon(
+                                modifier = Modifier.padding(10.dp),
+                                painter = painterResource(id = R.drawable.ic_down),
+                                contentDescription = null
+                            )
+                        }
+                        true -> {
+                            Icon(
+                                modifier = Modifier.padding(10.dp),
+                                painter = painterResource(id = R.drawable.ic_up),
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
+            }
         }
-        Spacer(modifier = Modifier.width(30.dp))
-        Text(
-            text = item.word,
-            modifier = Modifier.weight(1f),
-            style = Typography.headlineLarge
-        )
-        if (isSelected) {
-            Icon(
-                modifier = Modifier.padding(10.dp),
-                painter = painterResource(id = R.drawable.ic_check),
-                contentDescription = null
-            )
+        if (isExpanded) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(expandedHeight)
+                    .background(color = Color.Unspecified)
+            ) {
+                Text(
+                    text = meaning,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .alpha(alpha),
+                    style = Typography.displayMedium,
+                    textAlign = TextAlign.Left
+                )
+            }
         }
     }
 }
@@ -232,8 +351,3 @@ fun QuizPreview() {
         QuizScreen()
     }
 }
-
-data class ListItem(
-    val number: Int,
-    val word: String
-)

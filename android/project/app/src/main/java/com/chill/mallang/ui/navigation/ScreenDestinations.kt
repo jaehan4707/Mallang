@@ -65,10 +65,10 @@ object DestinationNickName : ScreenDestinationsWithArgument {
         userName: String,
         userEmail: String,
         userProfileImageUrl: String,
-    ) =
-        "${this.route}/${userName}/${userEmail}/${userProfileImageUrl}"
+    ) = "${this.route}/${userName}/${userEmail}/${userProfileImageUrl}"
 
 }
+
 
 object DestinationSelect : ScreenDestinationsWithArgument {
     override val arg: String
@@ -115,6 +115,26 @@ object DestinationWordNote : ScreenDestinations {
 object DestinationQuiz : ScreenDestinations {
     override val route: String
         get() = "quiz"
+}
+
+object DestinationQuizResult : ScreenDestinationsWithArgument {
+    override val arg: String
+        get() = "quiz_result"
+
+    override val routeWithArgs: String
+        get() = "${this.route}/{quizId}"
+
+    override val arguments: List<NamedNavArgument>
+        get() = listOf(
+            navArgument(name = "quizId") { type = NavType.IntType }
+        )
+
+    override val route: String
+        get() = "quiz_result"
+
+    fun createRoute(
+        quizId: Int
+    ) = "${this.route}/${quizId}"
 }
 
 object DestinationGameLobby : ScreenDestinations {

@@ -11,6 +11,7 @@ import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
+import com.chill.mallang.ui.feature.quiz.QuizResultScreen
 import com.chill.mallang.ui.feature.quiz.QuizScreen
 import com.chill.mallang.ui.feature.quiz.WordNoteScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
@@ -102,7 +103,8 @@ fun MallangNavHost(
         ) {
             QuizScreen(
                 modifier = modifier,
-                popUpBackStack = { navController.popBackStack() }
+                popUpBackStack = { navController.popBackStack() },
+                navigateToQuizResult = { navController.navigate(DestinationQuizResult.createRoute(quizId = it)) }
             )
         }
 
@@ -111,6 +113,18 @@ fun MallangNavHost(
         ) {
             GameLobbyScreen(
                 modifier = modifier,
+            )
+        }
+
+        composable(
+            route = DestinationQuizResult.routeWithArgs,
+            arguments = DestinationQuizResult.arguments,
+        ) { navBackStackEntry ->
+            val quizId = navBackStackEntry.arguments?.getInt("quizId")
+
+            QuizResultScreen(
+                modifier = modifier,
+                popUpBackStack = { navController.popBackStack() },
             )
         }
     }
