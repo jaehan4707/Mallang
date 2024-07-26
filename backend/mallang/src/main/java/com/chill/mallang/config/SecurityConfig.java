@@ -2,7 +2,6 @@ package com.chill.mallang.config;
 
 import com.chill.mallang.domain.user.jwt.JWTFilter;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
-import com.chill.mallang.domain.user.jwt.JoinFilter;
 import com.chill.mallang.domain.user.jwt.LoginFilter;
 import com.chill.mallang.domain.user.oauth.CustomOAuthProvider;
 import com.chill.mallang.domain.user.oauth.GoogleOAuthService;
@@ -60,8 +59,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(new JoinFilter("api/v1/user/join", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new LoginFilter("api/v1/user/login", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginFilter("/api/v1/user/login", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

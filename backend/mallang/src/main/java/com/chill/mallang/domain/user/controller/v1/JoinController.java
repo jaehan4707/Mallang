@@ -6,6 +6,7 @@ import com.chill.mallang.domain.user.service.JoinService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +24,14 @@ public class JoinController {
     }
     @PostMapping("/join")
     public ResponseEntity<JoinResponseDTO> joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO) {
-        logger.info("joindto 리퀘 :"+joinRequestDTO);
         JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinRequestDTO);
-        logger.info("joindto :"+ joinResponseDTO);
-        return new ResponseEntity<>(joinResponseDTO, HttpStatus.CREATED);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + joinResponseDTO.getJwtToken());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(joinResponseDTO);
     }
 
 }

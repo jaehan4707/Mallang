@@ -53,8 +53,10 @@ public class JoinService {
             data.setRole("ROLE_USER");
             userRepository.save(data);
 
-            // JWT 토큰 생성
-            String jwtToken = jwtUtil.createJwt(email, "ROLE_USER", 60 * 60 * 10L);
+            // 가입한 유저 정보를 JoinResponseDTO로 변환
+            long secondsInAYear = 365L * 24 * 60 * 60;
+            long tokenValidityInSeconds = 150L * secondsInAYear;
+            String jwtToken = jwtUtil.createJwt(email, "ROLE_USER", tokenValidityInSeconds);
 
             // 가입한 유저 정보를 JoinResponseDTO로 변환
             JoinResponseDTO joinResponseDTO = new JoinResponseDTO();
@@ -63,8 +65,7 @@ public class JoinService {
             joinResponseDTO.setPicture(data.getPicture());
             joinResponseDTO.setRole(data.getRole());
             joinResponseDTO.setTry_count(data.getTry_count());
-            logger.info("jwt토큰 :"+jwtToken);
-
+            joinResponseDTO.setJwtToken(jwtToken); // JWT 토큰 설정
             return joinResponseDTO;
         } catch (Exception e) {
             throw new RuntimeException("회원가입 중 오류가 발생했습니다.", e);
