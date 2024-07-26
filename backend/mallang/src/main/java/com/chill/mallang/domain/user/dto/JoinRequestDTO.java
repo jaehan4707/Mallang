@@ -1,25 +1,27 @@
-package com.chill.mallang.domain.user.model;
+package com.chill.mallang.domain.user.dto;
 
-
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
-@Entity
 @Getter
 @Setter
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+//회원가입
+public class JoinRequestDTO {
+    @NotNull
+    private String token;
     @NotNull
     private String email;
     @NotNull
     private String nickname;
+
+//    private Long faction_id;
     @NotNull
     private String picture;
+
     private Integer try_count;
-    private String role;
+
+    public JoinRequestDTO(){
+        this.try_count = 3;
+    }
 }

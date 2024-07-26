@@ -5,19 +5,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-//회원가입
-public class JoinDTO {
+public class JoinResponseDTO {
     private String email;
-
     private String nickname;
-
-//    private Long faction_id;
-
+    private String role;
     private String picture;
-
     private Integer try_count;
+    private String jwtToken;
 
-    public JoinDTO(){
+    public JoinResponseDTO() {
         this.try_count = 3;
     }
 }
