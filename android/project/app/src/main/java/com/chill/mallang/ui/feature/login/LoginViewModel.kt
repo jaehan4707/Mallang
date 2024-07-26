@@ -17,7 +17,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.BuildConfig
+import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.FirebaseRepository
+import com.chill.mallang.data.repository.remote.UserRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -38,7 +40,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val firebaseRepository: FirebaseRepository
+    private val firebaseRepository: FirebaseRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val _loginUiState = MutableStateFlow<LoginUiState>(LoginUiState.Loading)
@@ -56,23 +59,10 @@ class LoginViewModel @Inject constructor(
     // Google Sign-In Client
     private lateinit var googleSignInClient: GoogleSignInClient
 
+    private var googleSignInLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null
 
     init {
         getFirebaseAuthInstance()
-        getCurrentUser()
-    }
-
-    // google sign in launcher
-    private var googleSignInLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null
-
-    private fun getCurrentUser() {
-        viewModelScope.launch {
-            firebaseRepository.getCurrentUser().collectLatest { authUser ->
-                authUser?.let {
-                    _loginUiState.value = LoginUiState.AuthLogin
-                }
-            }
-        }
     }
 
     private fun getFirebaseAuthInstance() {
@@ -119,11 +109,13 @@ class LoginViewModel @Inject constructor(
     }
 
     fun handleActivityResult(requestCode: Int, data: Intent?) {
+        Log.d("jaehan", "123145")
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)
                 account?.let {
+                    Log.d("jaehan", "authCode : ${it.serverAuthCode}")
                     firebaseAuthWithGoogle(it.idToken!!)
                 }
             } catch (e: ApiException) {
@@ -217,16 +209,39 @@ class LoginViewModel @Inject constructor(
 
     // Google ID 토큰을 사용해 Firebase 인증
     private fun firebaseAuthWithGoogle(idToken: String) {
+        Log.d("jaehan", "${idToken}")
         val state = _loginUiState.value
         viewModelScope.launch(Dispatchers.IO) {
             firebaseRepository.firebaseAuthWithGoogle(idToken).collectLatest { authUser ->
                 authUser?.let { user ->
-                    _loginUiState.value = LoginUiState.Success(
-                        idToken = user.getIdToken(true).toString(),
-                        userName = user.displayName,
-                        userEmail = user.email,
-                        userProfileImageUrl = user.photoUrl.toString(),
+                    login(
+                        idToken = idToken,
+                        userEmail = user.email ?: "",
+                        profileImageUrl = user.photoUrl.toString()
                     )
+                }
+            }
+        }
+    }
+
+    private fun login(idToken: String, userEmail: String, profileImageUrl: String) {
+        viewModelScope.launch {
+            userRepository.login(idToken, userEmail).collectLatest { response ->
+                when (response) {
+                    is ApiResponse.Success -> {
+                        _loginUiState.value = LoginUiState.Success(
+                            userEmail = userEmail,
+                            userProfileImageUrl = profileImageUrl
+                        )
+                    }
+
+                    is ApiResponse.Error -> {
+                        _loginUiState.value = LoginUiState.Error(
+                            errorMessage = response.errorMessage
+                        )
+                    }
+
+                    ApiResponse.Init -> {}
                 }
             }
         }
