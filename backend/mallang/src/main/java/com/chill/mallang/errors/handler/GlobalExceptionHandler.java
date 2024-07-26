@@ -5,8 +5,8 @@ import com.chill.mallang.errors.errorcode.ErrorCode;
 import com.chill.mallang.errors.exception.RestApiException;
 import com.chill.mallang.errors.response.ErrorResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -19,12 +19,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RestApiException.class)
     public ResponseEntity<Object> handleQuizException(final RestApiException e) {
+        log.warn("handleIllegalArgument" , e);
         final ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode);
     }
@@ -41,12 +42,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             final HttpHeaders headers,
             final HttpStatusCode status,
             final WebRequest request) {
+        log.warn("handleIllegalArgument", e);
         final ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
         return handleExceptionInternal(e, errorCode);
     }
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleAllException(final Exception ex) {
+        log.warn("handleAllException", ex);
         final ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
         return handleExceptionInternal(errorCode);
     }
@@ -58,6 +61,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ErrorResponse makeErrorResponse(final ErrorCode errorCode) {
         return ErrorResponse.builder()
+                .status(errorCode.getHttpStatus().value())
+                .httpStatus(errorCode.getHttpStatus())
                 .code(errorCode.name())
                 .message(errorCode.getMessage())
                 .build();
