@@ -35,9 +35,9 @@ fun MallangNavHost(
         composable(
             route = DestinationLogin.route
         ) {
-            LoginScreen(onLoginSuccess = { userName, userEmail, userProfileImageUrl ->
+            LoginScreen(onLoginSuccess = { userEmail, userProfileImageUrl ->
                 navController.navigate(
-                    DestinationNickName.createRoute(userName, userEmail, userProfileImageUrl)
+                    DestinationNickName.createRoute(userEmail, userProfileImageUrl)
                 )
             }, onAuthLoginSuccess = { navController.navigate(DestinationMain.route) })
         }
@@ -45,7 +45,6 @@ fun MallangNavHost(
             route = DestinationNickName.routeWithArgs,
             arguments = DestinationNickName.arguments,
         ) { navBackStackEntry ->
-            val userName = navBackStackEntry.arguments?.getString("userName") ?: ""
             val userEmail = navBackStackEntry.arguments?.getString("userEmail") ?: ""
             val userProfileImageUrl = URLEncoder.encode(
                 navBackStackEntry.arguments?.getString("userProfileImageUrl") ?: "",
@@ -54,7 +53,6 @@ fun MallangNavHost(
             NicknameScreen(modifier = modifier, onClick = { nickName ->
                 navController.navigate(
                     DestinationSelect.createRoute(
-                        userName = userName,
                         userEmail = userEmail,
                         userProfileImageUrl = userProfileImageUrl,
                         userNickName = nickName
@@ -67,14 +65,10 @@ fun MallangNavHost(
             route = DestinationSelect.routeWithArgs,
             arguments = DestinationSelect.arguments,
         ) { navBackStackEntry ->
-            val userName = navBackStackEntry.arguments?.getString("userName")
             val userEmail = navBackStackEntry.arguments?.getString("userEmail")
             val userProfileImageUrl = navBackStackEntry.arguments?.getString("userProfileImageUrl")
             val userNickName = navBackStackEntry.arguments?.getString("userNickName")
-            SelectScreen(navigateToMain = { navController.navigate(DestinationMain.route) },
-                signUp = {
-
-                })
+            SelectScreen(navigateToMain = { navController.navigate(DestinationMain.route) })
         }
 
         composable(
