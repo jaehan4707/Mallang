@@ -1,5 +1,5 @@
 package com.chill.mallang.domain.user.jwt;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.chill.mallang.domain.user.dto.LoginRequestDTO;
 import com.chill.mallang.domain.user.oauth.CustomOAuthToken;
 import com.chill.mallang.domain.user.service.CustomUserDetailsService;
@@ -14,8 +14,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     private static final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
@@ -51,13 +52,26 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         }
     }
 
-
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
+        Map<String, String> dataMap = new HashMap<>();
         long secondsInAYear = 365L * 24 * 60 * 60;
         long tokenValidityInSeconds = 150L * secondsInAYear;
         String jwtToken = jwtUtil.createJwt(authResult.getName(), "ROLE_USER", tokenValidityInSeconds);
-        response.setHeader("Authorization", "Bearer " + jwtToken);
+        dataMap.put("token", jwtToken);
+
+        Map<String, Map<String, String>> responseMap = new HashMap<>();
+        responseMap.put("data", dataMap);
+
+        // Convert the response map to JSON
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(responseMap);
+
+        // Write JSON to the HttpServletResponse
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonResponse);
+        logger.info("토큰 wrapper"+jsonResponse);
     }
 
     @Override
