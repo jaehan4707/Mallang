@@ -1,97 +1,115 @@
-//package com.chill.mallang.domain.area.service;
-//
-//import com.chill.mallang.domain.area.dto.ChallengeRecordDTO;
-//import com.chill.mallang.domain.area.dto.TeamAreaLogDTO;
-//import com.chill.mallang.domain.area.dto.UserAreaLogDTO;
-//
-//import com.chill.mallang.domain.area.model.Area;
-//import com.chill.mallang.domain.area.model.AreaLog;
-//import com.chill.mallang.domain.area.repository.AreaRepository;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.Comparator;
-//import java.util.List;
-//import java.util.stream.Collectors;
-//
-//@Service
-//public class ChallengeRecordService {
-//
-//    @Autowired
-//    private AreaRepository areaRepository;
-//
-//    public ChallengeRecordDTO getChallengeRecord(Long areaId, Long userId) {
-//        // Area관련 데이터 조회
-//        Area area = areaRepository.findById(areaId).orElse(null);
-//
-//        if (area == null) {
-//            return ChallengeRecordDTO.builder()
-//                    .userRecord(null)
-//                    .myTeamRecords(List.of())
-//                    .oppoTeamRecords(List.of())
-//                    .build();
-//        }
-//
-//        // AreaLogs에서 사용자 기록 + 팀 기록 가져오기
-//        List<AreaLog> areaLogs = area.getAreaLogs();
-//
-//        List<TeamAreaLogDTO> myTeamRecords = areaLogs.stream()
-//                .filter(log -> log.getUser().getFaction().getName().equals("myTeam"))
-//                .map(log -> TeamAreaLogDTO.builder()
-//                        .userId(log.getUser().getId())
-//                        .userName(log.getUser().getNickname())
-//                        .userScore((int) log.getScore())
-//                        .userPlayTime(log.getPlayTime())
-//                        .build())
-//                .sorted(Comparator.comparingInt(TeamAreaLogDTO::getUserScore))
-//                .collect(Collectors.toList());
-//
-//        List<TeamAreaLogDTO> oppoTeamRecords = areaLogs.stream()
-//                .filter(log -> log.getUser().getFaction().getName().equals("oppoTeam"))
-//                .map(log -> TeamAreaLogDTO.builder()
-//                        .userId(log.getUser().getId())
-//                        .userName(log.getUser().getNickname())
-//                        .userScore((int) log.getScore())
-//                        .userPlayTime(log.getPlayTime())
-//                        .build())
-//                .sorted(Comparator.comparingInt(TeamAreaLogDTO::getUserScore))
-//                .collect(Collectors.toList());
-//
-//        // 등수 할당 로직
-//        assignRanks(myTeamRecords);
-//        assignRanks(oppoTeamRecords);
-//
-//        // 사용자 기록 찾기
-//        UserAreaLogDTO userRecord = areaLogs.stream()
-//                .filter(log -> log.getUser().getId().equals(userId))
-//                .map(log -> UserAreaLogDTO.builder()
-//                        .userScore((int) log.getScore())
-//                        .userPlayTime(log.getPlayTime())
-//                        .userPlace(getUserRank(log.getUser().getId(), myTeamRecords))
-//                        .build())
-//                .findFirst()
-//                .orElse(null);
-//
-//        return ChallengeRecordDTO.builder()
-//                .userRecord(userRecord)
-//                .myTeamRecords(myTeamRecords)
-//                .oppoTeamRecords(oppoTeamRecords)
-//                .build();
-//    }
-//
-//    //등수 찾기
-//    private void assignRanks(List<TeamAreaLogDTO> teamRecords) {
-//        for (int i = 0; i < teamRecords.size(); i++) {
-//            teamRecords.get(i).setUserPlace(i + 1);
-//        }
-//    }
-//
-//    private int getUserRank(Long userId, List<TeamAreaLogDTO> teamRecords) {
-//        for (TeamAreaLogDTO record : teamRecords) {
-//            if (record.getUserId().equals(userId)) {
-//                return record.getUserPlace();
-//            }
-//        }
-//        return -1; // 사용자 기록이 없는 경우
-//    }
-//}
+package com.chill.mallang.domain.area.service;
+
+import com.chill.mallang.domain.area.dto.ChallengeRecordDTO;
+import com.chill.mallang.domain.area.dto.TeamAreaLogDTO;
+import com.chill.mallang.domain.area.dto.UserAreaLogDTO;
+import com.chill.mallang.domain.area.model.AreaLog;
+import com.chill.mallang.domain.user.model.User;
+import com.chill.mallang.domain.user.repository.UserRepository;
+import com.chill.mallang.domain.area.repository.AreaLogRepository;
+import com.chill.mallang.domain.area.repository.AreaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ChallengeRecordService {
+
+    @Autowired
+    private AreaLogRepository areaLogRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AreaRepository areaRepository;
+
+    public ChallengeRecordDTO getChallengeRecord(Long areaId, Long userId) {
+        List<AreaLog> areaLogs = areaLogRepository.findByAreaId(areaId);
+        User user = userRepository.findById(userId).orElse(null);
+
+        //없으면 빈배열 반환
+        if (areaLogs.isEmpty() || user == null) {
+            return ChallengeRecordDTO.builder()
+                    .userRecord(null)
+                    .myTeamRecords(List.of())
+                    .oppoTeamRecords(List.of())
+                    .build();
+        }
+
+        //아군
+        List<TeamAreaLogDTO> myTeamRecords = areaLogs.stream()
+                .filter(log -> isSameTeam(log.getUser(), user))
+                .map(this::toTeamAreaLogDTO)
+                .sorted(this::compareLogs)
+                .collect(Collectors.toList());
+
+        //적군
+        List<TeamAreaLogDTO> oppoTeamRecords = areaLogs.stream()
+                .filter(log -> !isSameTeam(log.getUser(), user))
+                .map(this::toTeamAreaLogDTO)
+                .sorted(this::compareLogs)
+                .collect(Collectors.toList());
+
+        // 등수 설정
+        setRankings(myTeamRecords);
+        setRankings(oppoTeamRecords);
+
+        // 사용자 기록
+        TeamAreaLogDTO userRecord = myTeamRecords.stream()
+                .filter(record -> record.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+        return ChallengeRecordDTO.builder()
+                .userRecord(userRecord != null ? toUserAreaLogDTO(userRecord) : null)
+                .myTeamRecords(myTeamRecords)
+                .oppoTeamRecords(oppoTeamRecords)
+                .build();
+    }
+
+    //같은 팀인지 확인
+    private boolean isSameTeam(Long logUserId, User user) {
+        User logUser = userRepository.findById(logUserId).orElse(null);
+        return logUser != null && logUser.getFaction().equals(user.getFaction());
+    }
+
+    // convertDTO - TeamAreaLog
+    private TeamAreaLogDTO toTeamAreaLogDTO(AreaLog log) {
+        User user = userRepository.findById(log.getUser()).orElse(null);
+        return TeamAreaLogDTO.builder()
+                .userPlace(null) // 등수는 나중에 설정
+                .userId(log.getUser())
+                .userName(user != null ? user.getNickname() : "Unknown")
+                .userScore((int) log.getScore())
+                .userPlayTime((int) (log.getCreated_at().getSecond() - log.getCreated_at().getMinute() * 60))
+                .build();
+    }
+
+    // convertDTO - UserAreaLog
+    private UserAreaLogDTO toUserAreaLogDTO(TeamAreaLogDTO teamLog) {
+        return UserAreaLogDTO.builder()
+                .userScore(teamLog.getUserScore())
+                .userPlayTime(teamLog.getUserPlayTime())
+                .userPlace(teamLog.getUserPlace())
+                .build();
+    }
+
+    // 팀원 등수 설정 : 정렬한 인덱스값으로 적용(1등부터 시작)
+    private void setRankings(List<TeamAreaLogDTO> teamRecords) {
+        for (int i = 0; i < teamRecords.size(); i++) {
+            teamRecords.get(i).setUserPlace(i + 1);
+        }
+    }
+
+    // 기록 비교 (점수 -> 시간 순으로 비교)
+    private int compareLogs(TeamAreaLogDTO log1, TeamAreaLogDTO log2) {
+        int scoreComparison = log2.getUserScore().compareTo(log1.getUserScore());
+        if (scoreComparison != 0) {
+            return scoreComparison;
+        }
+        return log1.getUserPlayTime().compareTo(log2.getUserPlayTime());
+    }
+}

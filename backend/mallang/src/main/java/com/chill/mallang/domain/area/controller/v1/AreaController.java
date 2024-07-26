@@ -5,7 +5,7 @@ import com.chill.mallang.domain.area.dto.AreaTopUserDTO;
 import com.chill.mallang.domain.area.dto.ChallengeRecordDTO;
 import com.chill.mallang.domain.area.service.AreaService;
 import com.chill.mallang.domain.area.service.AreaTopUserService;
-//import com.chill.mallang.domain.area.service.ChallengeRecordService;
+import com.chill.mallang.domain.area.service.ChallengeRecordService;
 import com.chill.mallang.domain.user.dto.TryCountDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -32,8 +32,8 @@ public class AreaController {
     @Autowired
     private AreaTopUserService areaTopUserService;
 
-//    @Autowired
-//    private ChallengeRecordService challengeRecordService;
+    @Autowired
+    private ChallengeRecordService challengeRecordService;
 
     // 1. 점령자 대표 유저 정보 조회
     @GetMapping("/{area}/{userTeam}")
@@ -49,14 +49,13 @@ public class AreaController {
     }
 
     // 3. 도전 기록 조회
-//    @GetMapping("/records/{areaId}/{userId}")
-//    public ChallengeRecordDTO getGameRecords(@PathVariable Long areaId, @PathVariable Long userId) {
-//        return challengeRecordService.getChallengeRecord(areaId, userId);
-//    }
+    @GetMapping("/records/{areaId}/{userId}")
+    public ChallengeRecordDTO getGameRecords(@PathVariable Long areaId, @PathVariable Long userId) {
+        return challengeRecordService.getChallengeRecord(areaId, userId);
+    }
 
 
     // 4. 그냥 기본 기능 (test용)
-
     // 점령지 전체 조회
     @GetMapping
     public List<AreaDTO> getAllAreas() {
