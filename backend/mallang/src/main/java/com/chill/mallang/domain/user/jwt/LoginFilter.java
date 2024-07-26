@@ -36,7 +36,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
             LoginRequestDTO loginRequest = new ObjectMapper().readValue(request.getInputStream(), new TypeReference<LoginRequestDTO>(){});
 
             // 디버깅 로그 추가
-            System.out.println("Received login request: " + loginRequest);
+            logger.info("Received login request: " + loginRequest);
 
             String email = loginRequest.getEmail();
             String token = loginRequest.getToken();

@@ -33,18 +33,15 @@ public class JWTFilter extends OncePerRequestFilter {
         // 특정 URL 패턴 예외 처리
         String path = request.getRequestURI();
         String fullPath = request.getRequestURL().toString();
-        System.out.println("jwt필터 path: " + path);
-        System.out.println("jwt필터 full path: " + fullPath);
-
         if (path.equals("/api/v1/user/join") || path.equals("/api/v1/user/login")) {
-            System.out.println("Skipping JWT filter for path: " + path);
+            logger.info("Skipping JWT filter for path: " + path);
             filterChain.doFilter(request, response);
             return;
         }
 
         // request에서 Authorization 헤더를 찾음
         String authorization = request.getHeader("Authorization");
-        System.out.println("Authorization header: " + authorization);
+        logger.info("Authorization header: " + authorization);
 
         // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {

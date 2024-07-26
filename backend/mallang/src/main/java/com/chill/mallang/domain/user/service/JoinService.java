@@ -28,7 +28,7 @@ public class JoinService {
     public JoinResponseDTO joinProcess(JoinRequestDTO joinRequestDTO) {
         try {
             GoogleIdToken.Payload payload = googleOAuthService.verifyToken(joinRequestDTO.getToken());
-            System.out.printf("payloaddded :"+payload);
+            logger.info("GoogleIdToken.Payload :"+payload);
             if (payload == null) {
                 throw new IllegalArgumentException("유효하지 않은 ID 토큰입니다.");
             }
