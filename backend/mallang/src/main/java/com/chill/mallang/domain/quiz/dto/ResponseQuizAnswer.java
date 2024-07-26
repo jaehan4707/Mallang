@@ -7,12 +7,6 @@ import lombok.Data;
 @Builder
 public class ResponseQuizAnswer {
     private long id;
+    private String question;
     private String answer;
-
-    public ResponseQuizAnswer(long id, String answer) {
-        this.id = id;
-        this.answer = answer;
-    }
-
-
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum CustomErrorCode implements ErrorCode{
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "Invalid parameter included"),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Cannot find resource"),
+    // 변서원바보(실패,"바보")
     ;
 
     private final HttpStatus httpStatus;
