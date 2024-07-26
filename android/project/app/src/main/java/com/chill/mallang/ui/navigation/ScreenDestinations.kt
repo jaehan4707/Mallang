@@ -49,11 +49,10 @@ object DestinationNickName : ScreenDestinationsWithArgument {
         get() = "user"
 
     override val routeWithArgs: String
-        get() = "${this.route}/{userName}/{userEmail}/{userProfileImageUrl}"
+        get() = "${this.route}/{userEmail}/{userProfileImageUrl}"
 
     override val arguments: List<NamedNavArgument>
         get() = listOf(
-            navArgument(name = "userName") { type = NavType.StringType },
             navArgument(name = "userEmail") { type = NavType.StringType },
             navArgument(name = "userProfileImageUrl") { type = NavType.StringType }
         )
@@ -62,11 +61,9 @@ object DestinationNickName : ScreenDestinationsWithArgument {
         get() = "nickname"
 
     fun createRoute(
-        userName: String,
         userEmail: String,
         userProfileImageUrl: String,
-    ) =
-        "${this.route}/${userName}/${userEmail}/${userProfileImageUrl}"
+    ) = "${this.route}/${userEmail}/${userProfileImageUrl}"
 
 }
 
@@ -75,11 +72,10 @@ object DestinationSelect : ScreenDestinationsWithArgument {
         get() = "select"
 
     override val routeWithArgs: String
-        get() = "${this.route}/{userName}/{userEmail}/{userProfileImageUrl}/{userNickName}"
+        get() = "${this.route}/{userEmail}/{userProfileImageUrl}/{userNickName}"
 
     override val arguments: List<NamedNavArgument>
         get() = listOf(
-            navArgument(name = "userName") { type = NavType.StringType },
             navArgument(name = "userEmail") { type = NavType.StringType },
             navArgument(name = "userProfileImageUrl") { type = NavType.StringType },
             navArgument(name = "userNickName") { type = NavType.StringType },
@@ -89,11 +85,10 @@ object DestinationSelect : ScreenDestinationsWithArgument {
         get() = "select"
 
     fun createRoute(
-        userName: String,
         userEmail: String,
         userProfileImageUrl: String,
         userNickName: String,
-    ) = "${this.route}/${userName}/${userEmail}/${userProfileImageUrl}/${userNickName}"
+    ) = "${this.route}/${userEmail}/${userProfileImageUrl}/${userNickName}"
 }
 
 object DestinationUserDetail : ScreenDestinationsWithArgument {
