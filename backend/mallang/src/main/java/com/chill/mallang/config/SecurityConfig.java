@@ -4,7 +4,9 @@ import com.chill.mallang.domain.user.jwt.JWTFilter;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
 import com.chill.mallang.domain.user.jwt.LoginFilter;
 import com.chill.mallang.domain.user.oauth.CustomOAuthProvider;
+import com.chill.mallang.domain.user.oauth.GoogleOAuthService;
 import com.chill.mallang.domain.user.service.CustomUserDetailsService;
+import com.chill.mallang.domain.user.service.JoinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,58 +15,52 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    // AuthenticationManager가 인자로 받을 AuthenticationConfiguration 객체 생성자 주입
-    private final AuthenticationConfiguration authenticationConfiguration;
-    // JWTUtil 주입
-    private final JWTUtil jwtUtil;
 
-    // CustomUserDetailsService 주입
+    private final GoogleOAuthService googleOAuthService;
+    private final JWTFilter jwtFilter;
+    private final JWTUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
     private final CustomOAuthProvider customOAuthProvider;
+    private final JoinService joinService;
 
+    @Autowired
+    private AuthenticationConfiguration authenticationConfiguration;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService, CustomOAuthProvider customOAuthProvider) {
-        this.authenticationConfiguration = authenticationConfiguration;
+    public SecurityConfig(GoogleOAuthService googleOAuthService, JWTFilter jwtFilter, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService, CustomOAuthProvider customOAuthProvider, JoinService joinService) {
+        this.googleOAuthService = googleOAuthService;
+        this.jwtFilter = jwtFilter;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.customOAuthProvider = customOAuthProvider;
+        this.joinService = joinService;
     }
-
-    // AuthenticationManager Bean 등록
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+        // 로그인과 회원가입 요청에 대해서만 LoginFilter와 JoinFilter가 먼저 동작하도록 설정
         http
                 .csrf(csrf -> csrf.disable())
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "swagger-ui/**", "api-docs/**","api/v1/user/login", "api/v1/user/join", "login")
-                        .permitAll()
-                        .anyRequest().authenticated())
-                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class) // JWTFilter 추가
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers("api/v1/user/login", "api/v1/user/join").permitAll()
+                                .anyRequest().authenticated())
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterBefore(new LoginFilter("/api/v1/user/login", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -72,5 +68,20 @@ public class SecurityConfig {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(customOAuthProvider);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers ("/","/swagger-ui/**", "/api-docs/**");
     }
 }
