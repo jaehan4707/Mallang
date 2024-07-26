@@ -2,8 +2,10 @@ package com.chill.mallang.domain.area.controller.v1;
 
 import com.chill.mallang.domain.area.dto.AreaDTO;
 import com.chill.mallang.domain.area.dto.AreaTopUserDTO;
+import com.chill.mallang.domain.area.dto.ChallengeRecordDTO;
 import com.chill.mallang.domain.area.service.AreaService;
 import com.chill.mallang.domain.area.service.AreaTopUserService;
+//import com.chill.mallang.domain.area.service.ChallengeRecordService;
 import com.chill.mallang.domain.user.dto.TryCountDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -30,6 +32,9 @@ public class AreaController {
     @Autowired
     private AreaTopUserService areaTopUserService;
 
+//    @Autowired
+//    private ChallengeRecordService challengeRecordService;
+
     // 1. 점령자 대표 유저 정보 조회
     @GetMapping("/{area}/{userTeam}")
     public AreaTopUserDTO getAreaInfo(@PathVariable Long area, @PathVariable Long userTeam) {
@@ -39,15 +44,15 @@ public class AreaController {
     // 2. 사용자 잔여 도전 횟수 조회
     @GetMapping("/try-count/{userId}")
     public ResponseEntity<TryCountDTO> getUserTryCountById(@PathVariable Long userId) {
-        try {
-            TryCountDTO tryCount = areaService.getUserTryCountById(userId);
-            return new ResponseEntity<>(tryCount, HttpStatus.OK);
-        } catch (Exception exception) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+        TryCountDTO tryCount = areaService.getUserTryCountById(userId);
+        return new ResponseEntity<>(tryCount, HttpStatus.OK);
     }
 
     // 3. 도전 기록 조회
+//    @GetMapping("/records/{areaId}/{userId}")
+//    public ChallengeRecordDTO getGameRecords(@PathVariable Long areaId, @PathVariable Long userId) {
+//        return challengeRecordService.getChallengeRecord(areaId, userId);
+//    }
 
 
     // 4. 그냥 기본 기능 (test용)
