@@ -114,6 +114,13 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
-}
 
-apply(plugin = "com.google.gms.google-services")
+    //retrofit, okhttp, gson
+    implementation(libs.bundles.network)
+
+    //coroutines
+    implementation(libs.bundles.coroutines)
+
+    //preference datastore
+    implementation(libs.datastore.preferences)
+}
