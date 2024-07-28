@@ -47,7 +47,7 @@ import java.nio.charset.StandardCharsets
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String, String) -> Unit,
+    onLoginSuccess: (String, String, String) -> Unit,
     onAuthLoginSuccess: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -85,8 +85,8 @@ fun LoginScreen(
     HandleLoginEvent(
         loginUiState = uiState,
         authLogin = onAuthLoginSuccess,
-        loginSuccess = { userEmail, userProfileImageUrl ->
-            onLoginSuccess(userEmail, userProfileImageUrl)
+        loginSuccess = { idToken, userEmail, userProfileImageUrl ->
+            onLoginSuccess(idToken, userEmail, userProfileImageUrl)
         },
         showSnackBar = { errorMessage ->
             coroutineScope.launch {
@@ -164,7 +164,7 @@ fun GoogleLoginButton(
 fun HandleLoginEvent(
     loginUiState: LoginUiState,
     authLogin: () -> Unit,
-    loginSuccess: (String, String) -> Unit,
+    loginSuccess: (String, String, String) -> Unit,
     showSnackBar: (String) -> Unit,
 ) {
     LaunchedEffect(loginUiState) {
@@ -176,6 +176,7 @@ fun HandleLoginEvent(
 
             is LoginUiState.Success -> {
                 loginSuccess(
+                    loginUiState.idToken ?: "",
                     loginUiState.userEmail ?: "",
                     URLEncoder.encode(
                         loginUiState.userProfileImageUrl.toString(),
