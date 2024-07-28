@@ -17,8 +17,8 @@ suspend fun <T> apiHandler(
             }
         } else {
             return ApiResponse.Error(
-                errorCode = errorData.errorCode ?: 0,
-                errorMessage = errorData.errorMessage ?: "",
+                errorCode = errorData.status ?: 0,
+                errorMessage = errorData.message ?: "",
             )
         }
     }.onFailure {
