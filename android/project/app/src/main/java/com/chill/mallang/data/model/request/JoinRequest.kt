@@ -1,16 +1,18 @@
 package com.chill.mallang.data.model.request
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class JoinRequest(
-    @SerializedName("email")
+    @SerialName("token")
+    val idToken: String = "",
+    @SerialName("email")
     val userEmail: String = "",
-    @SerializedName("nickName")
+    @SerialName("nickname")
     val userNickName: String = "",
-    @SerializedName("picture")
+    @SerialName("picture")
     val userProfileImageUrl: String = "",
-    @SerializedName("try_count")
-    val tryCount: Int = 0,
-    @SerializedName("team")
-    val team: String = "",
+//    @SerializedName("team") 서버쪽 개발이 안끝남
+//    val team: String = "",
 )
