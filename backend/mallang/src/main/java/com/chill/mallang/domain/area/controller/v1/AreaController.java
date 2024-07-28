@@ -1,6 +1,6 @@
 package com.chill.mallang.domain.area.controller.v1;
 
-import com.chill.mallang.domain.area.dto.AreaDTO;
+import com.chill.mallang.domain.area.dto.APIresponse;
 import com.chill.mallang.domain.area.dto.AreaTopUserDTO;
 import com.chill.mallang.domain.area.dto.ChallengeRecordDTO;
 import com.chill.mallang.domain.area.service.AreaService;
@@ -39,23 +39,25 @@ public class AreaController {
     // 1. 점령자 대표 유저 정보 조회
     @Operation(summary = "점령지 대표 유저 정보 조회", description = "특정 점령지에 대한 양 팀의 정보와 각 팀 1위 유저 정보를 조회합니다.")
     @GetMapping("/{area}/{userTeam}")
-    public AreaTopUserDTO getAreaInfo(@PathVariable Long area, @PathVariable Long userTeam) {
-        return areaTopUserService.getAreaInfo(area, userTeam);
+    public ResponseEntity<APIresponse<AreaTopUserDTO>> getAreaInfo(@PathVariable Long area, @PathVariable Long userTeam) {
+        APIresponse<AreaTopUserDTO> topUser = areaTopUserService.getAreaInfo(area, userTeam);
+        return new ResponseEntity<>(topUser, HttpStatus.OK);
     }
 
     // 2. 사용자 잔여 도전 횟수 조회
     @Operation(summary = "사용자 잔여 도전 횟수 조회", description = "특정 사용자의 점령 잔여 도전가능 횟수를 조회합니다.")
     @GetMapping("/try-count/{userId}")
-    public ResponseEntity<TryCountDTO> getUserTryCountById(@PathVariable Long userId) {
-        TryCountDTO tryCount = areaService.getUserTryCountById(userId);
+    public ResponseEntity<APIresponse<TryCountDTO>> getUserTryCountById(@PathVariable Long userId) {
+        APIresponse<TryCountDTO> tryCount = areaService.getUserTryCountById(userId);
         return new ResponseEntity<>(tryCount, HttpStatus.OK);
     }
 
     // 3. 도전 기록 조회
     @Operation(summary = "도전 기록 조회", description = "특정 점령지에 대한 현재 사용자의 점수정보를 조회합니다. / 양 팀 멤버들의 점수정보를 등수 오름차순으로 정렬하여 조회합니다.")
     @GetMapping("/records/{areaId}/{userId}")
-    public ChallengeRecordDTO getGameRecords(@PathVariable Long areaId, @PathVariable Long userId) {
-        return challengeRecordService.getChallengeRecord(areaId, userId);
+    public ResponseEntity<APIresponse<ChallengeRecordDTO>> getGameRecords(@PathVariable Long areaId, @PathVariable Long userId) {
+        APIresponse<ChallengeRecordDTO> challengeRecord = challengeRecordService.getChallengeRecord(areaId, userId);
+        return new ResponseEntity<>(challengeRecord,HttpStatus.OK);
     }
 
 }

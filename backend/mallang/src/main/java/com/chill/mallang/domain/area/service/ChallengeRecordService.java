@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.area.service;
 
+import com.chill.mallang.domain.area.dto.APIresponse;
 import com.chill.mallang.domain.area.dto.ChallengeRecordDTO;
 import com.chill.mallang.domain.area.dto.TeamAreaLogDTO;
 import com.chill.mallang.domain.area.dto.UserAreaLogDTO;
@@ -9,6 +10,7 @@ import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.area.repository.AreaLogRepository;
 import com.chill.mallang.domain.area.repository.AreaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,47 +28,54 @@ public class ChallengeRecordService {
     @Autowired
     private AreaRepository areaRepository;
 
-    public ChallengeRecordDTO getChallengeRecord(Long areaId, Long userId) {
+    public APIresponse<ChallengeRecordDTO> getChallengeRecord(Long areaId, Long userId) {
         List<AreaLog> areaLogs = areaLogRepository.findByAreaId(areaId);
         User user = userRepository.findById(userId).orElse(null);
 
+        ChallengeRecordDTO data;
         //없으면 빈배열 반환
         if (areaLogs.isEmpty() || user == null) {
-            return ChallengeRecordDTO.builder()
+            data = ChallengeRecordDTO.builder()
                     .userRecord(null)
                     .myTeamRecords(List.of())
                     .oppoTeamRecords(List.of())
                     .build();
+        } else {
+            //아군
+            List<TeamAreaLogDTO> myTeamRecords = areaLogs.stream()
+                    .filter(log -> isSameTeam(log.getUser(), user))
+                    .map(this::toTeamAreaLogDTO)
+                    .sorted(this::compareLogs)
+                    .collect(Collectors.toList());
+
+            //적군
+            List<TeamAreaLogDTO> oppoTeamRecords = areaLogs.stream()
+                    .filter(log -> !isSameTeam(log.getUser(), user))
+                    .map(this::toTeamAreaLogDTO)
+                    .sorted(this::compareLogs)
+                    .collect(Collectors.toList());
+
+            // 등수 설정
+            setRankings(myTeamRecords);
+            setRankings(oppoTeamRecords);
+
+            // 사용자 기록
+            TeamAreaLogDTO userRecord = myTeamRecords.stream()
+                    .filter(record -> record.getUserId().equals(userId))
+                    .findFirst()
+                    .orElse(null);
+
+            data = ChallengeRecordDTO.builder()
+                    .userRecord(userRecord != null ? toUserAreaLogDTO(userRecord) : null)
+                    .myTeamRecords(myTeamRecords)
+                    .oppoTeamRecords(oppoTeamRecords)
+                    .build();
         }
 
-        //아군
-        List<TeamAreaLogDTO> myTeamRecords = areaLogs.stream()
-                .filter(log -> isSameTeam(log.getUser(), user))
-                .map(this::toTeamAreaLogDTO)
-                .sorted(this::compareLogs)
-                .collect(Collectors.toList());
-
-        //적군
-        List<TeamAreaLogDTO> oppoTeamRecords = areaLogs.stream()
-                .filter(log -> !isSameTeam(log.getUser(), user))
-                .map(this::toTeamAreaLogDTO)
-                .sorted(this::compareLogs)
-                .collect(Collectors.toList());
-
-        // 등수 설정
-        setRankings(myTeamRecords);
-        setRankings(oppoTeamRecords);
-
-        // 사용자 기록
-        TeamAreaLogDTO userRecord = myTeamRecords.stream()
-                .filter(record -> record.getUserId().equals(userId))
-                .findFirst()
-                .orElse(null);
-
-        return ChallengeRecordDTO.builder()
-                .userRecord(userRecord != null ? toUserAreaLogDTO(userRecord) : null)
-                .myTeamRecords(myTeamRecords)
-                .oppoTeamRecords(oppoTeamRecords)
+        return APIresponse.<ChallengeRecordDTO>builder()
+                .status(HttpStatus.OK.value())
+                .message("Success")
+                .data(data)
                 .build();
     }
 

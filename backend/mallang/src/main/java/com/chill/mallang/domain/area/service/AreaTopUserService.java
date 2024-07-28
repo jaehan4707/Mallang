@@ -1,14 +1,17 @@
 package com.chill.mallang.domain.area.service;
 
+import com.chill.mallang.domain.area.dto.APIresponse;
 import com.chill.mallang.domain.area.dto.AreaTopUserDTO;
 import com.chill.mallang.domain.area.model.Area;
 import com.chill.mallang.domain.area.repository.AreaRepository;
 import com.chill.mallang.domain.faction.dto.FactionDTO;
 import com.chill.mallang.domain.faction.repository.FactionRepository;
 import com.chill.mallang.domain.user.dto.TopUserDTO;
+import com.chill.mallang.domain.user.dto.TryCountDTO;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -28,7 +31,7 @@ public class AreaTopUserService {
     @Autowired
     private UserRepository userRepository;
 
-    public AreaTopUserDTO getAreaInfo(Long areaId, Long userTeamId) {
+    public APIresponse<AreaTopUserDTO> getAreaInfo(Long areaId, Long userTeamId) {
         Area area = areaRepository.findById(areaId).orElseThrow(() -> new IllegalArgumentException("Invalid area ID"));
         List<User> users = userRepository.findAll();
 
@@ -36,10 +39,16 @@ public class AreaTopUserService {
         FactionDTO myTeamInfo = calculateTeamInfo(users, userTeamId);
         FactionDTO oppoTeamInfo = calculateTeamInfo(users, getOppositeTeamId(userTeamId));
 
-        return AreaTopUserDTO.builder()
+        AreaTopUserDTO data = AreaTopUserDTO.builder()
                 .areaName(area.getName())
                 .myTeamInfo(myTeamInfo)
                 .oppoTeamInfo(oppoTeamInfo)
+                .build();
+
+        return APIresponse.<AreaTopUserDTO>builder()
+                .status(HttpStatus.OK.value())
+                .message("Success")
+                .data(data)
                 .build();
     }
 
