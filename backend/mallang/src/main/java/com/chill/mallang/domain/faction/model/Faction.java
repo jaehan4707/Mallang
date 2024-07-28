@@ -1,9 +1,6 @@
 package com.chill.mallang.domain.faction.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +14,14 @@ public class Faction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Enumerated(EnumType.STRING)
     @NotNull
-    private String name;
+    private FactionType name;
+
+    public Faction() {}
+
+    public Faction(FactionType name) {
+        this.name = name;
+    }
+
 }

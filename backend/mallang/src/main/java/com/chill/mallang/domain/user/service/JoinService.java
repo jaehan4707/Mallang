@@ -1,5 +1,7 @@
 package com.chill.mallang.domain.user.service;
 
+import com.chill.mallang.domain.faction.model.Faction;
+import com.chill.mallang.domain.faction.repository.FactionRepository;
 import com.chill.mallang.domain.user.dto.JoinRequestDTO;
 import com.chill.mallang.domain.user.dto.JoinResponseDTO;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
@@ -9,6 +11,7 @@ import com.chill.mallang.domain.user.repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +21,10 @@ public class JoinService {
     private final UserRepository userRepository;
     private final GoogleOAuthService googleOAuthService;
     private final JWTUtil jwtUtil;
+
+    //faction 추가
+    @Autowired
+    private FactionRepository factionRepository;
 
     public JoinService(UserRepository userRepository, GoogleOAuthService googleOAuthService, JWTUtil jwtUtil) {
         this.userRepository = userRepository;
@@ -38,6 +45,10 @@ public class JoinService {
             String picture = joinRequestDTO.getPicture();
             Integer try_count = joinRequestDTO.getTry_count();
 
+            //faction 추가
+            Faction faction = factionRepository.findByName(joinRequestDTO.getFaction())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid faction"));
+
             // 이메일 중복 확인
             Boolean isExist = userRepository.existsByEmail(email);
             if (isExist) {
@@ -50,6 +61,7 @@ public class JoinService {
             data.setNickname(nickname);
             data.setPicture(picture);
             data.setTry_count(try_count);
+            data.setFaction(faction);
             data.setRole("ROLE_USER");
             userRepository.save(data);
 
@@ -60,11 +72,6 @@ public class JoinService {
 
             // 가입한 유저 정보를 JoinResponseDTO로 변환
             JoinResponseDTO joinResponseDTO = new JoinResponseDTO();
-            joinResponseDTO.setEmail(data.getEmail());
-            joinResponseDTO.setNickname(data.getNickname());
-            joinResponseDTO.setPicture(data.getPicture());
-            joinResponseDTO.setRole(data.getRole());
-            joinResponseDTO.setTry_count(data.getTry_count());
             joinResponseDTO.setJwtToken(jwtToken); // JWT 토큰 설정
             return joinResponseDTO;
         } catch (Exception e) {

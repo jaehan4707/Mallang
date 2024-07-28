@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.user.dto;
 
+import com.chill.mallang.domain.faction.model.FactionType;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,12 @@ public class JoinRequestDTO {
     @NotNull
     private String picture;
 
+    @NotNull
+    private FactionType faction;
+
     private Integer try_count;
+
+
 
     public JoinRequestDTO(){
         this.try_count = 3;
