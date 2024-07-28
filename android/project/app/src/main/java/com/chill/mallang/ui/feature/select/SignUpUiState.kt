@@ -7,6 +7,7 @@ import androidx.compose.runtime.Stable
 sealed interface SignUpUiState {
     @Immutable
     data class Loading(
+        val idToken: String? = "",
         val userEmail: String? = "",
         val userNickName: String? = "",
         val userProfileImageUrl: String? = ""
