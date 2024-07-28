@@ -2,6 +2,7 @@ package com.chill.mallang.domain.user.controller.v1;
 
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/user")
-//사용자정보 조회용 컨트롤러
+@Tag(name = "User API", description = "사용자 조회 API")
 public class UserController {
     private final UserService userService;
 
