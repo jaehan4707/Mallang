@@ -49,10 +49,11 @@ object DestinationNickName : ScreenDestinationsWithArgument {
         get() = "user"
 
     override val routeWithArgs: String
-        get() = "${this.route}/{userEmail}/{userProfileImageUrl}"
+        get() = "${this.route}/{idToken}/{userEmail}/{userProfileImageUrl}"
 
     override val arguments: List<NamedNavArgument>
         get() = listOf(
+            navArgument(name = "idToken") { type = NavType.StringType },
             navArgument(name = "userEmail") { type = NavType.StringType },
             navArgument(name = "userProfileImageUrl") { type = NavType.StringType }
         )
@@ -61,9 +62,10 @@ object DestinationNickName : ScreenDestinationsWithArgument {
         get() = "nickname"
 
     fun createRoute(
+        idToken: String,
         userEmail: String,
         userProfileImageUrl: String,
-    ) = "${this.route}/${userEmail}/${userProfileImageUrl}"
+    ) = "${this.route}/${idToken}/${userEmail}/${userProfileImageUrl}"
 
 }
 
@@ -72,10 +74,11 @@ object DestinationSelect : ScreenDestinationsWithArgument {
         get() = "select"
 
     override val routeWithArgs: String
-        get() = "${this.route}/{userEmail}/{userProfileImageUrl}/{userNickName}"
+        get() = "${this.route}/{idToken}/{userEmail}/{userProfileImageUrl}/{userNickName}"
 
     override val arguments: List<NamedNavArgument>
         get() = listOf(
+            navArgument(name = "idToken") { type = NavType.StringType },
             navArgument(name = "userEmail") { type = NavType.StringType },
             navArgument(name = "userProfileImageUrl") { type = NavType.StringType },
             navArgument(name = "userNickName") { type = NavType.StringType },
@@ -85,10 +88,11 @@ object DestinationSelect : ScreenDestinationsWithArgument {
         get() = "select"
 
     fun createRoute(
+        idToken: String,
         userEmail: String,
         userProfileImageUrl: String,
         userNickName: String,
-    ) = "${this.route}/${userEmail}/${userProfileImageUrl}/${userNickName}"
+    ) = "${this.route}/${idToken}/${userEmail}/${userProfileImageUrl}/${userNickName}"
 }
 
 object DestinationUserDetail : ScreenDestinationsWithArgument {
