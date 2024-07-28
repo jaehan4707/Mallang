@@ -16,13 +16,16 @@ class UserRepositoryImpl @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
 ) : UserRepository {
 
-    override suspend fun join(request: JoinRequest): Flow<ApiResponse<Boolean>> = flow {
+    override suspend fun join(request: JoinRequest): Flow<ApiResponse<String>> = flow {
         val response = apiHandler {
             userApi.join(request)
         }
         when (response) {
             is ApiResponse.Success -> {
-                emit(ApiResponse.Success(true))
+                val accessToken = response.data.data?.token ?: ""
+                dataStoreRepository.saveAccessToken(accessToken)
+                dataStoreRepository.saveUserEmail(request.userEmail)
+                emit(ApiResponse.Success(accessToken))
             }
 
             is ApiResponse.Error -> {
@@ -56,6 +59,7 @@ class UserRepositoryImpl @Inject constructor(
             is ApiResponse.Success -> {
                 val accessToken = response.data ?: ""
                 dataStoreRepository.saveAccessToken(accessToken)
+                dataStoreRepository.saveUserEmail(email)
                 emit(ApiResponse.Success(data = accessToken))
             }
 
