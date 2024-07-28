@@ -1,4 +1,5 @@
 package com.chill.mallang.domain.user.jwt;
+import com.chill.mallang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.chill.mallang.domain.user.dto.LoginRequestDTO;
 import com.chill.mallang.domain.user.oauth.CustomOAuthToken;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -22,12 +24,14 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     private static final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
     private final JWTUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
-    public LoginFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+    public LoginFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService, UserRepository userRepository) {
         super(defaultFilterProcessesUrl);
         setAuthenticationManager(authenticationManager);
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
             String token = loginRequest.getToken();
 
             // ID 토큰을 CustomOAuthToken으로 래핑하여 인증 매니저에 전달
-            return getAuthenticationManager().authenticate(new CustomOAuthToken(token));
+            return getAuthenticationManager().authenticate(new CustomOAuthToken(token, email));
         } catch (IOException e) {
             // JSON 파싱 오류 처리
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -60,12 +64,18 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
+        String email = (String) authResult.getPrincipal();  // 이메일 가져오기
+
+        // 회원가입 유무 확인
+        String is_registered = userRepository.existsByEmail(email)? "true" : "false";
+        //jwt 토큰 생성
         Map<String, String> dataMap = new HashMap<>();
         long secondsInAYear = 365L * 24 * 60 * 60;
         long tokenValidityInSeconds = 150L * secondsInAYear;
         String jwtToken = jwtUtil.createJwt(authResult.getName(), "ROLE_USER", tokenValidityInSeconds);
-        dataMap.put("token", jwtToken);
 
+        dataMap.put("token", jwtToken);
+        dataMap.put("is_registered", is_registered);
         Map<String, Map<String, String>> responseMap = new HashMap<>();
         responseMap.put("data", dataMap);
 

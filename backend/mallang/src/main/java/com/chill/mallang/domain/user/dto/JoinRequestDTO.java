@@ -9,8 +9,7 @@ import org.jetbrains.annotations.NotNull;
 @Setter
 //회원가입
 public class JoinRequestDTO {
-    @NotNull
-    private String token;
+
     @NotNull
     private String email;
     @NotNull

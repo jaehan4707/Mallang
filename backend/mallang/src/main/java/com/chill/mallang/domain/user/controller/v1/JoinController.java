@@ -31,11 +31,11 @@ public class JoinController {
         this.joinService = joinService;
     }
     @PostMapping("/join")
-    public void joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO, HttpServletResponse response) throws IOException {
+    public void joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String token, HttpServletResponse response) throws IOException {
         JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinRequestDTO);
-
         Map<String, String> dataMap = new HashMap<>();
-        dataMap.put("token", joinResponseDTO.getJwtToken());
+        dataMap.put("token", token);
+        dataMap.put("is_registered", joinResponseDTO.getIs_registered());
         Map<String, Map<String, String>> responseMap = new HashMap<>();
         responseMap.put("data", dataMap);
 

@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class JoinResponseDTO {
     private String jwtToken;
+    private String is_registered;
 }
