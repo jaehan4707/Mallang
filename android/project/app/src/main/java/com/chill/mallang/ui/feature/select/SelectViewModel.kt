@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.select
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,13 +29,13 @@ class SelectViewModel @Inject constructor(
             with(savedStateHandle) {
                 _uiState.update {
                     state.copy(
+                        idToken = get<String>("idToken"),
                         userEmail = get<String>("userEmail"),
                         userProfileImageUrl = get<String>("userProfileImageUrl"),
                         userNickName = get<String>("userNickName")
                     )
                 }
             }
-
         }
     }
 
@@ -45,10 +46,11 @@ class SelectViewModel @Inject constructor(
             if (state is SignUpUiState.Loading) {
                 userRepository.join(
                     JoinRequest(
+                        idToken = state.idToken ?: "",
                         userEmail = state.userEmail ?: "",
                         userProfileImageUrl = state.userProfileImageUrl ?: "",
                         userNickName = state.userNickName ?: "",
-                        team = team ?: ""
+                        //team = team ?: ""
                     )
                 ).collectLatest { response ->
                     when (response) {
