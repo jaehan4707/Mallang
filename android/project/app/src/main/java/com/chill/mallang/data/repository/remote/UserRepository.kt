@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
 
-    suspend fun join(request: JoinRequest): Flow<ApiResponse<Boolean>>
+    suspend fun join(request: JoinRequest): Flow<ApiResponse<String>>
 
     suspend fun logout()
 
