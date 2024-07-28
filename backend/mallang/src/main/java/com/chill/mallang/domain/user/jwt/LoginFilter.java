@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -32,6 +33,12 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
+
+        // POST 메서드가 아닌 경우 예외를 던집니다.
+        if (!request.getMethod().equalsIgnoreCase("POST")) {
+            throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+        }
+
         try {
             // 요청 본문을 읽어 LoginRequest 객체로 변환
             LoginRequestDTO loginRequest = new ObjectMapper().readValue(request.getInputStream(), new TypeReference<LoginRequestDTO>(){});
