@@ -66,7 +66,6 @@ object DestinationNickName : ScreenDestinationsWithArgument {
     ) = "${this.route}/${userEmail}/${userProfileImageUrl}"
 }
 
-
 object DestinationSelect : ScreenDestinationsWithArgument {
     override val arg: String
         get() = "select"

@@ -36,9 +36,9 @@ fun MallangNavHost(
         composable(
             route = DestinationLogin.route
         ) {
-            LoginScreen(onLoginSuccess = { userEmail, userProfileImageUrl ->
+            LoginScreen(onLoginSuccess = { idToken, userEmail, userProfileImageUrl ->
                 navController.navigate(
-                    DestinationNickName.createRoute(userEmail, userProfileImageUrl)
+                    DestinationNickName.createRoute(idToken, userEmail, userProfileImageUrl)
                 )
             }, onAuthLoginSuccess = { navController.navigate(DestinationMain.route) })
         }
@@ -46,6 +46,7 @@ fun MallangNavHost(
             route = DestinationNickName.routeWithArgs,
             arguments = DestinationNickName.arguments,
         ) { navBackStackEntry ->
+            val idToken = navBackStackEntry.arguments?.getString("idToken") ?: ""
             val userEmail = navBackStackEntry.arguments?.getString("userEmail") ?: ""
             val userProfileImageUrl = URLEncoder.encode(
                 navBackStackEntry.arguments?.getString("userProfileImageUrl") ?: "",
@@ -54,6 +55,7 @@ fun MallangNavHost(
             NicknameScreen(modifier = modifier, onClick = { nickName ->
                 navController.navigate(
                     DestinationSelect.createRoute(
+                        idToken = idToken,
                         userEmail = userEmail,
                         userProfileImageUrl = userProfileImageUrl,
                         userNickName = nickName
