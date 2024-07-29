@@ -3,6 +3,7 @@ package com.chill.mallang.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +14,7 @@ import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.quiz.QuizResultScreen
 import com.chill.mallang.ui.feature.quiz.QuizScreen
+import com.chill.mallang.ui.feature.quiz.QuizViewModel
 import com.chill.mallang.ui.feature.quiz.WordNoteScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
 import java.net.URLEncoder
@@ -26,6 +28,8 @@ fun MallangNavHost(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    val viewModel: QuizViewModel = hiltViewModel()
 
     NavHost(
         modifier = modifier,
@@ -103,6 +107,7 @@ fun MallangNavHost(
         ) {
             QuizScreen(
                 modifier = modifier,
+                viewModel = viewModel,
                 popUpBackStack = { navController.popBackStack() },
                 navigateToQuizResult = { navController.navigate(DestinationQuizResult.createRoute(quizId = it)) }
             )
@@ -124,6 +129,7 @@ fun MallangNavHost(
 
             QuizResultScreen(
                 modifier = modifier,
+                viewModel = viewModel,
                 popUpBackStack = { navController.popBackStack() },
             )
         }

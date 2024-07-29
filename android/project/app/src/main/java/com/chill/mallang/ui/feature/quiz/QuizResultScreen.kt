@@ -38,8 +38,12 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun QuizResultScreen(
     modifier: Modifier = Modifier,
+    viewModel: QuizViewModel,
     popUpBackStack: () -> Unit = {}
 ) {
+
+    val state = viewModel.state
+
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
         isBackPressed = isBackPressed.value,
@@ -54,10 +58,10 @@ fun QuizResultScreen(
     BackHandler(onBack = { isBackPressed.value = true })
 
     // 사용자가 고른 정답
-    val userData = 2
+    val userData = state.selectedAnswer
 
     // 정답 데이터
-    val systemData = 1
+    val systemData = state.systemAnswer
 
     Box(
         modifier = modifier
@@ -80,14 +84,15 @@ fun QuizResultScreen(
                 color = titleColor
             )
             QuizBoxWithUnderline(
-                systemMessage = "빈칸을 채워 주세요",
-                quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-                underline = "괄목"
+                systemMessage = state.quizTitle,
+                quizScript = state.quizScript,
+                underline = state.quizWord
             )
             AnswerList(
-                isResultScreen = true,
-                userAnswer = userData,
-                systemAnswer = systemData
+                state = state,
+                onAnswerSelected = {
+                    viewModel.selectAnswer(it)
+                }
             )
         }
     }
@@ -158,6 +163,6 @@ fun QuizBoxWithUnderline(
 @Composable
 fun ResultPreview() {
     MallangTheme {
-        QuizResultScreen()
+//        QuizResultScreen()
     }
 }

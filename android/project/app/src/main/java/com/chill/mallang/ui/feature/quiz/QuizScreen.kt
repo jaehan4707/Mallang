@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -56,10 +55,11 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun QuizScreen(
     modifier: Modifier = Modifier,
+    viewModel: QuizViewModel,
     popUpBackStack: () -> Unit = {},
-    submitQuiz: (Int) -> Unit = {},
-    navigateToQuizResult: (Int) -> Unit = {}
+    navigateToQuizResult: (Int) -> Unit = {},
 ) {
+    val state = viewModel.state
 
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
@@ -82,16 +82,20 @@ fun QuizScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.height(15.dp))
             QuizBox(
-                systemMessage = "빈칸을 채워 주세요",
-                quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다."
+                quizTitle = state.quizTitle,
+                quizScript = state.quizScript
             )
             Spacer(modifier = Modifier.weight(1f))
             AnswerList(
-                isResultScreen = false
+                state = state,
+                onAnswerSelected = {
+                    viewModel.selectAnswer(it)
+                }
             )
         }
         Button(
             onClick = {
+                viewModel.submitQuiz()
                 navigateToQuizResult(1)
             },
             modifier = Modifier
@@ -114,7 +118,7 @@ fun QuizScreen(
 
 @Composable
 fun QuizBox(
-    systemMessage: String,
+    quizTitle: String,
     quizScript: String
 ) {
     Box(
@@ -137,7 +141,7 @@ fun QuizBox(
                 )
                 Box(modifier = Modifier.width(10.dp))
                 Text(
-                    text = systemMessage,
+                    text = quizTitle,
                     style = Typography.headlineMedium
                 )
             }
@@ -159,20 +163,10 @@ fun QuizBox(
 
 @Composable
 fun AnswerList(
-    isResultScreen: Boolean,
-    userAnswer: Int? = null,
-    systemAnswer: Int? = null
+    state: QuizState,
+    onAnswerSelected: (Int) -> Unit = { }
 ) {
-    // 더미 데이터
-    val wordList = arrayListOf(
-        "괄목" to "눈을 비비고 볼 정도로 매우 놀라다.",
-        "상대" to "서로 마주 대하다.",
-        "과장" to "사실보다 지나치게 불려서 말하거나 표현하다.",
-        "시기" to "때나 경우."
-    )
-
-    var selectedItem by remember { mutableStateOf<Int?>(null) }
-    var isExpandedItem by remember { mutableStateOf<Int?>(null) }
+    val wordList = state.wordList
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -181,26 +175,15 @@ fun AnswerList(
             .fillMaxSize()
     ) {
         items(wordList.size) { index ->
-            val isAnswer = index + 1 == systemAnswer
-            val fraction = if (!isResultScreen) 0.13f else 0.15f
+            val fraction = if (!state.isResultScreen) 0.13f else 0.15f
 
             AnswerListItem(
                 modifier = Modifier.fillParentMaxHeight(fraction),
                 index = index,
-                word = wordList[index].first,
-                meaning = wordList[index].second,
-                selectIndex = index + 1,
-                isSelected = selectedItem == index + 1,
-                isAnswer = isAnswer, // 정답 아이템
-                isExpanded = isExpandedItem == index + 1,
-                isResultScreen = isResultScreen,
-                userAnswer = userAnswer,
-                onItemClick = { clickedItem ->
-                    if (!isResultScreen) {
-                        selectedItem = clickedItem
-                    } else {
-                        isExpandedItem = if (isExpandedItem == clickedItem) null else clickedItem
-                    }
+                state = state,
+                isResultScreen = state.isResultScreen,
+                onItemClick = { selectedIndex ->
+                   onAnswerSelected(selectedIndex)
                 }
             )
         }
@@ -211,32 +194,30 @@ fun AnswerList(
 fun AnswerListItem(
     modifier: Modifier = Modifier,
     index: Int,
-    word: String,
-    meaning: String,
-    selectIndex: Int,
-    isSelected: Boolean,
-    isAnswer: Boolean,
-    isExpanded: Boolean,
+    state: QuizState,
     isResultScreen: Boolean,
-    userAnswer: Int? = null,
-    onItemClick: (Int) -> Unit = {}
+    onItemClick: (Int) -> Unit
 ) {
+
+    val isSelected = state.selectedAnswer == index + 1
+
     // 배경색
     val backgroundColor = when {
-        isResultScreen && userAnswer == selectIndex && !isAnswer -> Sub2
-        isResultScreen && isAnswer -> Green2
+        isResultScreen && isSelected && !state.isAnswer -> Sub2
+        isResultScreen && state.isAnswer -> Green2
         else -> Color.White
     }
 
     // 번호, 테두리 색상
     val borderColor = when {
-        isResultScreen && userAnswer == selectIndex && !isAnswer -> Sub1
-        isResultScreen && isAnswer -> Green1
+        isResultScreen && isSelected && !state.isAnswer -> Sub1
+        isResultScreen && state.isAnswer -> Green1
         else -> Gray6
     }
 
     // 뜻 확장 및 애니메이션 효과
-    val expandTransition = updateTransition(targetState = isExpanded, label = "expandTransition")
+    val expandTransition =
+        updateTransition(targetState = isSelected, label = "expandTransition")
     val expandedHeight by expandTransition.animateDp(
         label = "expandedHeight",
         transitionSpec = { tween(durationMillis = 200) }
@@ -265,7 +246,7 @@ fun AnswerListItem(
                     .fillMaxWidth()
                     .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
                     .border(2.dp, color = borderColor, shape = RoundedCornerShape(8.dp))
-                    .clickable { onItemClick(selectIndex) }
+                    .clickable { onItemClick(index + 1) }
             ) {
                 Box(
                     modifier = Modifier
@@ -286,7 +267,7 @@ fun AnswerListItem(
                 }
                 Spacer(modifier = Modifier.width(30.dp))
                 Text(
-                    text = word,
+                    text = state.wordList[index].first,
                     modifier = Modifier.weight(1f),
                     style = Typography.headlineLarge
                 )
@@ -296,15 +277,9 @@ fun AnswerListItem(
                         painter = painterResource(id = R.drawable.ic_check),
                         contentDescription = null
                     )
-                } else if (!isResultScreen && userAnswer == index + 1) {
-                    Icon(
-                        modifier = Modifier.padding(10.dp),
-                        painter = painterResource(id = R.drawable.ic_check),
-                        contentDescription = null
-                    )
                 }
                 if (isResultScreen) {
-                    when (isExpanded) {
+                    when (state.expandedAnswer == index + 1) {
                         false -> {
                             Icon(
                                 modifier = Modifier.padding(10.dp),
@@ -312,6 +287,7 @@ fun AnswerListItem(
                                 contentDescription = null
                             )
                         }
+
                         true -> {
                             Icon(
                                 modifier = Modifier.padding(10.dp),
@@ -323,7 +299,7 @@ fun AnswerListItem(
                 }
             }
         }
-        if (isExpanded) {
+        if (isResultScreen && state.expandedAnswer == index + 1) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -331,7 +307,7 @@ fun AnswerListItem(
                     .background(color = Color.Unspecified)
             ) {
                 Text(
-                    text = meaning,
+                    text = state.wordList[index].second,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -348,6 +324,6 @@ fun AnswerListItem(
 @Composable
 fun QuizPreview() {
     MallangTheme {
-        QuizScreen()
+//        QuizScreen()
     }
 }
