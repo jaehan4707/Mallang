@@ -9,4 +9,9 @@ public interface UserService {
     Optional<User> findByEmail(String email);
     Optional<User> findById(Long id);
     boolean existsById(Long id);
+
+    boolean existsByNickname(String nickname);
+
+    Optional<User> findByNickname(String nickname);
+
 }
