@@ -4,6 +4,7 @@ import com.chill.mallang.domain.user.dto.JoinRequestDTO;
 import com.chill.mallang.domain.user.dto.JoinResponseDTO;
 import com.chill.mallang.domain.user.service.JoinService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -30,6 +31,8 @@ public class JoinController {
 
         this.joinService = joinService;
     }
+
+    @Operation(summary = "회원가입 api", description = "헤어에 Bearer 토큰 포함시켜주세요.")
     @PostMapping("/join")
     public void joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String token, HttpServletResponse response) throws IOException {
         JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinRequestDTO);
