@@ -1,9 +1,7 @@
 package com.chill.mallang.domain.faction.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.chill.mallang.domain.user.model.User;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,4 +17,7 @@ public class Faction {
 
     @NotNull
     private String name;
+
+    @OneToOne
+    private User topUser;
 }

@@ -23,6 +23,7 @@ public class AreaLog {
 
     private long user;
     private LocalDateTime created_at;
+    private int playtime;
     @NotNull
     private float score;
 }
