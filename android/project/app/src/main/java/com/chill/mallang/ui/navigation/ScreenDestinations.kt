@@ -64,6 +64,7 @@ object DestinationNickName : ScreenDestinationsWithArgument {
         userEmail: String,
         userProfileImageUrl: String,
     ) = "${this.route}/${userEmail}/${userProfileImageUrl}"
+
 }
 
 object DestinationSelect : ScreenDestinationsWithArgument {
