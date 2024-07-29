@@ -36,7 +36,6 @@ public class JoinService {
             String email = joinRequestDTO.getEmail();
             String nickname = joinRequestDTO.getNickname();
             String picture = joinRequestDTO.getPicture();
-            Integer try_count = joinRequestDTO.getTry_count();
 
             //faction 추가
             Faction faction = factionRepository.findByName(joinRequestDTO.getFaction())
@@ -53,7 +52,7 @@ public class JoinService {
             data.setEmail(email);
             data.setNickname(nickname);
             data.setPicture(picture);
-            data.setTry_count(try_count);
+            data.setTry_count(3);
             data.setFaction(faction);
             data.setRole("ROLE_USER");
             userRepository.save(data);

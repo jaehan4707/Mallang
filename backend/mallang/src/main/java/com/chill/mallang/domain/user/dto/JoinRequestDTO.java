@@ -15,18 +15,9 @@ public class JoinRequestDTO {
     @NotNull
     private String nickname;
 
-//    private Long faction_id;
     @NotNull
     private String picture;
 
     @NotNull
     private FactionType faction;
-
-    private Integer try_count;
-
-
-
-    public JoinRequestDTO(){
-        this.try_count = 3;
-    }
 }

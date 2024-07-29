@@ -49,6 +49,8 @@ dependencies {
 	implementation 'com.google.api-client:google-api-client:1.32.1' // 구글 토큰 검정 및 인증 용
 	implementation 'com.google.oauth-client:google-oauth-client:1.32.1'
 	implementation 'com.google.http-client:google-http-client-jackson2:1.32.1'
+	implementation 'io.springfox:springfox-swagger2:2.9.2' //스웨거 edit 위한 라이브러리
+	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 }
 
 tasks.named('test') {
