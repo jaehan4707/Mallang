@@ -6,6 +6,7 @@ import com.chill.mallang.errors.exception.RestApiException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class QuizController {
     @GetMapping("/{quizID}")
     public ResponseEntity<?> getQuiz(@PathVariable Long quizID) {
 //        throw new RestApiException(CustomErrorCode.INVALID_PARAMETER);
-        return quizService.getById(quizID);
+        return new ResponseEntity<>(quizService.getById(quizID), HttpStatus.OK);
     }
 
     @Operation(summary = "퀴즈 정답 제출", description = "특정 퀴즈에 대한 정답을 제출합니다.")
