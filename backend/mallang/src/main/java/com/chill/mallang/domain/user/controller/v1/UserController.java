@@ -33,8 +33,8 @@ public class UserController {
     }
     @Operation(summary="email 중복 조회", description = "email 중복 API,헤더에 토큰 첨부 필수")
     @GetMapping("/exists/email/{email}")
-    public boolean checkEmailExists(@PathVariable String email) {
-        return userService.existsByEmail(email);
+    public ResponseEntity<Void> checkEmailExists(@PathVariable String email) {
+        return ResponseEntity.ok().build(); // 상태 코드 200 OK 반환
     }
     @Operation(summary="user 유무 조회", description = "유저 존재 확인 API,헤더에 토큰 첨부 필수")
     @GetMapping("/exists/id/{id}")
