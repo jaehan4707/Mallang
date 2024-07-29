@@ -217,7 +217,7 @@ fun ProgressWithText(duration: Int, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(100.dp)
-            .background(Color.Transparent), // 배경 투명
+            .background(Color.Transparent),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
@@ -241,7 +241,7 @@ fun ProgressWithText(duration: Int, modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun Game01PlayScreen(){
+fun Game01PlayScreenPreview(){
     MallangTheme {
         Game01PlayScreen()
     }
