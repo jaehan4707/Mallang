@@ -1,23 +1,12 @@
 package com.chill.mallang.domain.user.controller.v1;
 
-import com.chill.mallang.domain.user.common.ApiResponse;
-import com.chill.mallang.domain.user.dto.FindByEmailDTO;
-import com.chill.mallang.domain.user.jwt.JWTUtil;
 import com.chill.mallang.domain.user.service.UserService;
-import com.chill.mallang.errors.errorcode.CustomErrorCode;
-import com.chill.mallang.errors.exception.RestApiException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/user")
