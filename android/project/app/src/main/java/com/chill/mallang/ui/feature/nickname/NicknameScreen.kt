@@ -55,7 +55,6 @@ fun NicknameScreen(
             .addFocusCleaner(focusManager)
     ) {
         NickNameContent(
-            modifier = modifier,
             focusManager = focusManager,
             uiState = nicknameState,
             onClick = { onClick(it) },
@@ -65,7 +64,6 @@ fun NicknameScreen(
 
 @Composable
 fun NickNameContent(
-    modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
     uiState: NicknameState = NicknameState(),
     onClick: (String) -> Unit = {},
@@ -149,6 +147,7 @@ fun CustomTextField(
                 unfocusedBorderColor = Gray3,
                 focusedContainerColor = White,
                 unfocusedContainerColor = White,
+                errorContainerColor = White, // 에러 상태에서도 배경색이 변경되지 않도록 White 설정
                 focusedTextColor = Gray6,
                 unfocusedTextColor = Gray6,
                 unfocusedPlaceholderColor = Gray3,
