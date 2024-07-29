@@ -3,14 +3,21 @@ package com.chill.mallang.domain.quiz.service.impl;
 
 import com.chill.mallang.domain.quiz.dto.ChatGPTRequest;
 import com.chill.mallang.domain.quiz.dto.ChatGPTResponse;
+import com.chill.mallang.domain.quiz.model.Quiz;
+import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.chill.mallang.domain.quiz.service.QuizService;
+import com.chill.mallang.errors.errorcode.CustomErrorCode;
+import com.chill.mallang.errors.exception.RestApiException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.theokanning.openai.OpenAiService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,8 +27,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Value;
 
+@Slf4j
 @Service
 public class QuizServiceImpl implements QuizService {
 
@@ -35,6 +47,8 @@ public class QuizServiceImpl implements QuizService {
 
     @Autowired
     private RestTemplate template;
+    @Autowired
+    private QuizRepository quizRepository;
 
 
     @Autowired
@@ -112,6 +126,21 @@ public class QuizServiceImpl implements QuizService {
             logger.error("MalformedURLException: ", e);
         } catch (IOException e) {
             logger.error("IOException: ", e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getById(Long quizID) {
+        Optional<Quiz> quiz = quizRepository.findById(quizID);
+        logger.info(String.valueOf("QuizDTO : "), quiz);
+        if(quiz.isPresent()){
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", HttpStatus.OK.value());
+            response.put("message", "성공!");
+            response.put("data", quiz.get());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }else{
+            throw new RestApiException(CustomErrorCode.INVALID_PARAMETER);
         }
     }
 }

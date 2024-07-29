@@ -1,5 +1,4 @@
 package com.chill.mallang.config;
-
 import com.chill.mallang.domain.user.jwt.JWTFilter;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
 import com.chill.mallang.domain.user.jwt.LoginFilter;
@@ -82,6 +81,6 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers ("/","/swagger-ui/**", "/api-docs/**");
+        return web -> web.ignoring().requestMatchers ("/**","/swagger-ui/**", "/api-docs/**");
     }
 }

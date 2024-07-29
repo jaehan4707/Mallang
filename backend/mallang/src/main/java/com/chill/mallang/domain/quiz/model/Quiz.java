@@ -27,8 +27,19 @@ public class Quiz {
     @NotNull
     private String answer;
     @NotNull
-    private LocalDateTime created_at;
+    private LocalDateTime created_at = LocalDateTime.now();
 
     private LocalDateTime updated_at;
     private boolean isUsed;
+
+    @PrePersist
+    protected void onCreate(){
+        this.isUsed = false;
+    }
+
+    @PreUpdate
+    protected void onUpdate(){
+        this.updated_at = LocalDateTime.now();
+    }
+
 }
