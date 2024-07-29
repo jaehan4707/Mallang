@@ -93,7 +93,7 @@ public class ChallengeRecordService {
                 .userId(log.getUser())
                 .userName(user != null ? user.getNickname() : "Unknown")
                 .userScore((int) log.getScore())
-                .userPlayTime((int) (log.getCreated_at().getSecond() - log.getCreated_at().getMinute() * 60))
+                .userPlayTime((int) log.getPlaytime())
                 .build();
     }
 

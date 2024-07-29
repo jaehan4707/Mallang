@@ -1,6 +1,6 @@
 package com.chill.mallang.domain.area.dto;
 
-import com.chill.mallang.domain.user.model.User;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,9 +9,14 @@ import lombok.Setter;
 @Setter
 @Builder
 public class TeamAreaLogDTO {
+    @NotNull
     private Integer userPlace;
+    @NotNull
     private Long userId;
+    @NotNull
     private String userName;
+    @NotNull
     private Integer userScore;
+    @NotNull
     private Integer userPlayTime;
 }
