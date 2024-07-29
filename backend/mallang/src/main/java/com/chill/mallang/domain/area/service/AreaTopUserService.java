@@ -7,7 +7,6 @@ import com.chill.mallang.domain.area.repository.AreaRepository;
 import com.chill.mallang.domain.faction.dto.FactionDTO;
 import com.chill.mallang.domain.faction.repository.FactionRepository;
 import com.chill.mallang.domain.user.dto.TopUserDTO;
-import com.chill.mallang.domain.user.dto.TryCountDTO;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
