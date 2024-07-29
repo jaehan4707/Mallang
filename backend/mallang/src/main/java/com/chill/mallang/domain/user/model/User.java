@@ -28,4 +28,5 @@ public class User {
 
     private Integer try_count;
     private String role;
+
 }

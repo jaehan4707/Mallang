@@ -1,6 +1,7 @@
 package com.chill.mallang.domain.faction.model;
 
 import jakarta.persistence.*;
+import com.chill.mallang.domain.user.model.User;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,4 +25,6 @@ public class Faction {
         this.name = name;
     }
 
+    @OneToOne
+    private User topUser;
 }

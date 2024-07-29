@@ -32,16 +32,16 @@ public class JoinController {
         this.joinService = joinService;
     }
 
-    @Operation(summary = "회원가입 api", description = "헤어에 Bearer 토큰 포함시켜주세요.")
+    @Operation(summary = "회원가입 api", description = "헤더에 Bearer 토큰 포함시켜주세요.")
     @PostMapping("/join")
+    // 컨트롤러에 서비스 부분 다빼기
     public void joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String token, HttpServletResponse response) throws IOException {
         JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinRequestDTO);
         Map<String, String> dataMap = new HashMap<>();
-        dataMap.put("token", token);
+        dataMap.put("token", token.substring(7));
         dataMap.put("is_registered", joinResponseDTO.getIs_registered());
-        Map<String, Map<String, String>> responseMap = new HashMap<>();
+        Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("data", dataMap);
-
         // Convert the response map to JSON
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonResponse = objectMapper.writeValueAsString(responseMap);
