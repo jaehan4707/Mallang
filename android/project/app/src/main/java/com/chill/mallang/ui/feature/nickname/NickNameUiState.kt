@@ -5,16 +5,15 @@ import androidx.compose.runtime.Stable
 
 @Stable
 sealed interface NickNameUiState {
-
     @Immutable
     data class Error(
         val errorCode: Int = 0,
-        val errorMessage: String = ""
+        val errorMessage: String = "",
     ) : NickNameUiState
 
     @Immutable
     data class Success(
-        val nickName: String = ""
+        val nickName: String = "",
     ) : NickNameUiState
 
     @Immutable

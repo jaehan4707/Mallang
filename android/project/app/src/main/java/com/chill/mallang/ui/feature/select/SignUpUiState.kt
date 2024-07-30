@@ -9,7 +9,7 @@ sealed interface SignUpUiState {
     data class Loading(
         val userEmail: String? = "",
         val userNickName: String? = "",
-        val userProfileImageUrl: String? = ""
+        val userProfileImageUrl: String? = "",
     ) : SignUpUiState
 
     @Immutable

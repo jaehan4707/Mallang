@@ -63,20 +63,20 @@ fun SelectScreen(navigateToMain: () -> Unit = {}) {
                     duration = SnackbarDuration.Short,
                 )
             }
-        }
+        },
     )
     Surface(
-        color = BackGround
+        color = BackGround,
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(80.dp))
             Image(
                 painter = painterResource(id = R.drawable.ic_title_small),
                 contentDescription = null,
-                modifier = Modifier.height(120.dp)
+                modifier = Modifier.height(120.dp),
             )
             Spacer(modifier = Modifier.weight(0.2f))
             TextWithIcon(text = "당신의 진영을 선택해 주세요", icon = R.drawable.ic_team)
@@ -87,12 +87,13 @@ fun SelectScreen(navigateToMain: () -> Unit = {}) {
                 leftLabel = "말",
                 rightLabel = "랑",
                 leftColor = Red01,
-                rightColor = SkyBlue
+                rightColor = SkyBlue,
             )
             Spacer(modifier = Modifier.height(35.dp))
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
                 TeamButton(
@@ -102,7 +103,7 @@ fun SelectScreen(navigateToMain: () -> Unit = {}) {
                     },
                     text = "말",
                     color = Red01,
-                    isSelected = selectedTeam == "말"
+                    isSelected = selectedTeam == "말",
                 )
                 Spacer(modifier = Modifier.width(25.dp))
                 TeamButton(
@@ -112,7 +113,7 @@ fun SelectScreen(navigateToMain: () -> Unit = {}) {
                     },
                     text = "랑",
                     color = SkyBlue,
-                    isSelected = selectedTeam == "랑"
+                    isSelected = selectedTeam == "랑",
                 )
             }
             if (showConfirmButton) {
@@ -131,29 +132,35 @@ fun TeamButton(
     onClick: () -> Unit,
     text: String,
     color: Color,
-    isSelected: Boolean
+    isSelected: Boolean,
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            contentColor = White,
-            containerColor = color
-        ),
+        colors =
+            ButtonDefaults.buttonColors(
+                contentColor = White,
+                containerColor = color,
+            ),
         shape = RoundedCornerShape(13.dp),
-        modifier = modifier
-            .width(100.dp)
-            .height(48.dp)
-            .then(
-                if (isSelected) Modifier.border(
-                    2.dp,
-                    Gray6,
-                    RoundedCornerShape(13.dp)
-                ) else Modifier
-            )
+        modifier =
+            modifier
+                .width(100.dp)
+                .height(48.dp)
+                .then(
+                    if (isSelected) {
+                        Modifier.border(
+                            2.dp,
+                            Gray6,
+                            RoundedCornerShape(13.dp),
+                        )
+                    } else {
+                        Modifier
+                    },
+                ),
     ) {
         Text(
             text,
-            style = Typography.displayLarge
+            style = Typography.displayLarge,
         )
     }
 }

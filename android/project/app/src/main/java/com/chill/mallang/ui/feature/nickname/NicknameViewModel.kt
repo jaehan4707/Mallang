@@ -17,38 +17,41 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class NicknameViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val userRepository: UserRepository,
-) : ViewModel() {
-    val nicknameState = NicknameState()
-    private val _uiState = MutableStateFlow<NickNameUiState>(NickNameUiState.Init)
-    val uiState = _uiState.asStateFlow()
+class NicknameViewModel
+    @Inject
+    constructor(
+        private val savedStateHandle: SavedStateHandle,
+        private val userRepository: UserRepository,
+    ) : ViewModel() {
+        val nicknameState = NicknameState()
+        private val _uiState = MutableStateFlow<NickNameUiState>(NickNameUiState.Init)
+        val uiState = _uiState.asStateFlow()
 
-    fun checkNickName() {
-        viewModelScope.launch {
-            userRepository.checkNickName(nickName = nicknameState.nickname)
-                .collectLatest { response ->
-                    when (response) {
-                        is ApiResponse.Success -> {
-                            _uiState.value =
-                                NickNameUiState.Success(nickName = nicknameState.nickname)
+        fun checkNickName() {
+            viewModelScope.launch {
+                userRepository
+                    .checkNickName(nickName = nicknameState.nickname)
+                    .collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Success -> {
+                                _uiState.value =
+                                    NickNameUiState.Success(nickName = nicknameState.nickname)
+                            }
+
+                            is ApiResponse.Error -> {
+                                nicknameState.updateErrorMessage(ErrorMessage.DUPLICATED_NICKNAME)
+                                _uiState.value =
+                                    NickNameUiState.Error(errorMessage = nicknameState.errorMessage)
+                            }
+
+                            ApiResponse.Init -> {}
                         }
-
-                        is ApiResponse.Error -> {
-                            nicknameState.updateErrorMessage(ErrorMessage.DUPLICATED_NICKNAME)
-                            _uiState.value =
-                                NickNameUiState.Error(errorMessage = nicknameState.errorMessage)
-                        }
-
-                        ApiResponse.Init -> {}
                     }
-                }
+            }
         }
     }
-}
 
-class NicknameState() {
+class NicknameState {
     private val nicknameRegex = "^[가-힣a-zA-Z]{2,10}$".toRegex() // 정규식
 
     var nickname by mutableStateOf("")
@@ -70,13 +73,12 @@ class NicknameState() {
         this.errorMessage = errorMessage
     }
 
-    private fun generateErrorMsg(newNickname: String): String {
-        return when {
+    private fun generateErrorMsg(newNickname: String): String =
+        when {
             newNickname.isEmpty() -> ErrorMessage.EMPTY_MESSAGE
             newNickname.length < 2 -> ErrorMessage.TOO_SHORT
             newNickname.length > 10 -> ErrorMessage.TOO_LONG
             !nicknameRegex.matches(newNickname) -> ErrorMessage.INVALID_CHAR
             else -> ""
         }
-    }
 }

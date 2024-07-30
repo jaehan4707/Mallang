@@ -12,22 +12,22 @@ import androidx.compose.ui.input.pointer.pointerInput
 // 화면 터치로 TextField 포커스 해제
 fun Modifier.addFocusCleaner(
     focusManager: FocusManager,
-    doOnClear: () -> Unit = {}
-): Modifier {
-    return this.pointerInput(Unit) {
+    doOnClear: () -> Unit = {},
+): Modifier =
+    this.pointerInput(Unit) {
         detectTapGestures(onTap = {
             doOnClear()
             focusManager.clearFocus()
         })
     }
-}
 
 // clickable ripple 효과  해제
-fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
-    this.clickable(
-        indication = null,
-        interactionSource = remember { MutableInteractionSource() }
-    ) {
-        onClick()
+fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier =
+    composed {
+        this.clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() },
+        ) {
+            onClick()
+        }
     }
-}
