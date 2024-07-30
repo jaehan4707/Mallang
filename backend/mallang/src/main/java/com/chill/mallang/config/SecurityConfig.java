@@ -4,6 +4,7 @@ import com.chill.mallang.domain.user.jwt.JWTUtil;
 import com.chill.mallang.domain.user.jwt.LoginFilter;
 import com.chill.mallang.domain.user.oauth.CustomOAuthProvider;
 import com.chill.mallang.domain.user.oauth.GoogleOAuthService;
+import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.user.service.CustomUserDetailsService;
 import com.chill.mallang.domain.user.service.JoinService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +33,19 @@ public class SecurityConfig {
     private final CustomOAuthProvider customOAuthProvider;
     private final JoinService joinService;
 
+    private final UserRepository userRepository;
+
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
 
-    public SecurityConfig(GoogleOAuthService googleOAuthService, JWTFilter jwtFilter, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService, CustomOAuthProvider customOAuthProvider, JoinService joinService) {
+    public SecurityConfig(GoogleOAuthService googleOAuthService, JWTFilter jwtFilter, JWTUtil jwtUtil, CustomUserDetailsService userDetailsService, CustomOAuthProvider customOAuthProvider, JoinService joinService, UserRepository userRepository) {
         this.googleOAuthService = googleOAuthService;
         this.jwtFilter = jwtFilter;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.customOAuthProvider = customOAuthProvider;
         this.joinService = joinService;
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -58,7 +62,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(new LoginFilter("/api/v1/user/login", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginFilter("/api/v1/user/login", authenticationManager(authenticationConfiguration), jwtUtil, userDetailsService, userRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

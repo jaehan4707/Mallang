@@ -8,16 +8,19 @@ import java.util.Collection;
 public class CustomOAuthToken extends AbstractAuthenticationToken {
 
     private final String idToken;
+    private final String email;  // 이메일 필드 추가
 
-    public CustomOAuthToken(String idToken) {
+    public CustomOAuthToken(String idToken, String email) {
         super(null);
         this.idToken = idToken;
+        this.email = email;
         setAuthenticated(false);
     }
 
-    public CustomOAuthToken(Collection<? extends GrantedAuthority> authorities, String idToken) {
+    public CustomOAuthToken(Collection<? extends GrantedAuthority> authorities, String idToken, String email) {
         super(authorities);
         this.idToken = idToken;
+        this.email = email;
         super.setAuthenticated(true);
     }
 
@@ -28,6 +31,6 @@ public class CustomOAuthToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return null;
+        return email;  // 이메일 반환
     }
 }

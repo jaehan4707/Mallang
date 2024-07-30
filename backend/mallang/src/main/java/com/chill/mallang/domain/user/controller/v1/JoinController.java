@@ -1,9 +1,8 @@
 package com.chill.mallang.domain.user.controller.v1;
 
 import com.chill.mallang.domain.user.dto.JoinRequestDTO;
-import com.chill.mallang.domain.user.dto.JoinResponseDTO;
 import com.chill.mallang.domain.user.service.JoinService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -30,23 +28,12 @@ public class JoinController {
 
         this.joinService = joinService;
     }
+
+    @Operation(summary = "회원가입 api", description = "헤더에 Bearer 토큰 포함시켜주세요.")
     @PostMapping("/join")
-    public void joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO, HttpServletResponse response) throws IOException {
-        JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinRequestDTO);
-
-        Map<String, String> dataMap = new HashMap<>();
-        dataMap.put("token", joinResponseDTO.getJwtToken());
-        Map<String, Map<String, String>> responseMap = new HashMap<>();
-        responseMap.put("data", dataMap);
-
-        // Convert the response map to JSON
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(responseMap);
-
-        // Write JSON to the HttpServletResponse
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(jsonResponse);
+    // 컨트롤러에 서비스 부분 다빼기
+    public ResponseEntity<?> joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
+        Map<String, Object> serviceResponse = joinService.joinProcess(joinRequestDTO, token);
+        return new ResponseEntity<>(serviceResponse, HttpStatus.OK);
     }
-
 }

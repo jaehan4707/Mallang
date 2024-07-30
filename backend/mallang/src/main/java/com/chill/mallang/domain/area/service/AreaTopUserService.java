@@ -7,17 +7,15 @@ import com.chill.mallang.domain.area.repository.AreaRepository;
 import com.chill.mallang.domain.faction.dto.FactionDTO;
 import com.chill.mallang.domain.faction.repository.FactionRepository;
 import com.chill.mallang.domain.user.dto.TopUserDTO;
-import com.chill.mallang.domain.user.dto.TryCountDTO;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
+import com.chill.mallang.errors.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional; //두 객체를 비교할 때 null 체크를 자동으로 처리
+import java.util.*;
 
 // 점령지 상세정보 1. 점령자 대표 유저 정보 조회
 @Service
@@ -31,25 +29,30 @@ public class AreaTopUserService {
     @Autowired
     private UserRepository userRepository;
 
-    public APIresponse<AreaTopUserDTO> getAreaInfo(Long areaId, Long userTeamId) {
-        Area area = areaRepository.findById(areaId).orElseThrow(() -> new IllegalArgumentException("Invalid area ID"));
-        List<User> users = userRepository.findAll();
+    public Map<String, Object> getAreaInfo(Long areaId, Long userTeamId) {
+        Optional<Area> area = areaRepository.findById(areaId);
 
-        // 팀 별 점수 합산 및 최고 득점자 찾기
-        FactionDTO myTeamInfo = calculateTeamInfo(users, userTeamId);
-        FactionDTO oppoTeamInfo = calculateTeamInfo(users, getOppositeTeamId(userTeamId));
 
-        AreaTopUserDTO data = AreaTopUserDTO.builder()
-                .areaName(area.getName())
-                .myTeamInfo(myTeamInfo)
-                .oppoTeamInfo(oppoTeamInfo)
-                .build();
+        if (area.isPresent() && userTeamId != null) {
 
-        return APIresponse.<AreaTopUserDTO>builder()
-                .status(HttpStatus.OK.value())
-                .message("Success")
-                .data(data)
-                .build();
+            List<User> users = userRepository.findAll();
+
+            // 팀 별 점수 합산 및 최고 득점자 찾기
+            FactionDTO myTeamInfo = calculateTeamInfo(users, userTeamId);
+            FactionDTO oppoTeamInfo = calculateTeamInfo(users, getOppositeTeamId(userTeamId));
+
+            AreaTopUserDTO topUserInfo = AreaTopUserDTO.builder()
+                    .areaName(area.get().getName())
+                    .myTeamInfo(myTeamInfo)
+                    .oppoTeamInfo(oppoTeamInfo)
+                    .build();
+
+            return new HashMap<>(){{
+                put("data",topUserInfo);
+            }};
+        } else {
+            throw new RestApiException(AreaErrorCode.INVALID_PARAMETER);
+        }
     }
 
     private FactionDTO calculateTeamInfo(List<User> users, Long teamId) {

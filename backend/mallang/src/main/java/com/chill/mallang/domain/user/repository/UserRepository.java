@@ -9,8 +9,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-        Boolean existsByEmail(String email);
         Optional<User> findByEmail(String email);
+        //USER id 탐색
         @Override
-        boolean existsById(Long id);
+        Optional<User>findById(Long id);
+        boolean existsByNickname(String nickname);
+        boolean existsByEmail(String email);
 }
