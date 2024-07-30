@@ -58,6 +58,8 @@ public class AreaController {
     @Operation(summary = "도전 기록 조회", description = "특정 점령지에 대한 현재 사용자의 점수정보를 조회합니다. / 양 팀 멤버들의 점수정보를 등수 오름차순으로 정렬하여 조회합니다.")
     @GetMapping("/records/{areaId}/{userId}")
     public ResponseEntity<?> getGameRecords(@PathVariable Long areaId, @PathVariable Long userId) {
+        logger.info(areaId.toString());
+        logger.info(userId.toString());
         Map<String,Object> challengeRecordInfo = challengeRecordService.getChallengeRecord(areaId, userId);
         return new ResponseEntity<>(challengeRecordInfo,HttpStatus.OK);
     }
