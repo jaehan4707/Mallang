@@ -1,16 +1,14 @@
 package com.chill.mallang.domain.quiz.model;
 
+import com.chill.mallang.domain.area.model.Area;
 import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +20,10 @@ public class Answer {
     @ManyToOne
     @JoinColumn(name = "quiz")
     private Quiz quiz;
+
+    @ManyToOne
+    @JoinColumn(name = "area")
+    private Area area;
 
     private String answer;
     private float score;

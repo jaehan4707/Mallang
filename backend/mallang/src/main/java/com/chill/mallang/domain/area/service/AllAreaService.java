@@ -42,7 +42,7 @@ public class AllAreaService {
     // 전체 점령지 조회
     public Map<String, Object> getAllAreas() {
         List<Area> areas = areaRepository.findAll();
-        if (areas == null || areas.isEmpty()) {
+        if (areas.isEmpty()) {
             throw new RestApiException(AreaErrorCode.INVALID_PARAMETER);
         }
 
