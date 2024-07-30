@@ -74,4 +74,26 @@ class UserRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun checkNickName(nickName: String): Flow<ApiResponse<Unit>> = flow {
+        val response = apiHandler {
+            userApi.checkNickName(nickName)
+        }
+        when (response) {
+            is ApiResponse.Success -> {
+                emit(ApiResponse.Success(null))
+            }
+
+            is ApiResponse.Error -> {
+                emit(
+                    ApiResponse.Error(
+                        errorCode = response.errorCode,
+                        errorMessage = response.errorMessage
+                    )
+                )
+            }
+
+            ApiResponse.Init -> {}
+        }
+    }
 }
