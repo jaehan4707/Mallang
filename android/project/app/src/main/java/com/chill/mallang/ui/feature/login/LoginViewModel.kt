@@ -211,11 +211,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             firebaseRepository.firebaseAuthWithGoogle(idToken).collectLatest { authUser ->
                 authUser?.let { user ->
-                    _loginUiState.value = LoginUiState.Success(
-                        idToken = idToken,
-                        userEmail = user.email,
-                        userProfileImageUrl = user.photoUrl.toString()
-                    )
+                    login(idToken, user.email ?: "", user.photoUrl.toString())
                 }
             }
         }

@@ -14,7 +14,6 @@ sealed interface LoginUiState {
 
     @Immutable
     data class Success(
-        val idToken: String? = "",
         val userEmail: String? = "",
         val userProfileImageUrl: String? = "",
     ) : LoginUiState
