@@ -71,12 +71,10 @@ public class AreaController {
         return new ResponseEntity<>(areaInfo, HttpStatus.OK);
     }
 
-    @Operation(summary = "전체 점령지 단순 조회", description = "특정 점령지의 정보를 조회합니다.")
+    @Operation(summary = "전체 점령지 단순 조회", description = "전체 점령지의 정보를 조회합니다.")
     @GetMapping()
     public ResponseEntity<?> getAllAreas() {
         Map<String,Object> areaInfo = allAreaService.getAllAreas();
         return new ResponseEntity<>(areaInfo, HttpStatus.OK);
     }
-
-
 }
