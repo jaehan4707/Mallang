@@ -19,13 +19,14 @@ public class Quiz {
     @ManyToOne
     @JoinColumn(name = "area")
     private Area area;
-
-    @NotNull
-    private String question;
     @NotNull
     private int difficulty;
     @NotNull
+    private String question;
+    @NotNull
     private String answer;
+    @NotNull
+    private String type;
     @NotNull
     private LocalDateTime created_at = LocalDateTime.now();
 

@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.quiz.controller.v1;
 
+import com.chill.mallang.domain.quiz.dto.RequestQuizAnswer;
 import com.chill.mallang.domain.quiz.service.QuizService;
 import com.chill.mallang.errors.errorcode.CustomErrorCode;
 import com.chill.mallang.errors.exception.RestApiException;
@@ -24,14 +25,14 @@ public class QuizController {
     @Operation(summary = "퀴즈 상제 정보 조회", description = "특정 퀴즈에 대한 상제 정보를 조회합니다.")
     @GetMapping("/{quizID}")
     public ResponseEntity<?> getQuiz(@PathVariable Long quizID) {
-//        throw new RestApiException(CustomErrorCode.INVALID_PARAMETER);
         return new ResponseEntity<>(quizService.getById(quizID), HttpStatus.OK);
     }
 
     @Operation(summary = "퀴즈 정답 제출", description = "특정 퀴즈에 대한 정답을 제출합니다.")
-    @PostMapping("/{quizID}/answers")
-    public ResponseEntity<?> postQuizAnswer(@PathVariable Long quizID, @RequestBody String answer) {
-        return null;
+    @PostMapping("/submit")
+    public ResponseEntity<?> postQuizAnswer(@RequestBody RequestQuizAnswer requestQuizAnswer) {
+        quizService.submitAnswer(requestQuizAnswer);
+        return new ResponseEntity<>("정답 제출 완료", HttpStatus.OK);
     }
 
     @Operation(summary = "정답 확인", description = "특정 문제의 AI 기준 정답 확인")

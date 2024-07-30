@@ -3,10 +3,14 @@ package com.chill.mallang.domain.quiz.service;
 
 import com.chill.mallang.domain.quiz.dto.ChatGPTRequest;
 import com.chill.mallang.domain.quiz.dto.ChatGPTResponse;
+import com.chill.mallang.domain.quiz.dto.RequestQuizAnswer;
 import com.chill.mallang.domain.quiz.dto.ResponseQuiz;
+import com.chill.mallang.domain.quiz.error.QuizErrorCode;
+import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.quiz.model.Quiz;
+import com.chill.mallang.domain.quiz.repository.AnswerRepository;
 import com.chill.mallang.domain.quiz.repository.QuizRepository;
-import com.chill.mallang.errors.errorcode.CustomErrorCode;
+import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.errors.exception.RestApiException;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,7 +51,10 @@ public class QuizService {
     private RestTemplate template;
     @Autowired
     private QuizRepository quizRepository;
-
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @Autowired
     public QuizService(OpenAiService openAiService) {
@@ -133,13 +139,35 @@ public class QuizService {
                     .question(quiz.get().getQuestion())  // 추가된 부분
                     .answer(quiz.get().getAnswer())
                     .difficulty(quiz.get().getDifficulty())
+                    .type(quiz.get().getType())
                     .build();
 
             return new HashMap<String, Object>() {{
                     put("Data", responseQuiz);
             }};
         } else {
-            throw new RestApiException(CustomErrorCode.INVALID_PARAMETER);
+            throw new RestApiException(QuizErrorCode.INVALID_QUIZ_PK);
         }
+    }
+
+    public void submitAnswer(RequestQuizAnswer requestQuizAnswer){
+        logger.info(String.valueOf(requestQuizAnswer));
+        saveAnswer(requestQuizAnswer);
+        logger.info("Success Save Answer");
+    }
+
+    public Answer saveAnswer(RequestQuizAnswer requestQuizAnswer){
+
+        Answer answer = Answer.builder()
+                .user(userRepository.findById(requestQuizAnswer.getUserId()).orElseThrow(() -> new RestApiException(QuizErrorCode.USER_NOT_FOUND)))
+                .quiz(quizRepository.findById(requestQuizAnswer.getQuizId()).orElseThrow(() -> new RestApiException(QuizErrorCode.QUIZ_NOT_FOUND)))
+                .answer(requestQuizAnswer.getUserAnswer())
+                .answerTime(requestQuizAnswer.getAnswerTime())
+                .score(100)
+                .check_fin(0) // 기본값 설정
+                .build();
+
+        logger.info("Add answer data : " , answer.toString());
+        return answerRepository.save(answer);
     }
 }
