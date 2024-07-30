@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.map.mapview
 
-import CustomMarkerState
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
@@ -22,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.chill.mallang.R
+import com.chill.mallang.ui.feature.map.CustomMarkerState
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
@@ -37,7 +37,7 @@ import com.google.maps.android.compose.MarkerState
 @Composable
 @GoogleMapComposable
 fun CustomMarkerWithArea(
-    state: CustomMarkerState = CustomMarkerState()
+    state: CustomMarkerState
 ){
     MarkerComposable(
         state = state.marker
