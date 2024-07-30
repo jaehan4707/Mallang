@@ -19,6 +19,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -29,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.theme.BackGround
@@ -42,11 +45,14 @@ import com.chill.mallang.ui.util.addFocusCleaner
 @Composable
 fun NicknameScreen(
     modifier: Modifier = Modifier,
-    onClick: (String) -> Unit = {}
+    onSuccess: (String) -> Unit = {},
 ) {
     val nicknameViewModel: NicknameViewModel = hiltViewModel()
     val nicknameState = nicknameViewModel.nicknameState
     val focusManager = LocalFocusManager.current
+    val nickNameUiState by nicknameViewModel.uiState.collectAsStateWithLifecycle()
+
+    HandleNickNameUiEvent(uiState = nickNameUiState, onSuccess = onSuccess)
 
     Surface(
         color = BackGround,
@@ -57,8 +63,27 @@ fun NicknameScreen(
         NickNameContent(
             focusManager = focusManager,
             uiState = nicknameState,
-            onClick = { onClick(it) },
+            onSuccess = { onSuccess(it) },
+            checkNickName = {
+                nicknameViewModel.checkNickName()
+            }
         )
+    }
+}
+
+@Composable
+fun HandleNickNameUiEvent(
+    uiState: NickNameUiState,
+    onSuccess: (String) -> Unit = {},
+) {
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is NickNameUiState.Success -> {
+                onSuccess(uiState.nickName)
+            }
+
+            else -> {}
+        }
     }
 }
 
@@ -66,7 +91,8 @@ fun NicknameScreen(
 fun NickNameContent(
     focusManager: FocusManager = LocalFocusManager.current,
     uiState: NicknameState = NicknameState(),
-    onClick: (String) -> Unit = {},
+    onSuccess: (String) -> Unit = {},
+    checkNickName: () -> Unit = { },
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -100,7 +126,9 @@ fun NickNameContent(
         }
         Spacer(modifier = Modifier.height(20.dp))
         LongBlackButton(
-            onClick = { onClick(uiState.nickname) },
+            onClick = {
+                checkNickName()
+            },
             text = "결정하기"
         )
         Spacer(modifier = Modifier.weight(1f))
