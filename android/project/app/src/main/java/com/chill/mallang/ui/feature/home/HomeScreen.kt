@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.home
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,7 +38,6 @@ import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
 import com.chill.mallang.ui.util.noRippleClickable
-
 
 object TestData { // 화면 임시 구성할 데이터
     const val USER_NAME = "짜이한"
@@ -57,25 +54,28 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
+    popUpBackStack: () -> Unit = {},
 ) {
-    val context = LocalContext.current
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
         isBackPressed = isBackPressed.value,
         onConfirm = {
             isBackPressed.value = false
-            (context as Activity).finish()
+            popUpBackStack()
         },
         onDismiss = {
             isBackPressed.value = false
         },
-        content = stringResource(R.string.app_exit_message)
+        content = stringResource(R.string.app_exit_message),
     )
-    BackHandler(onBack = { isBackPressed.value = true })
+    BackHandler(onBack = {
+        isBackPressed.value = true
+    })
     Box(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxSize()
-            .padding(horizontal = 15.dp)
+            .padding(horizontal = 15.dp),
     ) {
         Column {
             Row { // 유저 아이템 수의 따라 LazyColumn
@@ -117,22 +117,23 @@ fun HomeScreen(
 fun IconButton(
     icon: Int,
     label: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.noRippleClickable {
+        modifier =
+        Modifier.noRippleClickable {
             onClick()
         },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             painter = painterResource(id = icon),
-            contentDescription = label
+            contentDescription = label,
         )
         Text(
             text = label,
             style = Typography.displayLarge,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(5.dp))
     }
@@ -142,37 +143,43 @@ fun IconButton(
 fun SideUserButton(modifier: Modifier = Modifier) {
     Column(
         modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.End
+        horizontalAlignment = Alignment.End,
     ) {
         IconButton(
             icon = R.drawable.ic_setting,
             label = stringResource(R.string.side_button_setting),
-            onClick = { }
+            onClick = { },
         )
         IconButton(
             icon = R.drawable.ic_quest,
             label = stringResource(R.string.side_button_quest),
-            onClick = { })
+            onClick = { },
+        )
         IconButton(
             icon = R.drawable.ic_ranking,
             label = stringResource(R.string.side_button_ranking),
-            onClick = { })
+            onClick = { },
+        )
     }
 }
 
 @Composable
-internal fun UserItem(icon: Int, label: String) {
+internal fun UserItem(
+    icon: Int,
+    label: String,
+) {
     Row(
-        modifier = Modifier
+        modifier =
+        Modifier
             .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
             .padding(5.dp)
-            .height(IntrinsicSize.Min)
+            .height(IntrinsicSize.Min),
     ) {
         Icon(
             painter = painterResource(id = icon),
             contentDescription = label,
             tint = Color.Yellow,
-            modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp)
+            modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp),
         )
         Text(
             text = label,
@@ -180,13 +187,17 @@ internal fun UserItem(icon: Int, label: String) {
             color = Color.Black,
             textAlign = TextAlign.Center,
             fontSize = 18.sp,
-            modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp)
+            modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp),
         )
     }
 }
 
 @Composable
-fun UserCharacter(modifier: Modifier = Modifier, userName: String, userRank: String) {
+fun UserCharacter(
+    modifier: Modifier = Modifier,
+    userName: String,
+    userRank: String,
+) {
     when (userRank) { // 티어별 이미지 할당
         TestData.RANK_1 -> {}
         TestData.RANK_2 -> {}
@@ -195,20 +206,21 @@ fun UserCharacter(modifier: Modifier = Modifier, userName: String, userRank: Str
     }
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Max),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_stars),
                 contentDescription = userRank,
-                modifier = Modifier.align(Alignment.CenterVertically)
+                modifier = Modifier.align(Alignment.CenterVertically),
             )
             Text(
                 text = userName,
                 style = Typography.headlineLarge,
-                modifier = Modifier.padding(start = 3.dp)
+                modifier = Modifier.padding(start = 3.dp),
             )
         }
         Image(painter = painterResource(id = R.mipmap.malang), contentDescription = "말랑")
@@ -216,16 +228,17 @@ fun UserCharacter(modifier: Modifier = Modifier, userName: String, userRank: Str
             Image(
                 modifier = Modifier.align(Alignment.Center),
                 painter = painterResource(id = R.mipmap.rectangle_message),
-                contentDescription = ""
+                contentDescription = "",
             )
             Text(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .padding(top = 10.dp)
                     .align(Alignment.Center),
                 text = stringResource(id = R.string.character_message),
                 style = Typography.bodyLarge,
                 color = Sub1,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             )
         }
     }
@@ -236,10 +249,11 @@ fun ModeButton(
     icon: Int,
     label: String,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .width(75.dp)
             .height(75.dp)
             .noRippleClickable { onClick() }
@@ -255,7 +269,7 @@ fun ModeButton(
         Text(
             text = label,
             style = Typography.displayMedium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
