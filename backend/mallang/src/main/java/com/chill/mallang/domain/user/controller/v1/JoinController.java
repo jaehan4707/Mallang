@@ -35,21 +35,8 @@ public class JoinController {
     @Operation(summary = "회원가입 api", description = "헤더에 Bearer 토큰 포함시켜주세요.")
     @PostMapping("/join")
     // 컨트롤러에 서비스 부분 다빼기
-    public void joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String token, HttpServletResponse response) throws IOException {
-        JoinResponseDTO joinResponseDTO = joinService.joinProcess(joinRequestDTO);
-        Map<String, String> dataMap = new HashMap<>();
-        dataMap.put("token", token.substring(7));
-        dataMap.put("is_registered", joinResponseDTO.getIs_registered());
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("data", dataMap);
-        // Convert the response map to JSON
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(responseMap);
-
-        // Write JSON to the HttpServletResponse
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(jsonResponse);
+    public ResponseEntity<?> joinProcess(@Valid @RequestBody JoinRequestDTO joinRequestDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String token, HttpServletResponse response) throws IOException {
+        Map<String, Object> serviceResponse = joinService.joinProcess(joinRequestDTO, token);
+        return new ResponseEntity<>(serviceResponse, HttpStatus.OK);
     }
-
 }

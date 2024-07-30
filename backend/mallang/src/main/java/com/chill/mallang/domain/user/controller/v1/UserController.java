@@ -5,8 +5,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -20,7 +25,8 @@ public class UserController {
     @Operation(summary="user 정보 조회 with email", description = "해당 유저 정보 조회 API,헤더에 토큰 첨부 필수")
     @GetMapping("/email")
     public ResponseEntity<?> getUserByEmail(HttpServletRequest request) {
-        return userService.findByEmailFromToken(request);
+        Map<String, Object> response = userService.findByEmailFromToken(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary="email 중복 조회", description = "email 중복 API,헤더에 토큰 첨부 필수")

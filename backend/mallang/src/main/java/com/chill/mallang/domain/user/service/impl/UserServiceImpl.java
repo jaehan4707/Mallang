@@ -2,12 +2,13 @@ package com.chill.mallang.domain.user.service.impl;
 
 import com.chill.mallang.domain.user.dto.FindByEmailDTO;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
-import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.user.service.UserService;
 import com.chill.mallang.errors.errorcode.CustomErrorCode;
 import com.chill.mallang.errors.exception.RestApiException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
     @Autowired
@@ -48,6 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<FindByEmailDTO> findByEmail(String email) {
+        logger.info("findByEmail" + userRepository.findByEmail(email).toString());
         return userRepository.findByEmail(email).map(user -> new FindByEmailDTO(
                 user.getNickname(),
                 user.getFaction().getName().name(), // FactionType을 문자열로 변환
@@ -56,22 +59,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> findByEmailFromToken(HttpServletRequest request) {
+    public Map<String, Object> findByEmailFromToken(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (token == null || !token.startsWith("Bearer ")) {
             throw new RestApiException(CustomErrorCode.INVALID_PARAMETER);
         }
         String email = jwtUtil.extractEmail(token.substring(7));
         Optional<FindByEmailDTO> userDTO = findByEmail(email);
+        logger.info("userDTO: " + userDTO);
         Map<String, Object> response = new HashMap<>();
         if (userDTO.isPresent()) {
-            response.put("data", userDTO.get());
+            response.put("status", 200);
             response.put("success", "회원조회에 성공했습니다.");
-            response.put("status", HttpStatus.OK.value());
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            response.put("data", userDTO.get());
         } else {
             throw new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND);
         }
+        return response;
     }
 }
 
