@@ -21,18 +21,6 @@ class QuizResultViewModel @Inject constructor(
         gradeQuiz(savedStandHandle.get<Int>("studyId") ?: -1)
     }
 
-    fun expandAnswer(index: Int) {
-        if (index + 1 == state.expandedAnswer) {
-            state = state.copy(
-                expandedAnswer = -1
-            )
-        } else {
-            state = state.copy(
-                expandedAnswer = index + 1
-            )
-        }
-    }
-
     private fun gradeQuiz(studyId: Int) {
         viewModelScope.launch {
             // 퀴즈 결과 불러오기 api 실행
