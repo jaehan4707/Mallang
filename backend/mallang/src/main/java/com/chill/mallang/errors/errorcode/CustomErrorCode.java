@@ -12,7 +12,8 @@ public enum CustomErrorCode implements ErrorCode{
     // 변서원바보(실패,"바보")
     NICKNAME_IS_EXISTS(HttpStatus.CONFLICT, "Nickname already exists"),
     EMAIL_IS_EXISTS(HttpStatus.CONFLICT, "email already exists"),
-    JOIN_IS_FAILED(HttpStatus.CONFLICT, "join is failed")
+    JOIN_IS_FAILED(HttpStatus.CONFLICT, "join is failed"),
+    AUTHENTICATED_FAILED(HttpStatus.NON_AUTHORITATIVE_INFORMATION, "Authenticated failed")
     ;
 
     private final HttpStatus httpStatus;

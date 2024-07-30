@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -19,6 +18,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     private static final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
@@ -69,16 +69,17 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         // 회원가입 유무 확인
         String is_registered = userRepository.existsByEmail(email)? "true" : "false";
         //jwt 토큰 생성
-        Map<String, String> dataMap = new HashMap<>();
+        Map<String, Object> dataMap = new HashMap<>();
         long secondsInAYear = 365L * 24 * 60 * 60;
         long tokenValidityInSeconds = 150L * secondsInAYear;
         String jwtToken = jwtUtil.createJwt(authResult.getName(), "ROLE_USER", tokenValidityInSeconds);
 
         dataMap.put("token", jwtToken);
         dataMap.put("is_registered", is_registered);
-        Map<String, Map<String, String>> responseMap = new HashMap<>();
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("status", 200);
+        responseMap.put("success", "로그인에 성공하였습니다.");
         responseMap.put("data", dataMap);
-
         // Convert the response map to JSON
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonResponse = objectMapper.writeValueAsString(responseMap);
@@ -87,7 +88,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(jsonResponse);
-        logger.info("토큰 wrapper"+jsonResponse);
+        logger.info("토큰 wrapper" + jsonResponse);
     }
 
     @Override
