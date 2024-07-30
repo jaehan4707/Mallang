@@ -5,6 +5,7 @@ import com.chill.mallang.domain.area.dto.TeamAreaLogDTO;
 import com.chill.mallang.domain.area.dto.UserAreaLogDTO;
 import com.chill.mallang.domain.area.model.AreaLog;
 import com.chill.mallang.domain.faction.model.FactionType;
+import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.area.repository.AreaLogRepository;

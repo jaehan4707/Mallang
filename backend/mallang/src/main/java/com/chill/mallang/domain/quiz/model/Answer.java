@@ -22,6 +22,8 @@ public class Answer {
     @JoinColumn(name = "quiz")
     private Quiz quiz;
 
+
+
     private String answer;
     private float score;
     private int answerTime;
