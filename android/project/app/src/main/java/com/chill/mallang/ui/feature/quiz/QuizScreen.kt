@@ -23,10 +23,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -38,10 +43,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.component.CustomSnackBar
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
+import kotlinx.coroutines.launch
 
 @Composable
 fun QuizScreen(
@@ -52,6 +59,10 @@ fun QuizScreen(
 
     val quizViewModel: QuizViewModel = hiltViewModel()
     val quizState = quizViewModel.state
+
+    // SnackbarHostState 생성
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
@@ -66,46 +77,68 @@ fun QuizScreen(
     )
     BackHandler(onBack = { isBackPressed.value = true })
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = Color.White)
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.height(15.dp))
-            QuizBox(
-                quizTitle = quizState.quizTitle,
-                quizScript = quizState.quizScript
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            AnswerList(
-                viewModel = quizViewModel,
-                state = quizState,
-                fraction = 0.13f,
-                onAnswerSelected = { selectedIndex ->
-                    quizViewModel.selectAnswer(selectedIndex)
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { snackBarData ->
+                    CustomSnackBar(snackBarData = snackBarData)
                 }
             )
         }
-        Button(
-            onClick = {
-                quizViewModel.submitQuiz() // 퀴즈 제출 및 채점
-                navigateToQuizResult(1)
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                .widthIn(min = 180.dp) // 버튼의 최소 너비
-                .heightIn(min = 80.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Gray6
-            ),
-            shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp)
+    ) { innerPadding ->
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(color = Color.White)
+                .padding(innerPadding)
         ) {
-            Text(
-                text = "제출하기      >",
-                style = Typography.headlineLarge
-            )
+            Column(modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.height(15.dp))
+                QuizBox(
+                    quizTitle = quizState.quizTitle,
+                    quizScript = quizState.quizScript
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                AnswerList(
+                    viewModel = quizViewModel,
+                    state = quizState,
+                    fraction = 0.13f,
+                    onAnswerSelected = { selectedIndex ->
+                        quizViewModel.selectAnswer(selectedIndex)
+                    }
+                )
+            }
+            Button(
+                onClick = {
+                    if (quizViewModel.selectedAnswer == -1) {
+                        // 스낵바 띄우기
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "정답을 선택해 주세요!",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    } else {
+                        quizViewModel.submitQuiz() // 퀴즈 제출 및 채점
+                        navigateToQuizResult(1)
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(y = (-30).dp) // 버튼을 20dp 위로 올
+                    .widthIn(min = 180.dp) // 버튼의 최소 너비
+                    .heightIn(min = 80.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Gray6
+                ),
+                shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp)
+            ) {
+                Text(
+                    text = "제출하기      >",
+                    style = Typography.headlineLarge
+                )
+            }
         }
     }
 }
