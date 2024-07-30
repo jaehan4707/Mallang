@@ -11,6 +11,7 @@ lifecycleRuntimeKtx = "2.8.3"
 activityCompose = "1.9.0"
 composeBom = "2024.04.01"
 googleMap = "4.4.1"
+mapsUtil = "5.1.1"
 secretGradle = "2.0.1"
 navigationCompose = "2.7.7"
 appcompat = "1.6.1"
@@ -74,6 +75,8 @@ kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = {group = "org.jetbrains.kotlinx", name="kotlinx-coroutines-android",version.ref="coroutines"}
+
+google-maps-util = {group = "com.google.maps.android", name = "maps-utils-ktx", version.ref = "mapsUtil"}
 
 [bundles]
 network = ["retrofit", "okhttp-logging-interceptor", "gson","kotlinx-serialization-json","kotlinx-serialization-converter"]

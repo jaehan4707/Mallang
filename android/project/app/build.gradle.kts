@@ -102,6 +102,7 @@ dependencies {
 
     //google maps sdk
     implementation(libs.google.maps.android.compose)
+    implementation(libs.google.maps.util)
 
     // firebase
     implementation(libs.play.services.auth)
