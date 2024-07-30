@@ -9,11 +9,15 @@ import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.area.repository.AreaLogRepository;
 import com.chill.mallang.domain.area.repository.AreaRepository;
+import com.chill.mallang.errors.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,19 +32,11 @@ public class ChallengeRecordService {
     @Autowired
     private AreaRepository areaRepository;
 
-    public APIresponse<ChallengeRecordDTO> getChallengeRecord(Long areaId, Long userId) {
+    public Map<String, Object> getChallengeRecord(Long areaId, Long userId) {
         List<AreaLog> areaLogs = areaLogRepository.findByAreaId(areaId);
-        User user = userRepository.findById(userId).orElse(null);
+        Optional<User> user = userRepository.findById(userId);
 
-        ChallengeRecordDTO data;
-        //없으면 빈배열 반환
-        if (areaLogs.isEmpty() || user == null) {
-            data = ChallengeRecordDTO.builder()
-                    .userRecord(null)
-                    .myTeamRecords(List.of())
-                    .oppoTeamRecords(List.of())
-                    .build();
-        } else {
+        if (user.isPresent() && areaLogs != null) {
             //아군
             List<TeamAreaLogDTO> myTeamRecords = areaLogs.stream()
                     .filter(log -> isSameTeam(log.getUser(), user))
@@ -65,24 +61,23 @@ public class ChallengeRecordService {
                     .findFirst()
                     .orElse(null);
 
-            data = ChallengeRecordDTO.builder()
+            ChallengeRecordDTO challengeRecordInfo = ChallengeRecordDTO.builder()
                     .userRecord(userRecord != null ? toUserAreaLogDTO(userRecord) : null)
                     .myTeamRecords(myTeamRecords)
                     .oppoTeamRecords(oppoTeamRecords)
                     .build();
-        }
 
-        return APIresponse.<ChallengeRecordDTO>builder()
-                .status(HttpStatus.OK.value())
-                .message("Success")
-                .data(data)
-                .build();
+            return new HashMap<>(){{
+                put("data",challengeRecordInfo);
+            }};
+        } else {
+            throw new RestApiException(AreaErrorCode.INVALID_PARAMETER);        }
     }
 
     //같은 팀인지 확인
-    private boolean isSameTeam(Long logUserId, User user) {
+    private boolean isSameTeam(Long logUserId, Optional<User> user) {
         User logUser = userRepository.findById(logUserId).orElse(null);
-        return logUser != null && logUser.getFaction().equals(user.getFaction());
+        return logUser != null && logUser.getFaction().equals(user.get().getFaction());
     }
 
     // convertDTO - TeamAreaLog

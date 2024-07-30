@@ -4,11 +4,14 @@ import com.chill.mallang.domain.area.dto.APIresponse;
 import com.chill.mallang.domain.area.dto.AllAreaDTO;
 import com.chill.mallang.domain.area.model.Area;
 import com.chill.mallang.domain.area.repository.AreaRepository;
-import com.chill.mallang.domain.user.dto.TryCountDTO;
+import com.chill.mallang.errors.exception.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -18,23 +21,22 @@ public class AllAreaService {
     private AreaRepository areaRepository;
 
     // 점령지 조회
-    public APIresponse<AllAreaDTO> getAreaById(Long areaId) {
+    public Map<String, Object> getAreaById(Long areaId) {
         Optional<Area> area = areaRepository.findById(areaId);
-        AllAreaDTO data = area.map(this::convertToDto).orElse(null);
-        return APIresponse.<AllAreaDTO>builder()
-                .status(HttpStatus.OK.value())
-                .message("Success")
-                .data(data)
-                .build();
-    }
+        if (area.isPresent()) {
 
-    //DTO 변환
-    private AllAreaDTO convertToDto(Area area) {
-        return AllAreaDTO.builder()
-                .areaId(area.getId())
-                .areaName(area.getName())
-                .latitude(area.getLatitude())
-                .longitude(area.getLongitude())
-                .build();
+            AllAreaDTO areaInfo = AllAreaDTO.builder()
+                    .areaId(area.get().getId())
+                    .areaName(area.get().getName())
+                    .latitude(area.get().getLatitude())
+                    .longitude(area.get().getLongitude())
+                    .build();
+
+            return new HashMap<>(){{
+                put("data",areaInfo);
+            }};
+        } else {
+            throw new RestApiException(AreaErrorCode.INVALID_PARAMETER);
+        }
     }
 }
