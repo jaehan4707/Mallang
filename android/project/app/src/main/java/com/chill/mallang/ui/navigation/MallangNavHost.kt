@@ -51,7 +51,7 @@ fun MallangNavHost(
                 navBackStackEntry.arguments?.getString("userProfileImageUrl") ?: "",
                 StandardCharsets.UTF_8.toString()
             )
-            NicknameScreen(modifier = modifier, onClick = { nickName ->
+            NicknameScreen(modifier = modifier, onSuccess = { nickName ->
                 navController.navigate(
                     DestinationSelect.createRoute(
                         userEmail = userEmail,
@@ -98,7 +98,13 @@ fun MallangNavHost(
             QuizScreen(
                 modifier = modifier,
                 popUpBackStack = { navController.popBackStack() },
-                navigateToQuizResult = { navController.navigate(DestinationQuizResult.createRoute(quizId = it)) }
+                navigateToQuizResult = {
+                    navController.navigate(
+                        DestinationQuizResult.createRoute(
+                            quizId = it
+                        )
+                    )
+                }
             )
         }
 

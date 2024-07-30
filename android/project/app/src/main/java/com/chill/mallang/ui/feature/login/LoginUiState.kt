@@ -5,7 +5,6 @@ import androidx.compose.runtime.Stable
 
 @Stable
 sealed interface LoginUiState {
-
     @Immutable
     data object Loading : LoginUiState
 
