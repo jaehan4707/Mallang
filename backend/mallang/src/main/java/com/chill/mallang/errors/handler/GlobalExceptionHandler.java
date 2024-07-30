@@ -4,7 +4,6 @@ import com.chill.mallang.errors.errorcode.CommonErrorCode;
 import com.chill.mallang.errors.errorcode.ErrorCode;
 import com.chill.mallang.errors.exception.RestApiException;
 import com.chill.mallang.errors.response.ErrorResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
