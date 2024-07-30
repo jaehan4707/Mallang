@@ -21,11 +21,12 @@ public class User {
     private String nickname;
     @NotNull
     private String picture;
-    private Integer try_count;
-    private String role;
 
     @ManyToOne
-    @JoinColumn(name = "faction")
+    @JoinColumn(name ="faction", nullable = false)
     private Faction faction;
+
+    private Integer try_count;
+    private String role;
 
 }

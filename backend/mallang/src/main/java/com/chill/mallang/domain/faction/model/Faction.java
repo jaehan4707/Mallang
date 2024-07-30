@@ -1,7 +1,7 @@
 package com.chill.mallang.domain.faction.model;
 
-import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
+import com.chill.mallang.domain.user.model.User;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,8 +15,15 @@ public class Faction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Enumerated(EnumType.STRING)
     @NotNull
-    private String name;
+    private FactionType name;
+
+    public Faction() {}
+
+    public Faction(FactionType name) {
+        this.name = name;
+    }
 
     @OneToOne
     private User topUser;

@@ -24,13 +24,13 @@ public class CustomOAuthProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String idToken = (String) authentication.getCredentials();
-
+        String email = authentication.getName();
         try {
             GoogleIdToken.Payload payload = googleOAuthService.verifyToken(idToken);
 
             if (payload != null) {
                 UserDetails userDetails = new User(payload.getSubject(), "", new ArrayList<>());
-                return new CustomOAuthToken(userDetails.getAuthorities(), idToken);
+                return new CustomOAuthToken(userDetails.getAuthorities(), idToken, email);
             }
 
         } catch (GeneralSecurityException | IOException e) {
