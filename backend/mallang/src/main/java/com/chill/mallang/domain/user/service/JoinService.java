@@ -22,13 +22,11 @@ public class JoinService {
 
     private static final Logger logger = LoggerFactory.getLogger(JoinService.class);
     private final UserRepository userRepository;
-    private final JWTUtil jwtUtil;
     private final FactionRepository factionRepository;
 
     @Autowired
-    public JoinService(UserRepository userRepository, JWTUtil jwtUtil, FactionRepository factionRepository) {
+    public JoinService(UserRepository userRepository, FactionRepository factionRepository) {
         this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
         this.factionRepository = factionRepository;
     }
 
@@ -48,7 +46,7 @@ public class JoinService {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid faction"));
 
             // 이메일 중복 확인
-            Boolean isExist = userRepository.existsByEmail(email);
+            boolean isExist = userRepository.existsByEmail(email);
             if (isExist) {
                 throw new RestApiException(CustomErrorCode.EMAIL_IS_EXISTS);
             }
