@@ -98,13 +98,7 @@ fun MallangNavHost(
             QuizScreen(
                 modifier = modifier,
                 popUpBackStack = { navController.popBackStack() },
-                navigateToQuizResult = {
-                    navController.navigate(
-                        DestinationQuizResult.createRoute(
-                            quizId = it
-                        )
-                    )
-                }
+                navigateToQuizResult = { navController.navigate(DestinationQuizResult.createRoute(studyId = it)) }
             )
         }
 
@@ -120,7 +114,7 @@ fun MallangNavHost(
             route = DestinationQuizResult.routeWithArgs,
             arguments = DestinationQuizResult.arguments,
         ) { navBackStackEntry ->
-            val quizId = navBackStackEntry.arguments?.getInt("quizId")
+            val quizId = navBackStackEntry.arguments?.getInt("studyId")
 
             QuizResultScreen(
                 modifier = modifier,
