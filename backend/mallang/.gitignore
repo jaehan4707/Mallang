@@ -42,5 +42,5 @@ out/
 .vscode/
 
 ### securityConfig###
-**/src/main/config/SecurityConfig.java
+backend/mallang/src/main/java/com/chill/mallang/config/SecurityConfig.java
 
