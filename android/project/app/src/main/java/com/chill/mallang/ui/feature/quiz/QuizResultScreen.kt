@@ -24,8 +24,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -57,9 +59,10 @@ fun QuizResultScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {}
 ) {
-
     val quizResultViewModel: QuizResultViewModel = hiltViewModel()
     val state = quizResultViewModel.state
+
+    var expandedItem by remember { mutableIntStateOf(-1) }
 
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
@@ -102,8 +105,9 @@ fun QuizResultScreen(
             AnswerList(
                 state = state,
                 fraction = 0.15f,
+                expandedItem = expandedItem,
                 onAnswerSelected = { selectedIndex ->
-                    quizResultViewModel.expandAnswer(selectedIndex)
+                    expandedItem = if (expandedItem == selectedIndex + 1) -1 else selectedIndex + 1
                 }
             )
         }
@@ -115,9 +119,9 @@ fun AnswerResultListItem(
     modifier: Modifier = Modifier,
     index: Int,
     state: QuizResultState,
+    expandedItem: Int,
     onItemClick: (Int) -> Unit
 ) {
-
     val isUserAnswer = state.userAnswer == index + 1
     val isSystemAnswer = state.systemAnswer == index + 1
 
@@ -137,7 +141,7 @@ fun AnswerResultListItem(
 
     // 뜻 확장 및 애니메이션 효과
     val expandTransition =
-        updateTransition(targetState = state.expandedAnswer, label = "expandTransition")
+        updateTransition(targetState = expandedItem, label = "expandTransition")
     val expandedHeight by expandTransition.animateDp(
         label = "expandedHeight",
         transitionSpec = { tween(durationMillis = 200) }
@@ -191,7 +195,7 @@ fun AnswerResultListItem(
                     modifier = Modifier.weight(1f),
                     style = Typography.headlineLarge
                 )
-                when (state.expandedAnswer == index + 1) {
+                when (expandedItem == index + 1) {
                     false -> {
                         Icon(
                             modifier = Modifier.padding(10.dp),
@@ -210,7 +214,7 @@ fun AnswerResultListItem(
                 }
             }
         }
-        if (state.expandedAnswer == index + 1) {
+        if (expandedItem == index + 1) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
