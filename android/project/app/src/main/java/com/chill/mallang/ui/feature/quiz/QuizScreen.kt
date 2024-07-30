@@ -158,7 +158,8 @@ fun QuizBox(
 @Composable
 fun AnswerList(
     state: Any,
-    viewModel: QuizViewModel,
+    viewModel: QuizViewModel? = null,
+    expandedItem: Int = -1,
     fraction: Float,
     onAnswerSelected: (Int) -> Unit = { }
 ) {
@@ -178,7 +179,7 @@ fun AnswerList(
             .fillMaxSize()
     ) {
         items(size) { index ->
-            if (state is QuizState) {
+            if (state is QuizState && viewModel != null) {
                 AnswerListItem(
                     modifier = Modifier.fillParentMaxHeight(fraction),
                     index = index,
@@ -193,6 +194,7 @@ fun AnswerList(
                     modifier = Modifier.fillParentMaxHeight(fraction),
                     index = index,
                     state = state,
+                    expandedItem = expandedItem,
                     onItemClick = { selectedIndex ->
                         onAnswerSelected(selectedIndex)
                     }
