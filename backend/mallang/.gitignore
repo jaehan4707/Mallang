@@ -26,6 +26,7 @@ bin/
 # Ignore local application setting
 **/src/main/resources/application-dev.properties
 **/src/main/resources/application.properties
+**/src/main/java/mallang/config/SecurityConfig.java
 
 out/
 !**/src/main/**/out/
@@ -41,7 +42,4 @@ out/
 ### VS Code ###
 .vscode/
 
-### securityConfig###
-backend/mallang/src/main/java/com/chill/mallang/config/SecurityConfig.java
-**/src/main/java/mallang/config/SecurityConfig.java
 
