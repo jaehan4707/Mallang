@@ -43,4 +43,5 @@ out/
 
 ### securityConfig###
 backend/mallang/src/main/java/com/chill/mallang/config/SecurityConfig.java
+**/src/main/java/mallang/config/SecurityConfig.java
 
