@@ -3,7 +3,7 @@ package com.chill.mallang.data.model.response
 
 sealed class ApiResponse<out T : Any?> {
     data class Success<out T : Any?>(
-        val data: T
+        val data: T?
     ) : ApiResponse<T>()
 
     data class Error(
