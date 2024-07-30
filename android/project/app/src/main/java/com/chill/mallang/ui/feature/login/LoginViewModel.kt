@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.BuildConfig
 import com.chill.mallang.data.model.response.ApiResponse
+import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.FirebaseRepository
 import com.chill.mallang.data.repository.remote.UserRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -33,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -41,6 +43,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val firebaseRepository: FirebaseRepository,
+    private val dataStoreRepository: DataStoreRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
@@ -62,7 +65,23 @@ class LoginViewModel @Inject constructor(
     private var googleSignInLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null
 
     init {
+        loadUserInfo()
         getFirebaseAuthInstance()
+    }
+
+    private fun loadUserInfo() {
+        viewModelScope.launch {
+            combine(
+                dataStoreRepository.getUserEmail(),
+                dataStoreRepository.getAccessToken()
+            ) { email, accessToken ->
+                Pair(email, accessToken)
+            }.collectLatest { (email, accessToken) ->
+                if (email != null && accessToken != null) {
+                    _loginUiState.value = LoginUiState.AuthLogin
+                }
+            }
+        }
     }
 
     private fun getFirebaseAuthInstance() {
@@ -109,13 +128,11 @@ class LoginViewModel @Inject constructor(
     }
 
     fun handleActivityResult(requestCode: Int, data: Intent?) {
-        Log.d("jaehan", "123145")
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)
                 account?.let {
-                    Log.d("jaehan", "authCode : ${it.serverAuthCode}")
                     firebaseAuthWithGoogle(it.idToken!!)
                 }
             } catch (e: ApiException) {
@@ -158,7 +175,8 @@ class LoginViewModel @Inject constructor(
                         fallbackToGoogleSignIn(googleSignInLauncher)
                     }
 
-                    else -> _loginUiState.value = LoginUiState.Error(errorMessage = e.message ?: "")
+                    else -> _loginUiState.value =
+                        LoginUiState.Error(errorMessage = e.message ?: "")
                 }
             }
         }
@@ -209,16 +227,10 @@ class LoginViewModel @Inject constructor(
 
     // Google ID 토큰을 사용해 Firebase 인증
     private fun firebaseAuthWithGoogle(idToken: String) {
-        Log.d("jaehan", "${idToken}")
-        val state = _loginUiState.value
         viewModelScope.launch(Dispatchers.IO) {
             firebaseRepository.firebaseAuthWithGoogle(idToken).collectLatest { authUser ->
                 authUser?.let { user ->
-                    login(
-                        idToken = idToken,
-                        userEmail = user.email ?: "",
-                        profileImageUrl = user.photoUrl.toString()
-                    )
+                    login(idToken, user.email ?: "", user.photoUrl.toString())
                 }
             }
         }

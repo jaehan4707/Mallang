@@ -34,7 +34,6 @@ class SelectViewModel @Inject constructor(
                     )
                 }
             }
-
         }
     }
 

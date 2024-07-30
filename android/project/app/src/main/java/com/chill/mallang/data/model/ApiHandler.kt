@@ -12,9 +12,7 @@ suspend fun <T> apiHandler(
         val response = apiResponse.invoke()
         val errorData = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
         if (response.isSuccessful) {
-            response.body()?.let { body ->
-                return ApiResponse.Success(body)
-            }
+            return ApiResponse.Success(response.body())
         } else {
             return ApiResponse.Error(
                 errorCode = errorData.status ?: 0,
