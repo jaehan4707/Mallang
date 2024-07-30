@@ -14,15 +14,22 @@ public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    @ManyToOne
-    @JoinColumn(name = "quiz")
-    private Quiz quiz;
     @ManyToOne
     @JoinColumn(name = "user")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "quiz")
+    private Quiz quiz;
+
     private String answer;
     private float score;
+    private int answerTime;
     private LocalDateTime created_at;
+    private int check_fin;
+
+    @PrePersist
+    protected void onCreate() {
+        this.check_fin = 0;
+    }
 }
