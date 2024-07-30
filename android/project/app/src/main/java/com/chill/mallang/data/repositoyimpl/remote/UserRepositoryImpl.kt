@@ -16,16 +16,15 @@ class UserRepositoryImpl @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
 ) : UserRepository {
 
-    override suspend fun join(request: JoinRequest): Flow<ApiResponse<String>> = flow {
+    override suspend fun join(request: JoinRequest): Flow<ApiResponse<Boolean>> = flow {
         val response = apiHandler {
             userApi.join(request)
         }
         when (response) {
             is ApiResponse.Success -> {
-                val accessToken = response.data.data?.token ?: ""
-                dataStoreRepository.saveAccessToken(accessToken)
-                dataStoreRepository.saveUserEmail(request.userEmail)
-                emit(ApiResponse.Success(accessToken))
+                response.data?.data?.let {
+                    emit(ApiResponse.Success(it.isRegister ?: true))
+                }
             }
 
             is ApiResponse.Error -> {
@@ -43,10 +42,7 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun logout() {}
-
-    override suspend fun deleteUser() {}
-    override suspend fun login(idToken: String, email: String): Flow<ApiResponse<String>> = flow {
+    override suspend fun login(idToken: String, email: String): Flow<ApiResponse<Boolean>> = flow {
         val response = apiHandler {
             userApi.login(
                 LoginRequest(
@@ -57,10 +53,11 @@ class UserRepositoryImpl @Inject constructor(
         }
         when (response) {
             is ApiResponse.Success -> {
-                val accessToken = response.data ?: ""
-                dataStoreRepository.saveAccessToken(accessToken)
-                dataStoreRepository.saveUserEmail(email)
-                emit(ApiResponse.Success(data = accessToken))
+                response.data?.data?.let {
+                    dataStoreRepository.saveAccessToken(it.token ?: "")
+                    dataStoreRepository.saveUserEmail(email)
+                    emit(ApiResponse.Success(it.isRegister ?: true))
+                }
             }
 
             is ApiResponse.Error -> {
