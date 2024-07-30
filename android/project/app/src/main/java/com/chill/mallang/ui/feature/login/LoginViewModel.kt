@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.BuildConfig
 import com.chill.mallang.data.model.response.ApiResponse
+import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.FirebaseRepository
 import com.chill.mallang.data.repository.remote.UserRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -33,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -41,6 +43,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val firebaseRepository: FirebaseRepository,
+    private val dataStoreRepository: DataStoreRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
@@ -62,7 +65,23 @@ class LoginViewModel @Inject constructor(
     private var googleSignInLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null
 
     init {
+        loadUserInfo()
         getFirebaseAuthInstance()
+    }
+
+    private fun loadUserInfo() {
+        viewModelScope.launch {
+            combine(
+                dataStoreRepository.getUserEmail(),
+                dataStoreRepository.getAccessToken()
+            ) { email, accessToken ->
+                Pair(email, accessToken)
+            }.collectLatest { (email, accessToken) ->
+                if (email != null && accessToken != null) {
+                    _loginUiState.value = LoginUiState.AuthLogin
+                }
+            }
+        }
     }
 
     private fun getFirebaseAuthInstance() {
