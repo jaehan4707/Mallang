@@ -9,26 +9,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
-
 @Composable
 fun MultiplePermissionsHandler(
     permissions: List<String>,
-    onPermissionsResult: (Map<String, Boolean>) -> Unit
+    onPermissionsResult: (Map<String, Boolean>) -> Unit,
 ) {
     val context = LocalContext.current
 
-    val permissionsToRequest = remember(permissions) {
-        permissions.filter {
-            ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
+    val permissionsToRequest =
+        remember(permissions) {
+            permissions.filter {
+                ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
+            }
         }
-    }
 
-    val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions(),
-        onResult = { perms ->
-            onPermissionsResult(perms)
-        }
-    )
+    val multiplePermissionResultLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = { perms ->
+                onPermissionsResult(perms)
+            },
+        )
 
     LaunchedEffect(permissions) {
         if (permissionsToRequest.isNotEmpty()) {

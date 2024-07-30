@@ -6,7 +6,8 @@ plugins {
     alias(libs.plugins.google.services) // Google 서비스 플러그인
     id("kotlin-kapt")
     alias(libs.plugins.hilt)
-    id(libs.google.maps.secrets.gradle.get().group!!)
+    id(libs.google.maps.secrets.gradle.get().group ?: "")
+    alias(libs.plugins.kotlinx.serialization)
 }
 secrets {
     // Optionally specify a different file name containing your secrets.
@@ -37,7 +38,8 @@ android {
         versionCode = 1
         versionName = "1.0"
         buildConfigField("String", "WEB_CLIENT_ID", properties["default_web_client_id"] as String)
-
+        buildConfigField("String", "BASE_URL", properties["BASE_URL"] as String)
+        buildConfigField("String", "API_VERSION", properties["API_VERSION"] as String)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -115,6 +117,13 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
-}
 
-apply(plugin = "com.google.gms.google-services")
+    //retrofit, okhttp, gson
+    implementation(libs.bundles.network)
+
+    //coroutines
+    implementation(libs.bundles.coroutines)
+
+    //preference datastore
+    implementation(libs.datastore.preferences)
+}

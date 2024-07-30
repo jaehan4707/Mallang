@@ -47,7 +47,7 @@ import java.nio.charset.StandardCharsets
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String, String, String) -> Unit,
+    onLoginSuccess: (String, String) -> Unit,
     onAuthLoginSuccess: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -61,22 +61,24 @@ fun LoginScreen(
     }
 
     // Credential Manager 방식
-    val credentialLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.let {
-                viewModel.getCredential(context)
+    val credentialLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartIntentSenderForResult(),
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let {
+                    viewModel.getCredential(context)
+                }
             }
         }
-    }
 
 // Google Sign-In 방식
-    val googleSignInLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        viewModel.handleActivityResult(LoginViewModel.RC_SIGN_IN, result.data)
-    }
+    val googleSignInLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            viewModel.handleActivityResult(LoginViewModel.RC_SIGN_IN, result.data)
+        }
 
     LaunchedEffect(googleSignInLauncher) {
         viewModel.setGoogleSignInLauncher(googleSignInLauncher)
@@ -84,9 +86,9 @@ fun LoginScreen(
 
     HandleLoginEvent(
         loginUiState = uiState,
-        authLogin = { onAuthLoginSuccess() },
-        loginSuccess = { userName, userEmail, userProfileImageUrl ->
-            onLoginSuccess(userName, userEmail, userProfileImageUrl)
+        authLogin = onAuthLoginSuccess,
+        loginSuccess = { userEmail, userProfileImageUrl ->
+            onLoginSuccess(userEmail, userProfileImageUrl)
         },
         showSnackBar = { errorMessage ->
             coroutineScope.launch {
@@ -98,22 +100,23 @@ fun LoginScreen(
         },
     )
 
-
     Surface(
         color = BackGround,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier
+                    .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.weight(0.1f))
             Image(
                 painter = painterResource(id = R.drawable.ic_title),
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
             )
             Spacer(modifier = Modifier.weight(0.4f))
             GoogleLoginButton(onClick = {
@@ -128,33 +131,36 @@ fun LoginScreen(
 fun GoogleLoginButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    text: String
+    text: String,
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            contentColor = Gray6,
-            containerColor = Color.White
-        ),
+        colors =
+            ButtonDefaults.buttonColors(
+                contentColor = Gray6,
+                containerColor = Color.White,
+            ),
         shape = RoundedCornerShape(10.dp),
         border = BorderStroke(1.dp, Gray4),
-        modifier = modifier
-            .fillMaxWidth(0.8f)
-            .height(48.dp)
+        modifier =
+            modifier
+                .fillMaxWidth(0.8f)
+                .height(48.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_google),
                 contentDescription = null,
-                modifier = Modifier.width(28.dp)
+                modifier = Modifier.width(28.dp),
             )
             Box(modifier = Modifier.width(10.dp))
             Text(
-                text, style = Typography.displayLarge
+                text,
+                style = Typography.displayLarge,
             )
         }
     }
@@ -164,7 +170,7 @@ fun GoogleLoginButton(
 fun HandleLoginEvent(
     loginUiState: LoginUiState,
     authLogin: () -> Unit,
-    loginSuccess: (String, String, String) -> Unit,
+    loginSuccess: (String, String) -> Unit,
     showSnackBar: (String) -> Unit,
 ) {
     LaunchedEffect(loginUiState) {
@@ -176,18 +182,15 @@ fun HandleLoginEvent(
 
             is LoginUiState.Success -> {
                 loginSuccess(
-                    loginUiState.userName ?: "",
                     loginUiState.userEmail ?: "",
                     URLEncoder.encode(
                         loginUiState.userProfileImageUrl.toString(),
-                        StandardCharsets.UTF_8.toString()
-                    )
+                        StandardCharsets.UTF_8.toString(),
+                    ),
                 )
             }
 
-            LoginUiState.Loading -> {
-
-            }
+            LoginUiState.Loading -> {}
 
             is LoginUiState.Error -> {
                 showSnackBar(loginUiState.errorMessage)

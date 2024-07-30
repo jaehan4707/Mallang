@@ -4,9 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.systemBars
 import com.chill.mallang.ui.MainScreen
 import com.chill.mallang.ui.theme.MallangTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,8 +14,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val systemPaddingValue = WindowInsets.systemBars.asPaddingValues()
-
             MallangTheme {
                 MainScreen()
             }

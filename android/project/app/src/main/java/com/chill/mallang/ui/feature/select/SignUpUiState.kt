@@ -1,24 +1,22 @@
-package com.chill.mallang.ui.feature.login
+package com.chill.mallang.ui.feature.select
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 
 @Stable
-sealed interface LoginUiState {
+sealed interface SignUpUiState {
     @Immutable
-    data object Loading : LoginUiState
-
-    @Immutable
-    data object AuthLogin : LoginUiState
-
-    @Immutable
-    data class Success(
+    data class Loading(
         val userEmail: String? = "",
+        val userNickName: String? = "",
         val userProfileImageUrl: String? = "",
-    ) : LoginUiState
+    ) : SignUpUiState
+
+    @Immutable
+    data object Success : SignUpUiState
 
     @Immutable
     data class Error(
         val errorMessage: String = "",
-    ) : LoginUiState
+    ) : SignUpUiState
 }
