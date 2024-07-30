@@ -16,4 +16,3 @@ interface FirebaseRepository {
 
     fun getFirebaseInstance(): FirebaseAuth
 }
-

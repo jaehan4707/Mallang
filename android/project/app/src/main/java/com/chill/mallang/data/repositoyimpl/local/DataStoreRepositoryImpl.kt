@@ -51,7 +51,6 @@ class DataStoreRepositoryImpl @Inject constructor(
         }.first())
     }
 
-
     companion object {
         val ACCESS_TOKEN_KEY = stringPreferencesKey("ACCESS_TOKEN_KEY")
         val USER_EMAIL_KEY = stringPreferencesKey("USER_EMAIL_KEY")
