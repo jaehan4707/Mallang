@@ -1,6 +1,7 @@
 package com.chill.mallang.ui.feature.quiz
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,8 @@ import kotlinx.coroutines.launch
 class QuizViewModel : ViewModel() {
     var state by mutableStateOf(QuizState())
         private set
+
+    var selectedAnswer by mutableIntStateOf(-1)
 
     init {
         loadQuizData()
@@ -33,7 +36,7 @@ class QuizViewModel : ViewModel() {
     }
 
     fun selectAnswer(index: Int) {
-        state = state.copy(selectedAnswer = index)
+        selectedAnswer = index + 1
     }
 
     fun submitQuiz() {

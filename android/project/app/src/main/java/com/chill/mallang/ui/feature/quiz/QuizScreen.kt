@@ -79,6 +79,7 @@ fun QuizScreen(
             )
             Spacer(modifier = Modifier.weight(1f))
             AnswerList(
+                viewModel = quizViewModel,
                 state = quizState,
                 fraction = 0.13f,
                 onAnswerSelected = { selectedIndex ->
@@ -157,6 +158,7 @@ fun QuizBox(
 @Composable
 fun AnswerList(
     state: Any,
+    viewModel: QuizViewModel,
     fraction: Float,
     onAnswerSelected: (Int) -> Unit = { }
 ) {
@@ -180,6 +182,7 @@ fun AnswerList(
                 AnswerListItem(
                     modifier = Modifier.fillParentMaxHeight(fraction),
                     index = index,
+                    viewModel = viewModel,
                     state = state,
                     onItemClick = { selectedIndex ->
                         onAnswerSelected(selectedIndex)
@@ -203,6 +206,7 @@ fun AnswerList(
 fun AnswerListItem(
     modifier: Modifier = Modifier,
     index: Int,
+    viewModel: QuizViewModel,
     state: QuizState,
     onItemClick: (Int) -> Unit
 ) {
@@ -220,7 +224,7 @@ fun AnswerListItem(
                     .fillMaxWidth()
                     .background(color = Color.White, shape = RoundedCornerShape(8.dp))
                     .border(2.dp, color = Gray6, shape = RoundedCornerShape(8.dp))
-                    .clickable { onItemClick(index + 1) }
+                    .clickable { onItemClick(index) }
             ) {
                 Box(
                     modifier = Modifier
@@ -245,7 +249,7 @@ fun AnswerListItem(
                     modifier = Modifier.weight(1f),
                     style = Typography.headlineLarge
                 )
-                if (state.selectedAnswer == index + 1) {
+                if (viewModel.selectedAnswer == index + 1) {
                     Icon(
                         modifier = Modifier.padding(10.dp),
                         painter = painterResource(id = R.drawable.ic_check),
