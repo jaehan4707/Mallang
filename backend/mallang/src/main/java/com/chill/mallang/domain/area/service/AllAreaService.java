@@ -4,8 +4,12 @@ import com.chill.mallang.domain.area.dto.APIresponse;
 import com.chill.mallang.domain.area.dto.AllAreaDTO;
 import com.chill.mallang.domain.area.model.Area;
 import com.chill.mallang.domain.area.repository.AreaRepository;
+import com.chill.mallang.domain.quiz.service.QuizService;
 import com.chill.mallang.errors.exception.RestApiException;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +18,12 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@Slf4j
 public class AllAreaService {
 
     @Autowired
     private AreaRepository areaRepository;
+    private Logger logger = LoggerFactory.getLogger(AllAreaService.class);
 
     // 특정 점령지 조회
     public Map<String, Object> getAreaById(Long areaId) {
@@ -42,7 +48,8 @@ public class AllAreaService {
     // 전체 점령지 조회
     public Map<String, Object> getAllAreas() {
         List<Area> areas = areaRepository.findAll();
-        if (areas.isEmpty()) {
+        logger.info(String.valueOf(areas));
+        if (areas == null || areas.isEmpty()) {
             throw new RestApiException(AreaErrorCode.INVALID_PARAMETER);
         }
 
@@ -62,5 +69,5 @@ public class AllAreaService {
             put("data", allAreaInfo);
         }};
         return response;
-        }
     }
+}
