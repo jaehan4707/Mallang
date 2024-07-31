@@ -1,9 +1,9 @@
 package com.chill.mallang.ui.component
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.SnackbarData
@@ -21,30 +21,32 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun CustomSnackBar(
     snackBarData: SnackbarData,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
+        modifier =
+            modifier
+                .fillMaxSize(),
     ) {
         Surface(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .align(Alignment.TopCenter)
-                .padding(16.dp),
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.1f)
+                    .align(Alignment.TopCenter)
+                    .padding(16.dp),
             shape = RoundedCornerShape(8.dp),
-            color = Sub1
+            color = Sub1,
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = snackBarData.visuals.message,
                     style = Typography.displayLarge,
                     textAlign = TextAlign.Center,
-                    color = Color.White
+                    color = Color.White,
                 )
             }
         }
