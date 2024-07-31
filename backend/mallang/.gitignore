@@ -27,6 +27,7 @@ bin/
 **/src/main/resources/application-dev.properties
 **/src/main/resources/application.properties
 **/src/main/java/mallang/config/SecurityConfig.java
+
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
@@ -40,3 +41,5 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
