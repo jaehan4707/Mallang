@@ -1,12 +1,12 @@
 package com.chill.mallang.ui.navigation
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
@@ -23,14 +23,13 @@ fun MallangNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     startDestination: String,
+    onShowErrorSnackBar: (String) -> Unit,
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-
+    val context = LocalContext.current
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = DestinationLogin.route,
+        startDestination = startDestination,
     ) {
         composable(
             route = DestinationLogin.route,
@@ -65,10 +64,7 @@ fun MallangNavHost(
         composable(
             route = DestinationSelect.routeWithArgs,
             arguments = DestinationSelect.arguments,
-        ) { navBackStackEntry ->
-            val userEmail = navBackStackEntry.arguments?.getString("userEmail")
-            val userProfileImageUrl = navBackStackEntry.arguments?.getString("userProfileImageUrl")
-            val userNickName = navBackStackEntry.arguments?.getString("userNickName")
+        ) {
             SelectScreen(navigateToMain = { navController.navigate(DestinationMain.route) })
         }
 
@@ -79,6 +75,7 @@ fun MallangNavHost(
                 modifier = Modifier,
                 navigateToGame = { navController.navigate(DestinationGameLobby.route) },
                 navigateToWordNote = { navController.navigate(DestinationWordNote.route) },
+                popUpBackStack = { (context as Activity).finish() }
             )
         }
 
