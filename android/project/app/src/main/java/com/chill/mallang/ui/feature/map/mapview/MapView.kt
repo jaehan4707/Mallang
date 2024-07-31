@@ -17,11 +17,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.chill.mallang.data.model.Area
 import com.chill.mallang.ui.feature.map.AreasState
 import com.chill.mallang.ui.feature.map.CustomMarkerState
+import com.chill.mallang.ui.feature.map.LocationState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -31,8 +32,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun MapView(
     modifier: Modifier = Modifier,
-    currentLocation: LatLng?,
-    areasState: AreasState
+    currentLocation: LocationState,
+    selectedArea: Area?,
+    areasState: AreasState,
+    onSelectArea: (Area) -> Unit = {}
 ){
     val cameraPositionState = rememberCameraPositionState()
     val uiSettings = remember {
@@ -48,18 +51,31 @@ fun MapView(
         mutableStateOf(listOf<CustomMarkerState>())
     }
 
+    // 현재 위치가 바뀌면 카메라를 현 위치로 이동
     LaunchedEffect(currentLocation) {
-        currentLocation?.let {
+        if(currentLocation is LocationState.Tracking) {
             cameraPositionState.animate(
                 CameraUpdateFactory.newCameraPosition(
-                    CameraPosition(currentLocation, 15f, 0f, 0f)
+                    CameraPosition(currentLocation.latLng, 15f, 0f, 0f)
                 ),
                 1000
             )
 
             for (marker : CustomMarkerState in markerStates){
-                marker.distance = SphericalUtil.computeDistanceBetween(currentLocation, marker.area.latLng).toInt()
+                marker.distance = SphericalUtil.computeDistanceBetween(currentLocation.latLng, marker.area.latLng).toInt()
             }
+        }
+    }
+
+    // 마커 선택 시에 카메라를 마커로 이동
+    LaunchedEffect(selectedArea) {
+        if(selectedArea != null){
+            cameraPositionState.animate(
+                CameraUpdateFactory.newCameraPosition(
+                    CameraPosition(selectedArea.latLng, 15f, 0f, 0f)
+                ),
+                1000
+            )
         }
     }
 
@@ -68,7 +84,6 @@ fun MapView(
             setMarkers(areasState.list.map { area -> CustomMarkerState(area) })
         }
     }
-
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -83,7 +98,8 @@ fun MapView(
                 for (marker : CustomMarkerState in markerStates){
                     key(keys = arrayOf(marker.area.areaId, marker.distance)) {
                         CustomMarkerWithArea(
-                            state = marker
+                            state = marker,
+                            onClick = onSelectArea
                         )
                     }
                 }

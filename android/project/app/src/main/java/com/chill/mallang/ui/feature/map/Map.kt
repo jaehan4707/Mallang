@@ -13,6 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.data.model.Area
 import com.chill.mallang.ui.feature.map.layout.MapScaffold
 import com.chill.mallang.ui.feature.map.mapview.MapView
@@ -31,14 +33,14 @@ fun Map(
     onShowAreaDetail: (Area) -> Unit = {}
 ){
     val context = LocalContext.current
+    val viewModel: MapViewModel = hiltViewModel()
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
-    val (currentLocation, setLocation) = remember { mutableStateOf<LatLng?>(null) }
 
-    val (areas, setArea) = remember { mutableStateOf<AreasState>(AreasState.Empty) }
+    val currentLocation by viewModel.currentLocation.collectAsStateWithLifecycle()
+    val areas by viewModel.areaState.collectAsStateWithLifecycle()
+    val selectedArea = viewModel.selectedArea
 
-    var hasPermission by remember {
-        mutableStateOf(false)
-    }
+    var hasPermission by remember { mutableStateOf(false) }
 
     MultiplePermissionsHandler(
         permissions = listOf( Manifest.permission.ACCESS_FINE_LOCATION ),
@@ -47,7 +49,7 @@ fun Map(
             hasPermission = true
 
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                setLocation(LatLng(location.latitude, location.longitude))
+                viewModel.setLocation(LatLng(location.latitude, location.longitude))
             }
         } else {
             // On permission denied
@@ -57,7 +59,7 @@ fun Map(
     LaunchedEffect(hasPermission) {
         if(hasPermission){
             // Get area info
-            setArea(AreasState.HasValue(listOf()))
+            viewModel.loadAreas()
         }
     }
 
@@ -65,12 +67,14 @@ fun Map(
         MapView(
             modifier = Modifier.weight(1f),
             currentLocation = currentLocation,
-            areasState = areas
+            selectedArea = selectedArea,
+            areasState = areas,
+            onSelectArea = viewModel::setToSelected
         )
         MapScaffold(
             areaSelected = null,
             currentLocation = null,
-            onLocate = {},
+            onLocate = viewModel::findClosestArea,
             onShowDetail = onShowAreaDetail
         )
     }
