@@ -15,56 +15,57 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SelectViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val userRepository: UserRepository,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Loading())
-    val uiState = _uiState.asStateFlow()
+class SelectViewModel
+    @Inject
+    constructor(
+        private val savedStateHandle: SavedStateHandle,
+        private val userRepository: UserRepository,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Loading())
+        val uiState = _uiState.asStateFlow()
 
-    init {
-        val state = uiState.value
-        if (state is SignUpUiState.Loading) {
-            with(savedStateHandle) {
-                _uiState.update {
-                    state.copy(
-                        userEmail = get<String>("userEmail"),
-                        userProfileImageUrl = get<String>("userProfileImageUrl"),
-                        userNickName = get<String>("userNickName")
-                    )
-                }
-            }
-
-        }
-    }
-
-
-    fun join(team: String?) {
-        val state = uiState.value
-        viewModelScope.launch {
+        init {
+            val state = uiState.value
             if (state is SignUpUiState.Loading) {
-                userRepository.join(
-                    JoinRequest(
-                        userEmail = state.userEmail ?: "",
-                        userProfileImageUrl = state.userProfileImageUrl ?: "",
-                        userNickName = state.userNickName ?: "",
-                        team = team ?: ""
-                    )
-                ).collectLatest { response ->
-                    when (response) {
-                        is ApiResponse.Success -> {
-                            _uiState.value = SignUpUiState.Success
-                        }
-
-                        is ApiResponse.Error -> {
-                            _uiState.value =
-                                SignUpUiState.Error(errorMessage = response.errorMessage)
-                        }
-
-                        is ApiResponse.Init -> {}
+                with(savedStateHandle) {
+                    _uiState.update {
+                        state.copy(
+                            userEmail = get<String>("userEmail"),
+                            userProfileImageUrl = get<String>("userProfileImageUrl"),
+                            userNickName = get<String>("userNickName"),
+                        )
                     }
                 }
             }
         }
+
+        fun join(team: String?) {
+            val state = uiState.value
+            viewModelScope.launch {
+                if (state is SignUpUiState.Loading) {
+                    userRepository
+                        .join(
+                            JoinRequest(
+                                userEmail = state.userEmail ?: "",
+                                userProfileImageUrl = state.userProfileImageUrl ?: "",
+                                userNickName = state.userNickName ?: "",
+                                team = team ?: "",
+                            ),
+                        ).collectLatest { response ->
+                            when (response) {
+                                is ApiResponse.Success -> {
+                                    _uiState.value = SignUpUiState.Success
+                                }
+
+                                is ApiResponse.Error -> {
+                                    _uiState.value =
+                                        SignUpUiState.Error(errorMessage = response.errorMessage)
+                                }
+
+                                is ApiResponse.Init -> {}
+                            }
+                        }
+                }
+            }
+        }
     }
-}

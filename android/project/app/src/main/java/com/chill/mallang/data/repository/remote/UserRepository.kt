@@ -5,12 +5,12 @@ import com.chill.mallang.data.model.response.ApiResponse
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-
     suspend fun join(request: JoinRequest): Flow<ApiResponse<Boolean>>
 
-    suspend fun logout()
+    suspend fun login(
+        idToken: String,
+        email: String,
+    ): Flow<ApiResponse<Boolean>>
 
-    suspend fun deleteUser()
-
-    suspend fun login(idToken: String, email: String): Flow<ApiResponse<String>>
+    suspend fun checkNickName(nickName: String): Flow<ApiResponse<Unit>>
 }

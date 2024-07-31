@@ -24,13 +24,14 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val title = currentDestination?.route?.substringBefore("/") ?: ""
-    val isShownShowAppBar = when (title) {
-        DestinationLogin.route, DestinationSelect.route, DestinationNickName.route, DestinationMain.route, "" -> {
-            false
-        }
+    val isShownShowAppBar =
+        when (title) {
+            DestinationLogin.route, DestinationSelect.route, DestinationNickName.route, DestinationMain.route, "" -> {
+                false
+            }
 
-        else -> true
-    }
+            else -> true
+        }
     val isBackPressed = remember { mutableStateOf(false) }
 
     val onConfirm = {
@@ -45,7 +46,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     BackConfirmHandler(
         onConfirm = onConfirm,
         onDismiss = { isBackPressed.value = it },
-        isBackPressed = isBackPressed.value
+        isBackPressed = isBackPressed.value,
     )
 
     Scaffold(
@@ -59,9 +60,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     navigateToHome = {
                         navController.popBackStack(
                             DestinationMain.route,
-                            inclusive = false
+                            inclusive = false,
                         )
-                    })
+                    },
+                )
             }
             MallangNavHost(
                 navController = navController,

@@ -4,14 +4,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LoginResponse(
-    val data: LoginData? = null,
+data class JoinResponse(
+    val data: JoinData? = null,
+    val status: Int? = null,
     val success: String? = null,
-    val code: Int? = null,
 )
 
 @Serializable
-data class LoginData(
+data class JoinData(
     @SerialName("is_registered")
     val isRegister: Boolean? = false,
     @SerialName("token")

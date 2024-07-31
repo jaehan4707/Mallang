@@ -51,7 +51,7 @@ fun MallangNavHost(
                 navBackStackEntry.arguments?.getString("userProfileImageUrl") ?: "",
                 StandardCharsets.UTF_8.toString()
             )
-            NicknameScreen(modifier = modifier, onClick = { nickName ->
+            NicknameScreen(modifier = modifier, onSuccess = { nickName ->
                 navController.navigate(
                     DestinationSelect.createRoute(
                         userEmail = userEmail,
@@ -98,7 +98,7 @@ fun MallangNavHost(
             QuizScreen(
                 modifier = modifier,
                 popUpBackStack = { navController.popBackStack() },
-                navigateToQuizResult = { navController.navigate(DestinationQuizResult.createRoute(quizId = it)) }
+                navigateToQuizResult = { navController.navigate(DestinationQuizResult.createRoute(studyId = it)) }
             )
         }
 
@@ -114,7 +114,7 @@ fun MallangNavHost(
             route = DestinationQuizResult.routeWithArgs,
             arguments = DestinationQuizResult.arguments,
         ) { navBackStackEntry ->
-            val quizId = navBackStackEntry.arguments?.getInt("quizId")
+            val quizId = navBackStackEntry.arguments?.getInt("studyId")
 
             QuizResultScreen(
                 modifier = modifier,

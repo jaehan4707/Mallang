@@ -19,6 +19,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -29,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.theme.BackGround
@@ -42,23 +45,46 @@ import com.chill.mallang.ui.util.addFocusCleaner
 @Composable
 fun NicknameScreen(
     modifier: Modifier = Modifier,
-    onClick: (String) -> Unit = {}
+    onSuccess: (String) -> Unit = {},
 ) {
     val nicknameViewModel: NicknameViewModel = hiltViewModel()
     val nicknameState = nicknameViewModel.nicknameState
     val focusManager = LocalFocusManager.current
+    val nickNameUiState by nicknameViewModel.uiState.collectAsStateWithLifecycle()
+
+    HandleNickNameUiEvent(uiState = nickNameUiState, onSuccess = onSuccess)
 
     Surface(
         color = BackGround,
-        modifier = modifier
-            .fillMaxSize()
-            .addFocusCleaner(focusManager)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .addFocusCleaner(focusManager),
     ) {
         NickNameContent(
             focusManager = focusManager,
             uiState = nicknameState,
-            onClick = { onClick(it) },
+            onSuccess = { onSuccess(it) },
+            checkNickName = {
+                nicknameViewModel.checkNickName()
+            },
         )
+    }
+}
+
+@Composable
+fun HandleNickNameUiEvent(
+    uiState: NickNameUiState,
+    onSuccess: (String) -> Unit = {},
+) {
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is NickNameUiState.Success -> {
+                onSuccess(uiState.nickName)
+            }
+
+            else -> {}
+        }
     }
 }
 
@@ -66,26 +92,28 @@ fun NicknameScreen(
 fun NickNameContent(
     focusManager: FocusManager = LocalFocusManager.current,
     uiState: NicknameState = NicknameState(),
-    onClick: (String) -> Unit = {},
+    onSuccess: (String) -> Unit = {},
+    checkNickName: () -> Unit = { },
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.height(80.dp))
         Image(
             painter = painterResource(id = R.drawable.ic_title_small),
             contentDescription = null,
-            modifier = Modifier.height(120.dp)
+            modifier = Modifier.height(120.dp),
         )
         Spacer(modifier = Modifier.weight(0.2f))
         TextWithIcon(text = "사용할 닉네임을 입력해 주세요", icon = R.drawable.ic_mage)
         Spacer(modifier = Modifier.height(30.dp))
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CustomTextField(
                 onValueChange = {
@@ -95,13 +123,15 @@ fun NickNameContent(
                 nicknameState = uiState,
                 onClearPressed = {
                     uiState.clearNickname()
-                }
+                },
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
         LongBlackButton(
-            onClick = { onClick(uiState.nickname) },
-            text = "결정하기"
+            onClick = {
+                checkNickName()
+            },
+            text = "결정하기",
         )
         Spacer(modifier = Modifier.weight(1f))
     }
@@ -117,9 +147,10 @@ fun CustomTextField(
     onClearPressed: () -> Unit = {},
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth(0.8f),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxWidth(0.8f),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         OutlinedTextField(
             value = nicknameState.nickname,
@@ -130,50 +161,54 @@ fun CustomTextField(
                 if (nicknameState.nickname.isEmpty()) {
                     Text(
                         text = placeholder,
-                        style = Typography.displayMedium
+                        style = Typography.displayMedium,
                     )
                 }
             },
-            modifier = modifier
-                .fillMaxWidth()
-                .height(48.dp),
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
             shape = RoundedCornerShape(10.dp),
             singleLine = true,
-            keyboardActions = KeyboardActions(onDone = {
-                focusManager.clearFocus()
-            }),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Gray6,
-                unfocusedBorderColor = Gray3,
-                focusedContainerColor = White,
-                unfocusedContainerColor = White,
-                errorContainerColor = White, // 에러 상태에서도 배경색이 변경되지 않도록 White 설정
-                focusedTextColor = Gray6,
-                unfocusedTextColor = Gray6,
-                unfocusedPlaceholderColor = Gray3,
-                focusedPlaceholderColor = Gray3
-            ),
+            keyboardActions =
+                KeyboardActions(onDone = {
+                    focusManager.clearFocus()
+                }),
+            colors =
+                OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Gray6,
+                    unfocusedBorderColor = Gray3,
+                    focusedContainerColor = White,
+                    unfocusedContainerColor = White,
+                    errorContainerColor = White, // 에러 상태에서도 배경색이 변경되지 않도록 White 설정
+                    focusedTextColor = Gray6,
+                    unfocusedTextColor = Gray6,
+                    unfocusedPlaceholderColor = Gray3,
+                    focusedPlaceholderColor = Gray3,
+                ),
             textStyle = Typography.displayMedium,
             trailingIcon = {
                 IconButton(
-                    onClick = onClearPressed
+                    onClick = onClearPressed,
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_cancel),
                         contentDescription = null,
-                        tint = Color.Unspecified
+                        tint = Color.Unspecified,
                     )
                 }
             },
-            isError = nicknameState.errorMessage != ""
+            isError = nicknameState.errorMessage != "",
         )
         Text(
             text = nicknameState.errorMessage,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp, start = 4.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, start = 4.dp),
             color = Sub1,
-            style = Typography.displayMedium
+            style = Typography.displayMedium,
         )
     }
 }
@@ -182,20 +217,20 @@ fun CustomTextField(
 fun TextWithIcon(
     modifier: Modifier = Modifier,
     text: String,
-    icon: Int
+    icon: Int,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Text(
             text = text,
-            style = Typography.headlineMedium
+            style = Typography.headlineMedium,
         )
         Box(modifier = Modifier.width(3.dp))
         Image(
             painter = painterResource(id = icon),
-            contentDescription = null
+            contentDescription = null,
         )
     }
 }
