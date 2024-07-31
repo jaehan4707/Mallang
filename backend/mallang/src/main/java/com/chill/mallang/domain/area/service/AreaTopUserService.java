@@ -63,7 +63,7 @@ public class AreaTopUserService {
         for (Answer answer : answers) {
             if (answer.getUser().getFaction() != null && answer.getCheck_fin() == 1) {
                 if (answer.getUser().getFaction().getId() == teamId){
-                    float score = answer.getScore();
+                    double score = answer.getScore();
                     int tryCount = answer.getAnswerTime();
                     teamPoint += (int) score;
                     if (score > maxScore) {
