@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class UserAreaLogDTO {
+public class ResponseTotalUserInfo {
     private Integer userScore;
     private Integer userPlayTime;
     private Integer userPlace;

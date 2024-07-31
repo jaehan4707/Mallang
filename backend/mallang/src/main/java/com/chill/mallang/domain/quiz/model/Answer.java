@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.quiz.model;
 
+import com.chill.mallang.domain.area.model.Area;
 import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -23,6 +24,10 @@ public class Answer {
     @ManyToOne
     @JoinColumn(name = "quiz")
     private Quiz quiz;
+
+    @ManyToOne
+    @JoinColumn(name = "area")
+    private Area area;
 
     @Size(max =500, message ="최대 500자 입력 가능")
     private String answer;
