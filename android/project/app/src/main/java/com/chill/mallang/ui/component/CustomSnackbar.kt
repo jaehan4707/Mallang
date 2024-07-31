@@ -15,13 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun CustomSnackBar(
     snackBarData: SnackbarData,
     modifier: Modifier = Modifier,
+    backgroundColor: Color,
+    textColor: Color
 ) {
     Box(
         modifier =
@@ -36,7 +37,7 @@ fun CustomSnackBar(
                     .align(Alignment.TopCenter)
                     .padding(16.dp),
             shape = RoundedCornerShape(8.dp),
-            color = Sub1,
+            color = backgroundColor,
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -46,7 +47,7 @@ fun CustomSnackBar(
                     text = snackBarData.visuals.message,
                     style = Typography.displayLarge,
                     textAlign = TextAlign.Center,
-                    color = Color.White,
+                    color = textColor,
                 )
             }
         }
