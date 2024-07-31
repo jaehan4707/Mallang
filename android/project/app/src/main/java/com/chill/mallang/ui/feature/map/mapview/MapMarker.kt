@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.chill.mallang.R
+import com.chill.mallang.data.model.Area
 import com.chill.mallang.ui.feature.map.CustomMarkerState
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray6
@@ -37,10 +38,15 @@ import com.google.maps.android.compose.MarkerState
 @Composable
 @GoogleMapComposable
 fun CustomMarkerWithArea(
-    state: CustomMarkerState
+    state: CustomMarkerState,
+    onClick: (Area) -> Unit = {}
 ){
     MarkerComposable(
-        state = state.marker
+        state = state.marker,
+        onClick = {
+            onClick(state.area)
+            false
+        }
     ) {
         CustomMarker(distance = state.distance, color = state.color)
     }
