@@ -4,7 +4,7 @@ import com.chill.mallang.domain.faction.model.Faction;
 import com.chill.mallang.domain.faction.repository.FactionRepository;
 import com.chill.mallang.domain.user.dto.JoinRequestDTO;
 import com.chill.mallang.domain.user.dto.JoinResponseDTO;
-import com.chill.mallang.domain.user.jwt.JWTUtil;
+import com.chill.mallang.domain.user.errors.CustomUserErrorCode;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.errors.errorcode.CustomErrorCode;
@@ -48,10 +48,10 @@ public class JoinService {
             // 이메일 중복 확인
             boolean isExist = userRepository.existsByEmail(email);
             if (isExist) {
-                throw new RestApiException(CustomErrorCode.EMAIL_IS_EXISTS);
+                throw new RestApiException(CustomUserErrorCode.EMAIL_IS_EXISTS);
             }
             if(userRepository.existsByNickname(nickname)){
-                throw new RestApiException(CustomErrorCode.NICKNAME_IS_EXISTS);
+                throw new RestApiException(CustomUserErrorCode.NICKNAME_IS_EXISTS);
             }
 
             User user = new User();
@@ -78,7 +78,7 @@ public class JoinService {
             response.put("data", dataMap);
         } catch (Exception e) {
             logger.error("회원가입 중 오류 발생", e);
-            throw new RestApiException(CustomErrorCode.JOIN_IS_FAILED);
+            throw new RestApiException(CustomUserErrorCode.JOIN_IS_FAILED);
         }
         return response;
     }
