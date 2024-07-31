@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum QuizErrorCode implements ErrorCode {
     INVALID_QUIZ_PK(HttpStatus.BAD_REQUEST, "해당 Quiz PK로 값을 찾을 수 없습니다."),
-    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Cannot find resource"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "Cannot find user"),
     QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "Cannot find quiz"),
     ;
