@@ -1,10 +1,8 @@
 package com.chill.mallang.domain.user.oauth;
 
-import com.chill.mallang.domain.user.controller.v1.JoinController;
-import com.chill.mallang.errors.errorcode.CustomErrorCode;
+import com.chill.mallang.domain.user.errors.CustomUserErrorCode;
 import com.chill.mallang.errors.exception.RestApiException;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import lombok.extern.flogger.Flogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -37,7 +35,7 @@ public class CustomOAuthProvider implements AuthenticationProvider {
             GoogleIdToken.Payload payload = googleOAuthService.verifyToken(idToken);
             if (payload == null) {
                 logger.info("GoogleID)token invalid"+payload.toString());
-                throw new RestApiException(CustomErrorCode.INVALID_ID_TOKEN);
+                throw new RestApiException(CustomUserErrorCode.INVALID_ID_TOKEN);
             }
 
             String googleEmail = payload.getEmail();
@@ -48,10 +46,10 @@ public class CustomOAuthProvider implements AuthenticationProvider {
                 return new CustomOAuthToken(userDetails.getAuthorities(), idToken, email);
             } else {
                 logger.info("email is not matched"+email);
-                throw new RestApiException(CustomErrorCode.EMAIL_NOT_MATCHED);
+                throw new RestApiException(CustomUserErrorCode.EMAIL_NOT_MATCHED);
             }
         } catch (GeneralSecurityException | IOException e) {
-            throw new RestApiException(CustomErrorCode.EMAIL_NOT_MATCHED);
+            throw new RestApiException(CustomUserErrorCode.EMAIL_NOT_MATCHED);
         }
     }
 

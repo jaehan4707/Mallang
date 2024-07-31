@@ -1,6 +1,7 @@
 package com.chill.mallang.domain.user.service;
 
 
+import com.chill.mallang.domain.user.errors.CustomUserErrorCode;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
@@ -29,13 +30,13 @@ public class UserSettingService {
 
     public Map<String, Object> updateNickname(HttpServletRequest request, String nickname) {
         if (!request.getMethod().equalsIgnoreCase("PATCH")) {
-            throw new RestApiException(CustomErrorCode.METHOD_NOT_ALLOWED);
+            throw new RestApiException(CustomUserErrorCode.METHOD_NOT_ALLOWED);
         }
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         logger.info(nickname);
         logger.info(Boolean.toString(userRepository.existsByNickname(nickname)));
         if(userRepository.existsByNickname(nickname)){
-            throw new RestApiException(CustomErrorCode.NICKNAME_IS_EXISTS);
+            throw new RestApiException(CustomUserErrorCode.NICKNAME_IS_EXISTS);
         }
         String email = jwtUtil.extractEmail(token.substring(7));
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -51,13 +52,13 @@ public class UserSettingService {
             response.put("success", "닉네임 변경에 성공했습니다.");
             response.put("data", dataMap);
         } else {
-            throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
+            throw new RestApiException(CustomUserErrorCode.USER_NOT_FOUND);
         }
         return response;
     }
     public Map<String, Object> deleteUser(HttpServletRequest request) {
         if (!request.getMethod().equalsIgnoreCase("Delete")) {
-            throw new RestApiException(CustomErrorCode.METHOD_NOT_ALLOWED);
+            throw new RestApiException(CustomUserErrorCode.METHOD_NOT_ALLOWED);
         }
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         String email = jwtUtil.extractEmail(token.substring(7));
@@ -71,7 +72,7 @@ public class UserSettingService {
             response.put("status", 200);
             response.put("success", String.format("%s님 회원탈퇴에 성공하였습니다.", nickname));
         } else {
-            throw new RestApiException(CustomErrorCode.USER_NOT_FOUND);
+            throw new RestApiException(CustomUserErrorCode.USER_NOT_FOUND);
         }
         return response;
     }

@@ -1,10 +1,10 @@
 package com.chill.mallang.domain.user.service.impl;
 
 import com.chill.mallang.domain.user.dto.FindByEmailDTO;
+import com.chill.mallang.domain.user.errors.CustomUserErrorCode;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.user.service.UserService;
-import com.chill.mallang.errors.errorcode.CustomErrorCode;
 import com.chill.mallang.errors.exception.RestApiException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @ExceptionHandler
     public boolean existsByEmail(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new RestApiException(CustomErrorCode.EMAIL_IS_EXISTS);
+            throw new RestApiException(CustomUserErrorCode.EMAIL_IS_EXISTS);
         }
         return false; // 중복되지 않는 경우
     }
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsByNickname(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
-            throw new RestApiException(CustomErrorCode.NICKNAME_IS_EXISTS);
+            throw new RestApiException(CustomUserErrorCode.NICKNAME_IS_EXISTS);
         }
         return false; // 중복되지 않는 경우
     }
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> findByEmailFromToken(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (token == null || !token.startsWith("Bearer ")) {
-            throw new RestApiException(CustomErrorCode.INVALID_PARAMETER);
+            throw new RestApiException(CustomUserErrorCode.AUTHENTICATED_FAILED);
         }
         String email = jwtUtil.extractEmail(token.substring(7));
         Optional<FindByEmailDTO> userDTO = findByEmail(email);
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
             response.put("success", "회원조회에 성공했습니다.");
             response.put("data", userDTO.get());
         } else {
-            throw new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND);
+            throw new RestApiException(CustomUserErrorCode.JOIN_IS_FAILED);
         }
         return response;
     }
