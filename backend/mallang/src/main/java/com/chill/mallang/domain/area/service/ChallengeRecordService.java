@@ -3,7 +3,6 @@ package com.chill.mallang.domain.area.service;
 import com.chill.mallang.domain.area.dto.ChallengeRecordDTO;
 import com.chill.mallang.domain.area.dto.ResponseTotalTeamInfo;
 import com.chill.mallang.domain.area.dto.ResponseTotalUserInfo;
-import com.chill.mallang.domain.area.model.AreaLog;
 import com.chill.mallang.domain.faction.model.FactionType;
 import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.quiz.repository.AnswerRepository;
