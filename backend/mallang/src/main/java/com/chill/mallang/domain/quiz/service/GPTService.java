@@ -1,7 +1,7 @@
 package com.chill.mallang.domain.quiz.service;
 
-import com.chill.mallang.domain.quiz.dto.ChatGPTRequest;
-import com.chill.mallang.domain.quiz.dto.ChatGPTResponse;
+import com.chill.mallang.domain.quiz.dto.core.ChatGPTRequest;
+import com.chill.mallang.domain.quiz.dto.core.ChatGPTResponse;
 import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

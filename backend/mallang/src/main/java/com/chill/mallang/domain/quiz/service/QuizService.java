@@ -1,7 +1,7 @@
 package com.chill.mallang.domain.quiz.service;
 
-import com.chill.mallang.domain.quiz.dto.RequestQuizAnswer;
-import com.chill.mallang.domain.quiz.dto.ResponseQuiz;
+import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
+import com.chill.mallang.domain.quiz.dto.response.ResponseQuiz;
 import com.chill.mallang.domain.quiz.error.QuizErrorCode;
 import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.quiz.model.Quiz;
@@ -46,7 +46,6 @@ public class QuizService {
                     .question(quiz.get().getQuestion())  // 추가된 부분
                     .answer(quiz.get().getAnswer())
                     .difficulty(quiz.get().getDifficulty())
-                    .type(quiz.get().getType())
                     .build();
 
             return new HashMap<String, Object>() {{

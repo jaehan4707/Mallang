@@ -1,4 +1,4 @@
-package com.chill.mallang.domain.quiz.dto;
+package com.chill.mallang.domain.quiz.dto.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

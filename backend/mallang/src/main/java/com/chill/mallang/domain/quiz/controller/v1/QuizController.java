@@ -1,6 +1,6 @@
 package com.chill.mallang.domain.quiz.controller.v1;
 
-import com.chill.mallang.domain.quiz.dto.RequestQuizAnswer;
+import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
 import com.chill.mallang.domain.quiz.service.QuizService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
