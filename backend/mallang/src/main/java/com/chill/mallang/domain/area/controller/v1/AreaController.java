@@ -4,10 +4,7 @@ import com.chill.mallang.domain.area.dto.APIresponse;
 import com.chill.mallang.domain.area.dto.AllAreaDTO;
 import com.chill.mallang.domain.area.dto.AreaTopUserDTO;
 import com.chill.mallang.domain.area.dto.ChallengeRecordDTO;
-import com.chill.mallang.domain.area.service.AllAreaService;
-import com.chill.mallang.domain.area.service.TryCountService;
-import com.chill.mallang.domain.area.service.AreaTopUserService;
-import com.chill.mallang.domain.area.service.ChallengeRecordService;
+import com.chill.mallang.domain.area.service.*;
 import com.chill.mallang.domain.user.dto.TryCountDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,6 +37,9 @@ public class AreaController {
 
     @Autowired
     private AllAreaService allAreaService;
+
+    @Autowired
+    private AreaStatusService areaStatusService;
 
     @Operation(summary = "점령지 대표 유저 정보 조회", description = "특정 점령지에 대한 양 팀의 정보와 각 팀 1위 유저 정보를 조회합니다.")
     @GetMapping("/{area}/{userTeam}")
@@ -76,5 +76,12 @@ public class AreaController {
     public ResponseEntity<?> getAllAreas() {
         Map<String,Object> areaInfo = allAreaService.getAllAreas();
         return new ResponseEntity<>(areaInfo, HttpStatus.OK);
+    }
+
+    @Operation(summary = "점령 현황 조회", description = "양 팀의 점령지 점령 현황을 조회합니다.")
+    @GetMapping("/status")
+    public ResponseEntity<?> getAreaStatus() {
+        Map<String,Object> areaStatus = areaStatusService.getAreaStatus();
+        return new ResponseEntity<>(areaStatus,HttpStatus.OK);
     }
 }
