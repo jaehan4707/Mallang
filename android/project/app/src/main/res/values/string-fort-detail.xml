@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="team_mal_title">말팀짱</string>
+    <string name="team_rang_title">랑팀짱</string>
+    <string name="top_user_title">[ %s ]</string>
+    <string name="team_score">%d 점</string>
+    <string name="game_start">게임 시작</string>
+    <string name="remaining_chance">남은 기회: %d 회</string>
+    <string name="my_team_records_label">우리팀 기록</string>
+    <string name="oppo_team_records_label">상대팀 기록</string>
+    <string name="user_record_rank">%d 위</string>
+    <string name="user_record_score">%d 점</string>
+</resources>
