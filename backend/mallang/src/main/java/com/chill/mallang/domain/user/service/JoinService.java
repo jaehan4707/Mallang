@@ -50,6 +50,9 @@ public class JoinService {
             if (isExist) {
                 throw new RestApiException(CustomErrorCode.EMAIL_IS_EXISTS);
             }
+            if(userRepository.existsByNickname(nickname)){
+                throw new RestApiException(CustomErrorCode.NICKNAME_IS_EXISTS);
+            }
 
             User user = new User();
             logger.info(user.toString());
