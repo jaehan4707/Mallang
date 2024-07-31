@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.quiz
+package com.chill.mallang.ui.feature.quiz_result
 
 data class QuizResultState(
     val quizTitle: String = "",
