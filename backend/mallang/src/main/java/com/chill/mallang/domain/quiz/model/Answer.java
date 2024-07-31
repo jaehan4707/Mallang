@@ -2,6 +2,7 @@ package com.chill.mallang.domain.quiz.model;
 
 import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,8 +24,9 @@ public class Answer {
     @JoinColumn(name = "quiz")
     private Quiz quiz;
 
+    @Size(max =500, message ="최대 500자 입력 가능")
     private String answer;
-    private float score;
+    private double score;
     private int answerTime;
     private LocalDateTime created_at;
 
@@ -37,7 +39,7 @@ public class Answer {
     }
 
     @Builder
-    public Answer(User user, Quiz quiz, String answer, float score, int answerTime, int check_fin) {
+    public Answer(User user, Quiz quiz, String answer, double score, int answerTime, int check_fin) {
         this.user = user;
         this.quiz = quiz;
         this.answer = answer;
