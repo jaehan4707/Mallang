@@ -1,11 +1,6 @@
 package com.chill.mallang.domain.area.controller.v1;
 
-import com.chill.mallang.domain.area.dto.APIresponse;
-import com.chill.mallang.domain.area.dto.AllAreaDTO;
-import com.chill.mallang.domain.area.dto.AreaTopUserDTO;
-import com.chill.mallang.domain.area.dto.ChallengeRecordDTO;
 import com.chill.mallang.domain.area.service.*;
-import com.chill.mallang.domain.user.dto.TryCountDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
