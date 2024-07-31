@@ -26,6 +26,8 @@ public class QuizService {
 
 
     private Logger logger = LoggerFactory.getLogger(QuizService.class);
+    @Autowired
+    private GPTService gptService;
 
     @Autowired
     private QuizRepository quizRepository;
@@ -58,18 +60,27 @@ public class QuizService {
 
     public void submitAnswer(RequestQuizAnswer requestQuizAnswer){
         logger.info(String.valueOf(requestQuizAnswer));
-        saveAnswer(requestQuizAnswer);
+
+        String question = quizRepository.findById(requestQuizAnswer.getQuizId()).get().getQuestion();
+        String answer = requestQuizAnswer.getUserAnswer();
+
+        System.out.println(answer);
+
+        double score = gptService.getScore(question, answer);
+
+        saveAnswer(requestQuizAnswer, score);
+
         logger.info("Success Save Answer");
     }
 
-    public Answer saveAnswer(RequestQuizAnswer requestQuizAnswer){
+    public Answer saveAnswer(RequestQuizAnswer requestQuizAnswer, double score){
 
         Answer answer = Answer.builder()
                 .user(userRepository.findById(requestQuizAnswer.getUserId()).orElseThrow(() -> new RestApiException(QuizErrorCode.USER_NOT_FOUND)))
                 .quiz(quizRepository.findById(requestQuizAnswer.getQuizId()).orElseThrow(() -> new RestApiException(QuizErrorCode.QUIZ_NOT_FOUND)))
                 .answer(requestQuizAnswer.getUserAnswer())
                 .answerTime(requestQuizAnswer.getAnswerTime())
-                .score(100)
+                .score(score)
                 .check_fin(0) // 기본값 설정
                 .build();
 

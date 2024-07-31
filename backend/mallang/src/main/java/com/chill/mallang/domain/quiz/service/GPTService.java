@@ -2,6 +2,7 @@ package com.chill.mallang.domain.quiz.service;
 
 import com.chill.mallang.domain.quiz.dto.ChatGPTRequest;
 import com.chill.mallang.domain.quiz.dto.ChatGPTResponse;
+import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.theokanning.openai.OpenAiService;
@@ -33,6 +34,8 @@ public class GPTService {
 
     @Autowired
     private RestTemplate template;
+    @Autowired
+    private QuizRepository quizRepository;
 
     public GPTService(OpenAiService openAiService) {
         this.openAiService = openAiService;
@@ -53,6 +56,7 @@ public class GPTService {
         ChatGPTResponse.Choice choice = chatGPTResponse.getChoices().get(0);
 
         String jsonString = chatGPTResponse.getChoices().get(0).getMessage().getContent();
+
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonString);
@@ -68,7 +72,30 @@ public class GPTService {
         }
 
     }
+    public double getScore(String question, String userAnswer){
+        StringBuilder sb = new StringBuilder();
 
+        String prompt = "너는 지금부터 문제를 채점하는 채점자야. " +
+                "내가 문제와 정답을 주면 평가를 내려줘. " +
+                "평가 기준은 Question을 얼마나 잘 이해하고 요약해서 UserAnswer을 작성했는지 문해력 확인이야. " +
+                "이해도를 기준으로 냉정하게 평가해줘. " +
+                "응답은 Double형으로 숫자인 점수만 알려줘. " +
+                "0 ~ 100 점 사이 점수로 표현해.";
+
+        sb.append(prompt).append("\n").append("Question : ").append(question).append("\n").append("UserAnswer : ").append(userAnswer);
+        prompt = sb.toString();
+        logger.info(prompt);
+        ChatGPTRequest request = new ChatGPTRequest(model, prompt);
+        ChatGPTResponse chatGPTResponse = template.postForObject(apiUrl, request, ChatGPTResponse.class);
+
+        ChatGPTResponse.Choice choice = chatGPTResponse.getChoices().get(0);
+
+        String jsonString = chatGPTResponse.getChoices().get(0).getMessage().getContent();
+
+        System.out.println(jsonString);
+
+        return Double.valueOf(jsonString);
+    }
 
     public void checkModels() {
         // write code only here
