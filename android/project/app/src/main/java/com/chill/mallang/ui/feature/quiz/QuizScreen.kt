@@ -44,6 +44,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.CustomSnackBar
+import com.chill.mallang.ui.feature.quiz_result.AnswerResultListItem
+import com.chill.mallang.ui.feature.quiz_result.QuizResultState
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
@@ -60,8 +62,8 @@ fun QuizScreen(
     val quizViewModel: QuizViewModel = hiltViewModel()
     val quizState = quizViewModel.state
 
-    // SnackbarHostState 생성
-    val snackbarHostState = remember { SnackbarHostState() }
+    // SnackBarHostState 생성
+    val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     val isBackPressed = remember { mutableStateOf(false) }
@@ -80,7 +82,7 @@ fun QuizScreen(
     Scaffold(
         snackbarHost = {
             SnackbarHost(
-                hostState = snackbarHostState,
+                hostState = snackBarHostState,
                 snackbar = { snackBarData ->
                     CustomSnackBar(
                         snackBarData = snackBarData,
@@ -119,7 +121,7 @@ fun QuizScreen(
                     if (quizViewModel.selectedAnswer == -1) {
                         // 스낵바 띄우기
                         scope.launch {
-                            snackbarHostState.showSnackbar(
+                            snackBarHostState.showSnackbar(
                                 message = "정답을 선택해 주세요!",
                                 duration = SnackbarDuration.Short,
                             )
