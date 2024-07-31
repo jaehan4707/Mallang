@@ -3,10 +3,13 @@ package com.chill.mallang.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -17,9 +20,11 @@ import com.chill.mallang.ui.navigation.DestinationMain
 import com.chill.mallang.ui.navigation.DestinationNickName
 import com.chill.mallang.ui.navigation.DestinationSelect
 import com.chill.mallang.ui.navigation.MallangNavHost
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
+    val coroutineScope = rememberCoroutineScope()
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -33,14 +38,19 @@ fun MainScreen(modifier: Modifier = Modifier) {
             else -> true
         }
     val isBackPressed = remember { mutableStateOf(false) }
-
     val onConfirm = {
         navController.popBackStack()
         isBackPressed.value = false
     }
 
-    val onDismiss = {
-        isBackPressed.value = false
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
+
+    val onShowErrorSnackBar: (errorMessage: String) -> Unit = { errorMessage ->
+        coroutineScope.launch {
+            snackBarHostState.showSnackbar(errorMessage)
+        }
     }
 
     BackConfirmHandler(
@@ -51,7 +61,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
     ) { innerPadding ->
+
         Column(modifier = Modifier.padding(innerPadding)) {
             if (isShownShowAppBar) {
                 TopAppBar(
@@ -68,6 +80,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             MallangNavHost(
                 navController = navController,
                 startDestination = DestinationLogin.route,
+                onShowErrorSnackBar = onShowErrorSnackBar,
             )
         }
     }
