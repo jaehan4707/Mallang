@@ -32,10 +32,6 @@ public class UserSettingService {
             throw new RestApiException(CustomErrorCode.METHOD_NOT_ALLOWED);
         }
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        System.out.println(token);
-        if (token == null || !token.startsWith("Bearer ")) {
-            throw new RestApiException(CustomErrorCode.INVALID_PARAMETER);
-        }
         logger.info(nickname);
         logger.info(Boolean.toString(userRepository.existsByNickname(nickname)));
         if(userRepository.existsByNickname(nickname)){
