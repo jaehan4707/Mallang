@@ -1,6 +1,7 @@
 package com.chill.mallang.domain.quiz.service;
 
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
+import com.chill.mallang.domain.quiz.dto.request.RequestResult;
 import com.chill.mallang.domain.quiz.dto.response.ResponseQuiz;
 import com.chill.mallang.domain.quiz.error.QuizErrorCode;
 import com.chill.mallang.domain.quiz.model.Answer;
@@ -86,4 +87,9 @@ public class QuizService {
         logger.info("Add answer data : " , answer.toString());
         return answerRepository.save(answer);
     }
+
+    public void quizResult(RequestResult requestResult){
+
+    }
+
 }

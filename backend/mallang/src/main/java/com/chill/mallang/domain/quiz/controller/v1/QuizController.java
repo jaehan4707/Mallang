@@ -1,6 +1,7 @@
 package com.chill.mallang.domain.quiz.controller.v1;
 
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
+import com.chill.mallang.domain.quiz.dto.request.RequestResult;
 import com.chill.mallang.domain.quiz.service.QuizService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,7 +35,7 @@ public class QuizController {
     }
     @Operation(summary ="전체 결과 확인", description = "라운드 최종 결과를 확인합니다.")
     @GetMapping("/result")
-    public ResponseEntity<?> getQuizResult() {
+    public ResponseEntity<?> getQuizResult(@RequestBody RequestResult requestResult) {
         return new ResponseEntity<>("정답을 조회합니다.", HttpStatus.OK);
     }
     @Operation(summary = "정답 확인", description = "특정 문제의 AI 기준 정답 확인")
