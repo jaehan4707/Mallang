@@ -5,6 +5,7 @@ import com.chill.mallang.data.model.apiHandler
 import com.chill.mallang.data.model.request.JoinRequest
 import com.chill.mallang.data.model.request.LoginRequest
 import com.chill.mallang.data.model.response.ApiResponse
+import com.chill.mallang.data.model.response.UserInfo
 import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.UserRepository
 import kotlinx.coroutines.flow.Flow
@@ -92,6 +93,30 @@ class UserRepositoryImpl
                 when (response) {
                     is ApiResponse.Success -> {
                         emit(ApiResponse.Success(null))
+                    }
+
+                    is ApiResponse.Error -> {
+                        emit(
+                            ApiResponse.Error(
+                                errorCode = response.errorCode,
+                                errorMessage = response.errorMessage,
+                            ),
+                        )
+                    }
+
+                    ApiResponse.Init -> {}
+                }
+            }
+
+        override suspend fun getUserInfo(): Flow<ApiResponse<UserInfo>> =
+            flow {
+                val response =
+                    apiHandler {
+                        userApi.getUserInfo()
+                    }
+                when (response) {
+                    is ApiResponse.Success -> {
+                        emit(ApiResponse.Success(response.data?.data))
                     }
 
                     is ApiResponse.Error -> {
