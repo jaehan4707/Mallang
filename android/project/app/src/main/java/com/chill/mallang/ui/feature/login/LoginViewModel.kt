@@ -256,10 +256,18 @@ class LoginViewModel
                     when (response) {
                         is ApiResponse.Success -> {
                             _loginUiState.value =
-                                LoginUiState.Success(
-                                    userEmail = userEmail,
-                                    userProfileImageUrl = profileImageUrl,
-                                )
+                                when (response.data ?: false) {
+                                    true -> {
+                                        LoginUiState.AuthLogin
+                                    }
+
+                                    false -> {
+                                        LoginUiState.Success(
+                                            userEmail = userEmail,
+                                            userProfileImageUrl = profileImageUrl,
+                                        )
+                                    }
+                                }
                         }
 
                         is ApiResponse.Error -> {
