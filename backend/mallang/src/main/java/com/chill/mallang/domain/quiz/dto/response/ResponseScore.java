@@ -1,4 +1,4 @@
-package com.chill.mallang.domain.quiz.dto;
+package com.chill.mallang.domain.quiz.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

@@ -26,8 +26,6 @@ public class Quiz {
     @NotNull
     private String answer;
     @NotNull
-    private String type;
-    @NotNull
     private LocalDateTime created_at = LocalDateTime.now();
 
     private LocalDateTime updated_at;
