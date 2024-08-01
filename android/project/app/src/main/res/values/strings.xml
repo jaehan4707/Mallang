@@ -6,4 +6,5 @@
     <string name="positive_button_message">네</string>
     <string name="nagative_button_message">아니요</string>
     <string name="app_exit_message">앱을 종료하시겠습니까?</string>
+    <string name="loading_dialog_message">말랑 로딩중..</string>
 </resources>

@@ -127,4 +127,7 @@ dependencies {
 
     //preference datastore
     implementation(libs.datastore.preferences)
+
+    //lottie animation
+    implementation(libs.lottie)
 }

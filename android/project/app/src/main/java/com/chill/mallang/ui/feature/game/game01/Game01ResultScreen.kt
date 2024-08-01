@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.game01
+package com.chill.mallang.ui.feature.game.game01
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween

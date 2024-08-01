@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.game01
+package com.chill.mallang.ui.feature.game
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.chill.mallang.ui.theme.MallangTheme
 
 @Composable
-fun Game01Screen(modifier: Modifier = Modifier) {
+fun GameScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -24,6 +24,6 @@ fun Game01Screen(modifier: Modifier = Modifier) {
 @Composable
 fun GameLobbyScreenPreview() {
     MallangTheme {
-        Game01Screen()
+        GameScreen()
     }
 }
