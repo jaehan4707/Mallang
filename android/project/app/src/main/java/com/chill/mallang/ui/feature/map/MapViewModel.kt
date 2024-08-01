@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chill.mallang.data.model.Area
+import com.chill.mallang.data.model.entity.Area
+import com.chill.mallang.data.model.response.ApiResponse
+import com.chill.mallang.data.repository.remote.AreaRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.chill.mallang.R
-import com.chill.mallang.data.model.Area
+import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.ui.feature.map.CustomMarkerState
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray6
@@ -39,14 +39,14 @@ import com.google.maps.android.compose.MarkerState
 @GoogleMapComposable
 fun CustomMarkerWithArea(
     state: CustomMarkerState,
-    onClick: (Area) -> Unit = {}
-){
+    onClick: (Area) -> Unit = {},
+) {
     MarkerComposable(
         state = state.marker,
         onClick = {
             onClick(state.area)
             false
-        }
+        },
     ) {
         CustomMarker(distance = state.distance, color = state.color)
     }
@@ -59,27 +59,27 @@ fun CustomMarkerWithArea(
 @Composable
 fun CustomMarker(
     distance: Int,
-    color: Color
-){
+    color: Color,
+) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Surface(
             shape = RoundedCornerShape(100.dp),
             border = BorderStroke(2.dp, BackGround),
-            color = Gray6
+            color = Gray6,
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 text = "${distance}m",
-                color = BackGround
+                color = BackGround,
             )
         }
         Icon(
             modifier = Modifier.size(56.dp),
             painter = painterResource(id = R.drawable.ic_location),
             contentDescription = "",
-            tint = color
+            tint = color,
         )
     }
 }
@@ -92,11 +92,13 @@ fun MapMarker(
     state: MarkerState,
     title: String,
     snippet: String,
-    @DrawableRes iconResourceId: Int
+    @DrawableRes iconResourceId: Int,
 ) {
-    val icon = bitmapDescriptor(
-        LocalContext.current, iconResourceId
-    )
+    val icon =
+        bitmapDescriptor(
+            LocalContext.current,
+            iconResourceId,
+        )
     Marker(
         state = state,
         title = title,
@@ -110,17 +112,17 @@ fun MapMarker(
  */
 fun bitmapDescriptor(
     context: Context,
-    vectorResId: Int
+    vectorResId: Int,
 ): BitmapDescriptor? {
-
     // Drawable 가져오기
     val drawable = ContextCompat.getDrawable(context, vectorResId) ?: return null
     drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-    val bm = Bitmap.createBitmap(
-        drawable.intrinsicWidth,
-        drawable.intrinsicHeight,
-        Bitmap.Config.ARGB_8888
-    )
+    val bm =
+        Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888,
+        )
 
     // 비트맵 변환
     val canvas = android.graphics.Canvas(bm)
@@ -130,7 +132,7 @@ fun bitmapDescriptor(
 
 @Preview
 @Composable
-fun CustomMarkerPreview(){
+fun CustomMarkerPreview() {
     MallangTheme {
         CustomMarker(distance = 100, color = Red01)
     }

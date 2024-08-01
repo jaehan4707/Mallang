@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chill.mallang.data.model.Area
+import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.ui.feature.map.layout.MapScaffold
 import com.chill.mallang.ui.feature.map.mapview.MapView
 import com.chill.mallang.ui.theme.MallangTheme

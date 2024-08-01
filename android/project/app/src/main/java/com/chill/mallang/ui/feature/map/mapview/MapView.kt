@@ -16,7 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.chill.mallang.data.model.Area
+import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.ui.feature.map.AreasState
 import com.chill.mallang.ui.feature.map.CustomMarkerState
 import com.chill.mallang.ui.feature.map.LocationState
@@ -34,52 +34,57 @@ fun MapView(
     currentLocation: LocationState,
     selectedArea: Area?,
     areasState: AreasState,
-    onSelectArea: (Area) -> Unit = {}
-){
+    onSelectArea: (Area) -> Unit = {},
+) {
     val cameraPositionState = rememberCameraPositionState()
-    val uiSettings = remember {
-        MapUiSettings(myLocationButtonEnabled = true)
-    }
+    val uiSettings =
+        remember {
+            MapUiSettings(myLocationButtonEnabled = true)
+        }
     val properties by remember {
         mutableStateOf(MapProperties(isMyLocationEnabled = true))
     }
     var isMapLoaded by remember {
         mutableStateOf(false)
     }
-    val (markerStates, setMarkers) = remember {
-        mutableStateOf(listOf<CustomMarkerState>())
-    }
+    val (markerStates, setMarkers) =
+        remember {
+            mutableStateOf(listOf<CustomMarkerState>())
+        }
 
     // 현재 위치가 바뀌면 카메라를 현 위치로 이동
     LaunchedEffect(currentLocation) {
-        if(currentLocation is LocationState.Tracking) {
+        if (currentLocation is LocationState.Tracking) {
             cameraPositionState.animate(
                 CameraUpdateFactory.newCameraPosition(
-                    CameraPosition(currentLocation.latLng, 15f, 0f, 0f)
+                    CameraPosition(currentLocation.latLng, 15f, 0f, 0f),
                 ),
-                1000
+                1000,
             )
 
-            for (marker : CustomMarkerState in markerStates){
-                marker.distance = SphericalUtil.computeDistanceBetween(currentLocation.latLng, marker.area.latLng).toInt()
+            for (marker: CustomMarkerState in markerStates) {
+                marker.distance =
+                    SphericalUtil
+                        .computeDistanceBetween(currentLocation.latLng, marker.area.latLng)
+                        .toInt()
             }
         }
     }
 
     // 마커 선택 시에 카메라를 마커로 이동
     LaunchedEffect(selectedArea) {
-        if(selectedArea != null){
+        if (selectedArea != null) {
             cameraPositionState.animate(
                 CameraUpdateFactory.newCameraPosition(
-                    CameraPosition(selectedArea.latLng, 15f, 0f, 0f)
+                    CameraPosition(selectedArea.latLng, 15f, 0f, 0f),
                 ),
-                1000
+                1000,
             )
         }
     }
 
     LaunchedEffect(areasState) {
-        if(areasState is AreasState.HasValue){
+        if (areasState is AreasState.HasValue) {
             setMarkers(areasState.list.map { area -> CustomMarkerState(area) })
         }
     }
@@ -91,29 +96,31 @@ fun MapView(
             cameraPositionState = cameraPositionState,
             onMapLoaded = { isMapLoaded = true },
             uiSettings = uiSettings,
-            properties = properties
+            properties = properties,
         ) {
-            if(isMapLoaded ){
-                for (marker : CustomMarkerState in markerStates){
+            if (isMapLoaded) {
+                for (marker: CustomMarkerState in markerStates) {
                     CustomMarkerWithArea(
                         state = marker,
-                        onClick = onSelectArea
+                        onClick = onSelectArea,
                     )
                 }
             }
         }
-        if(!isMapLoaded) {
+        if (!isMapLoaded) {
             AnimatedVisibility(
-                modifier = Modifier
-                    .matchParentSize(),
+                modifier =
+                    Modifier
+                        .matchParentSize(),
                 visible = !isMapLoaded,
                 enter = EnterTransition.None,
-                exit = fadeOut()
+                exit = fadeOut(),
             ) {
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.primary)
-                        .wrapContentSize()
+                    modifier =
+                        Modifier
+                            .background(MaterialTheme.colorScheme.primary)
+                            .wrapContentSize(),
                 )
             }
         }
