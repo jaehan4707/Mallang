@@ -13,7 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.chill.mallang.data.model.Area
+import com.chill.mallang.data.model.entity.Area
+import com.chill.mallang.ui.feature.map.LocationState
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.MallangTheme
 import com.google.android.gms.maps.model.LatLng
@@ -26,15 +27,17 @@ import com.google.maps.android.SphericalUtil
 fun MapScaffold(
     modifier: Modifier = Modifier,
     areaSelected: Area?,
-    currentLocation: LatLng?,
+    currentLocation: LocationState,
     onLocate: () -> Unit = {},
-    onShowDetail: (Area) -> Unit = {}
-){
+    onShowDetail: (Area) -> Unit = {},
+) {
     // 현 위치와 선택된 위치 사이의 거리
     val distance by remember {
-        derivedStateOf{
-            if(currentLocation != null && areaSelected != null){
-                SphericalUtil.computeDistanceBetween(currentLocation, areaSelected.latLng).toInt()
+        derivedStateOf {
+            if (currentLocation is LocationState.Tracking && areaSelected != null) {
+                SphericalUtil
+                    .computeDistanceBetween(currentLocation.latLng, areaSelected.latLng)
+                    .toInt()
             } else {
                 null
             }
@@ -42,34 +45,38 @@ fun MapScaffold(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(330.dp)
-            .background(color = BackGround),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(330.dp)
+                .background(color = BackGround),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         OccupationStatusBar(
             modifier = Modifier.padding(16.dp),
             leftCount = 7,
-            rightCount = 3
+            rightCount = 3,
         )
-        CharacterMessageBox(modifier = Modifier
-            .weight(1f)
-            .padding(horizontal = 16.dp)
+        CharacterMessageBox(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 16.dp),
         )
 
-        if(areaSelected == null)
+        if (areaSelected == null) {
             LocateNearbyButton(
                 modifier = Modifier.padding(bottom = 16.dp),
-                onClick = onLocate
+                onClick = onLocate,
             )
-        else
+        } else {
             AreaInfoBar(
                 modifier = Modifier.padding(16.dp),
                 area = areaSelected,
                 distance = distance,
-                onShowDetail = { area -> onShowDetail(area) }
+                onShowDetail = { area -> onShowDetail(area) },
             )
+        }
     }
 }
 
@@ -79,9 +86,9 @@ fun MapScaffold(
  */
 @Preview(apiLevel = 34)
 @Composable
-private fun MapScaffoldPreview(){
+private fun MapScaffoldPreview() {
     MallangTheme {
-        MapScaffold(areaSelected = null, currentLocation = LatLng(0.0, 0.0))
+        MapScaffold(areaSelected = null, currentLocation = LocationState.Tracking(LatLng(0.0, 0.0)))
     }
 }
 
@@ -90,11 +97,11 @@ private fun MapScaffoldPreview(){
  */
 @Preview(apiLevel = 34)
 @Composable
-private fun MapScaffoldPreviewWithAreaInfo(){
+private fun MapScaffoldPreviewWithAreaInfo() {
     MallangTheme {
         MapScaffold(
             areaSelected = Area(1, "찰밭공원", 0.0, 0.0),
-            currentLocation = LatLng(0.0, 0.0)
+            currentLocation = LocationState.Tracking(LatLng(0.0, 0.0)),
         )
     }
 }

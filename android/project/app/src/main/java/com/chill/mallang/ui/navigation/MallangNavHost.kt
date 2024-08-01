@@ -7,9 +7,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.chill.mallang.ui.feature.fort_detail.FortDetailScreen
 import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
+import com.chill.mallang.ui.feature.map.MapScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.quiz.QuizScreen
 import com.chill.mallang.ui.feature.quiz_result.QuizResultScreen
@@ -73,7 +75,7 @@ fun MallangNavHost(
         ) {
             HomeScreen(
                 modifier = Modifier,
-                navigateToGame = { navController.navigate(DestinationGameLobby.route) },
+                navigateToGame = { navController.navigate(DestinationMap.route) },
                 navigateToWordNote = { navController.navigate(DestinationWordNote.route) },
                 popUpBackStack = { (context as Activity).finish() },
                 onShowErrorSnackBar = onShowErrorSnackBar,
@@ -94,6 +96,24 @@ fun MallangNavHost(
                     }
                 },
             )
+        }
+
+        composable(
+            route = DestinationMap.route,
+        ) {
+            MapScreen(
+                onShowAreaDetail = { area ->
+                    navController.navigate(DestinationAreaDetail.createRoute(area.areaId))
+                }
+            )
+        }
+
+        composable(
+            route = DestinationAreaDetail.routeWithArgs,
+            arguments = DestinationAreaDetail.arguments
+        ) { navBackStackEntry ->
+            val areaId = navBackStackEntry.arguments?.getLong(DestinationAreaDetail.arg)
+            FortDetailScreen(areaId = areaId)
         }
 
         composable(

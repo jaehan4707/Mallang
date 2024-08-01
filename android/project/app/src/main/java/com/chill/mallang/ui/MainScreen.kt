@@ -43,9 +43,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
         isBackPressed.value = false
     }
 
-    val snackBarHostState = remember {
-        SnackbarHostState()
-    }
+    val snackBarHostState =
+        remember {
+            SnackbarHostState()
+        }
 
     val onShowErrorSnackBar: (errorMessage: String) -> Unit = { errorMessage ->
         coroutineScope.launch {
@@ -53,6 +54,16 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    val defaultPop =
+        remember {
+            {
+                navController.popBackStack(
+                    DestinationMain.route,
+                    inclusive = false,
+                )
+                Unit
+            }
+        }
     BackConfirmHandler(
         onConfirm = onConfirm,
         onDismiss = { isBackPressed.value = it },
@@ -69,12 +80,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 TopAppBar(
                     label = title,
                     popUpBackStack = { isBackPressed.value = true },
-                    navigateToHome = {
-                        navController.popBackStack(
-                            DestinationMain.route,
-                            inclusive = false,
-                        )
-                    },
+                    navigateToHome = defaultPop,
                 )
             }
             MallangNavHost(

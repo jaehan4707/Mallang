@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chill.mallang.data.model.Area
+import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.ui.feature.map.layout.MapScaffold
 import com.chill.mallang.ui.feature.map.mapview.MapView
 import com.chill.mallang.ui.theme.MallangTheme
@@ -28,10 +28,10 @@ import com.google.android.gms.maps.model.LatLng
  */
 @SuppressLint("MissingPermission")
 @Composable
-fun Map(
+fun MapScreen(
     modifier: Modifier = Modifier,
-    onShowAreaDetail: (Area) -> Unit = {}
-){
+    onShowAreaDetail: (Area) -> Unit = {},
+) {
     val context = LocalContext.current
     val viewModel: MapViewModel = hiltViewModel()
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -43,9 +43,9 @@ fun Map(
     var hasPermission by remember { mutableStateOf(false) }
 
     MultiplePermissionsHandler(
-        permissions = listOf( Manifest.permission.ACCESS_FINE_LOCATION ),
+        permissions = listOf(Manifest.permission.ACCESS_FINE_LOCATION),
     ) { permissionResults ->
-        if(permissionResults.all { permissions -> permissions.value }){
+        if (permissionResults.all { permissions -> permissions.value }) {
             hasPermission = true
 
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
@@ -57,34 +57,57 @@ fun Map(
     }
 
     LaunchedEffect(hasPermission) {
-        if(hasPermission){
+        if (hasPermission) {
             // Get area info
             viewModel.loadAreas()
         }
     }
 
-    Column(modifier = modifier.fillMaxSize()){
+    MapScreenContent(
+        currentLocation = currentLocation,
+        areasState = areas,
+        selectedArea = selectedArea,
+        onSelectArea = viewModel::setToSelected,
+        onLocate = viewModel::findClosestArea,
+        onShowAreaDetail = onShowAreaDetail,
+    )
+}
+
+@Composable
+fun MapScreenContent(
+    modifier: Modifier = Modifier,
+    currentLocation: LocationState,
+    areasState: AreasState,
+    selectedArea: Area?,
+    onSelectArea: (Area) -> Unit = {},
+    onLocate: () -> Unit = {},
+    onShowAreaDetail: (Area) -> Unit = {},
+) {
+    Column(modifier = modifier.fillMaxSize()) {
         MapView(
             modifier = Modifier.weight(1f),
             currentLocation = currentLocation,
             selectedArea = selectedArea,
-            areasState = areas,
-            onSelectArea = viewModel::setToSelected
+            areasState = areasState,
+            onSelectArea = onSelectArea,
         )
         MapScaffold(
-            areaSelected = null,
-            currentLocation = null,
-            onLocate = viewModel::findClosestArea,
-            onShowDetail = onShowAreaDetail
+            areaSelected = selectedArea,
+            currentLocation = currentLocation,
+            onLocate = onLocate,
+            onShowDetail = onShowAreaDetail,
         )
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MapPreview(){
+fun MapPreview() {
     MallangTheme {
-        Map()
+        MapScreenContent(
+            currentLocation = LocationState.Empty,
+            areasState = AreasState.Empty,
+            selectedArea = null,
+        )
     }
 }
-

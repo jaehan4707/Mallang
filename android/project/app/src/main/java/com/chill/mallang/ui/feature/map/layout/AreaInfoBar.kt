@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chill.mallang.R
-import com.chill.mallang.data.model.Area
+import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
@@ -35,33 +35,35 @@ fun AreaInfoBar(
     area: Area,
     distance: Int?,
     onShowDetail: (Area) -> Unit = {},
-){
+) {
     Surface(
-        modifier = modifier
-            .background(Color.White)
-            .border(
-                border = BorderStroke(2.dp, Gray6),
-                shape = RoundedCornerShape(8.dp),
-            )
+        modifier =
+            modifier
+                .background(Color.White)
+                .border(
+                    border = BorderStroke(2.dp, Gray6),
+                    shape = RoundedCornerShape(8.dp),
+                ),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(painter = painterResource(id = R.drawable.ic_location), contentDescription = null)
             Text(text = area.areaName, style = Typography.bodyLarge)
-            Text(text = if(distance==null) "" else "${distance}m", style = Typography.labelSmall)
+            Text(text = if (distance == null) "" else "${distance}m", style = Typography.labelSmall)
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 modifier = Modifier.padding(vertical = 8.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonColors(
-                    contentColor = Gray6,
-                    containerColor = Gray6,
-                    disabledContentColor = Gray6,
-                    disabledContainerColor = Gray6
-                ),
-                onClick = { onShowDetail(area) }
+                colors =
+                    ButtonColors(
+                        contentColor = Gray6,
+                        containerColor = Gray6,
+                        disabledContentColor = Gray6,
+                        disabledContainerColor = Gray6,
+                    ),
+                onClick = { onShowDetail(area) },
             ) {
                 Text("보기", color = Color.White, fontSize = 16.sp)
             }
@@ -71,7 +73,7 @@ fun AreaInfoBar(
 
 @Preview
 @Composable
-fun LocationInfoBarPreview(){
+fun LocationInfoBarPreview() {
     MallangTheme {
         AreaInfoBar(area = Area(1, "찰밭공원", 0.0, 0.0), distance = 10)
     }
