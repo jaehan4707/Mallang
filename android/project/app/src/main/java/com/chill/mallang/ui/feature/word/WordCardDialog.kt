@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -71,14 +72,46 @@ fun WordCardDialog(
 
                 val currentPage by remember { derivedStateOf { pagerState.currentPage } }
 
-                Text(
+                Row(
                     modifier =
                         Modifier
-                            .padding(vertical = 10.dp),
-                    text = "${currentPage + 1} / ${wordCards.size}",
-                    style = Typography.displaySmall,
-                    color = Gray4,
-                )
+                            .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    // 왼쪽 빈 공간
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    // 중앙 텍스트
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "${currentPage + 1} / ${wordCards.size}",
+                            style = Typography.displaySmall,
+                            color = Gray4,
+                        )
+                    }
+
+                    // 오른쪽 닫기 아이콘
+                    Box(
+                        modifier =
+                            Modifier
+                                .padding(10.dp)
+                                .size(15.dp)
+                                .weight(1f),
+                        contentAlignment = Alignment.CenterEnd,
+                    ) {
+                        IconButton(
+                            icon = R.drawable.ic_close,
+                            label = "",
+                            onClick = onDismiss,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
 
                 HorizontalPager(
                     modifier =
