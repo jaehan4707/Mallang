@@ -1,5 +1,6 @@
 package com.chill.mallang.data.api
 
+import com.chill.mallang.data.model.ResponseBody
 import com.chill.mallang.data.model.request.JoinRequest
 import com.chill.mallang.data.model.request.LoginRequest
 import com.chill.mallang.data.model.response.GetUserInfoResponse
@@ -29,4 +30,9 @@ interface UserApi {
 
     @GET("user/info")
     suspend fun getUserInfo(): Response<GetUserInfoResponse>
+
+    @GET("user/exists/email/{email}")
+    suspend fun checkUserEmail(
+        @Path("email") userEmail: String
+    ): Response<ResponseBody<Unit>>
 }
