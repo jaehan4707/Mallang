@@ -38,11 +38,11 @@ fun MapView(
 ) {
     val cameraPositionState = rememberCameraPositionState()
     val uiSettings =
-        remember {
-            MapUiSettings(myLocationButtonEnabled = true)
+        remember(currentLocation is LocationState.Tracking) {
+            MapUiSettings(myLocationButtonEnabled = currentLocation is LocationState.Tracking)
         }
-    val properties by remember {
-        mutableStateOf(MapProperties(isMyLocationEnabled = true))
+    val properties by remember(currentLocation is LocationState.Tracking) {
+        mutableStateOf(MapProperties(isMyLocationEnabled = currentLocation is LocationState.Tracking))
     }
     var isMapLoaded by remember {
         mutableStateOf(false)
