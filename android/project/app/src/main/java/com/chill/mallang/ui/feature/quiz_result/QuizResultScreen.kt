@@ -49,7 +49,6 @@ import com.chill.mallang.ui.feature.quiz.AnswerList
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Green1
-import com.chill.mallang.ui.theme.Green2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Sub2
@@ -132,7 +131,6 @@ fun AnswerResultListItem(
     val backgroundColor =
         when {
             isUserAnswer && !isSystemAnswer -> Sub2
-            isSystemAnswer -> Green2
             else -> Color.White
         }
 
@@ -140,7 +138,6 @@ fun AnswerResultListItem(
     val borderColor =
         when {
             isUserAnswer && !isSystemAnswer -> Sub1
-            isSystemAnswer -> Green1
             else -> Gray6
         }
 
