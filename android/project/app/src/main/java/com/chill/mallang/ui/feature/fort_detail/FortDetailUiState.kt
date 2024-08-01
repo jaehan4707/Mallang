@@ -3,34 +3,8 @@ package com.chill.mallang.ui.feature.fort_detail
 import androidx.compose.runtime.Stable
 
 @Stable
-data class FortDetailUiState(
-    val occupationState: OccupationState =
-        OccupationState.Success(
-            areaName = "구미 캠퍼스",
-            myTeamInfo = TeamInfo(1, 3990, UserInfo(1, "말대표", 1)),
-            oppoTeamInfo = TeamInfo(2, 2990, UserInfo(2, "랑대표", 1)),
-        ),
-    val teamLeadersState: TeamLeadersState =
-        TeamLeadersState.Success(
-            userRecord = UserRecord(1, 1, "말대표", 100, 300),
-            myTeamRecords =
-                listOf(
-                    UserRecord(1, 1, "말대표", 100, 300),
-                    UserRecord(2, 3, "말부하", 97, 300),
-                ),
-            oppoTeamRecords =
-                listOf(
-                    UserRecord(1, 4, "랑대표", 100, 300),
-                    UserRecord(2, 5, "랑부하", 97, 300),
-                ),
-        ),
-)
-
-@Stable
 sealed interface OccupationState {
-    data class Loading(
-        val loadingMessage: String,
-    ) : OccupationState
+    data object Loading : OccupationState
 
     data class Success(
         val areaName: String,
@@ -45,9 +19,7 @@ sealed interface OccupationState {
 
 @Stable
 sealed interface TeamLeadersState {
-    data class Loading(
-        val loadingMessage: String,
-    ) : TeamLeadersState
+    data object Loading : TeamLeadersState
 
     data class Success(
         val userRecord: UserRecord,
