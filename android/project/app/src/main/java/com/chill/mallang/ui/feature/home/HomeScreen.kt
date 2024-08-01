@@ -55,9 +55,9 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Box(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(horizontal = 15.dp),
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 15.dp),
     ) {
         HomeContent(
             modifier = modifier,
@@ -128,7 +128,6 @@ fun HomeScreenContent(
     })
     Column {
         Row {
-            // 유저 아이템 수의 따라 LazyColumn
             UserItem(
                 icon = R.drawable.ic_stars,
                 label = "15코인",
@@ -166,16 +165,16 @@ fun HomeScreenContent(
 }
 
 @Composable
-fun IconButton(
+fun ImageButton(
     icon: Int,
     label: String,
     onClick: () -> Unit,
 ) {
     Column(
         modifier =
-            Modifier.noRippleClickable {
-                onClick()
-            },
+        Modifier.noRippleClickable {
+            onClick()
+        },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
@@ -197,17 +196,17 @@ fun SideUserButton(modifier: Modifier = Modifier) {
         modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.End,
     ) {
-        IconButton(
+        ImageButton(
             icon = R.drawable.ic_setting,
             label = stringResource(R.string.side_button_setting),
             onClick = { },
         )
-        IconButton(
+        ImageButton(
             icon = R.drawable.ic_quest,
             label = stringResource(R.string.side_button_quest),
             onClick = { },
         )
-        IconButton(
+        ImageButton(
             icon = R.drawable.ic_ranking,
             label = stringResource(R.string.side_button_ranking),
             onClick = { },
@@ -222,10 +221,10 @@ internal fun UserItem(
 ) {
     Row(
         modifier =
-            Modifier
-                .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
-                .padding(5.dp)
-                .height(IntrinsicSize.Min),
+        Modifier
+            .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
+            .padding(5.dp)
+            .height(IntrinsicSize.Min),
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -253,9 +252,9 @@ fun UserCharacter(
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Max),
+            Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
@@ -278,9 +277,9 @@ fun UserCharacter(
             )
             Text(
                 modifier =
-                    Modifier
-                        .padding(top = 10.dp)
-                        .align(Alignment.Center),
+                Modifier
+                    .padding(top = 10.dp)
+                    .align(Alignment.Center),
                 text = stringResource(id = R.string.character_message),
                 style = Typography.bodyLarge,
                 color = Sub1,
@@ -299,12 +298,12 @@ fun ModeButton(
 ) {
     Column(
         modifier =
-            modifier
-                .width(75.dp)
-                .height(75.dp)
-                .noRippleClickable { onClick() }
-                .background(color = Gray2, shape = CircleShape)
-                .border(width = 2.dp, color = Color.Black, shape = CircleShape),
+        modifier
+            .width(75.dp)
+            .height(75.dp)
+            .noRippleClickable { onClick() }
+            .background(color = Gray2, shape = CircleShape)
+            .border(width = 2.dp, color = Color.Black, shape = CircleShape),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -324,6 +323,6 @@ fun ModeButton(
 @Composable
 fun HomePreview() {
     MallangTheme {
-        HomeScreenContent()
+        HomeScreenContent(userNickName = "짜이한")
     }
 }
