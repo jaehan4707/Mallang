@@ -3,6 +3,7 @@ package com.chill.mallang.domain.quiz.repository;
 import com.chill.mallang.domain.quiz.model.Answer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -14,10 +15,10 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
     @Query(value = """
         SELECT a1.* 
-        FROM Answer a1 
+        FROM answer a1 
         JOIN (
             SELECT a2.user, MAX(a2.score) AS max_score, MIN(a2.answer_time) AS min_time 
-            FROM Answer a2 
+            FROM answer a2 
             WHERE a2.area = :areaId 
               AND a2.check_fin = 1 
               AND DATE_FORMAT(a2.created_at, '%Y-%m-%d') = DATE_FORMAT(CURRENT_DATE, '%Y-%m-%d') 
@@ -32,5 +33,5 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
         ORDER BY a1.score DESC, a1.answer_time ASC
         """, nativeQuery = true)
 
-    List<Answer> findByAreaId(Long areaId);
+    List<Answer> findByAreaId(@Param("areaId") Long areaId);
 }
