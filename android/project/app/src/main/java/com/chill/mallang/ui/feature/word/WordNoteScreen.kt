@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.quiz
+package com.chill.mallang.ui.feature.word
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
