@@ -13,122 +13,144 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class UserRepositoryImpl
-    @Inject
-    constructor(
-        private val userApi: UserApi,
-        private val dataStoreRepository: DataStoreRepository,
-    ) : UserRepository {
-        override suspend fun join(request: JoinRequest): Flow<ApiResponse<Boolean>> =
-            flow {
-                val response =
-                    apiHandler {
-                        userApi.join(request)
-                    }
-                when (response) {
-                    is ApiResponse.Success -> {
-                        response.data?.data?.let {
-                            emit(ApiResponse.Success(it.isRegister ?: true))
-                        }
-                    }
-
-                    is ApiResponse.Error -> {
-                        emit(
-                            ApiResponse.Error(
-                                errorCode = response.errorCode,
-                                errorMessage = response.errorMessage,
-                            ),
-                        )
-                    }
-
-                    ApiResponse.Init -> {
-                        emit(ApiResponse.Init)
+@Inject
+constructor(
+    private val userApi: UserApi,
+    private val dataStoreRepository: DataStoreRepository,
+) : UserRepository {
+    override suspend fun join(request: JoinRequest): Flow<ApiResponse<Boolean>> =
+        flow {
+            val response =
+                apiHandler {
+                    userApi.join(request)
+                }
+            when (response) {
+                is ApiResponse.Success -> {
+                    response.data?.data?.let {
+                        emit(ApiResponse.Success(it.isRegister ?: true))
                     }
                 }
-            }
 
-        override suspend fun login(
-            idToken: String,
-            email: String,
-        ): Flow<ApiResponse<Boolean>> =
-            flow {
-                val response =
-                    apiHandler {
-                        userApi.login(
-                            LoginRequest(
-                                idToken = idToken,
-                                email = email,
-                            ),
-                        )
-                    }
-                when (response) {
-                    is ApiResponse.Success -> {
-                        response.data?.data?.let {
-                            dataStoreRepository.saveAccessToken(it.token ?: "")
-                            dataStoreRepository.saveUserEmail(email)
-                            emit(ApiResponse.Success(it.isRegister ?: true))
-                        }
-                    }
+                is ApiResponse.Error -> {
+                    emit(
+                        ApiResponse.Error(
+                            errorCode = response.errorCode,
+                            errorMessage = response.errorMessage,
+                        ),
+                    )
+                }
 
-                    is ApiResponse.Error -> {
-                        emit(
-                            ApiResponse.Error(
-                                errorCode = response.errorCode,
-                                errorMessage = response.errorMessage,
-                            ),
-                        )
-                    }
-
-                    ApiResponse.Init -> {
-                        emit(ApiResponse.Init)
-                    }
+                ApiResponse.Init -> {
+                    emit(ApiResponse.Init)
                 }
             }
+        }
 
-        override suspend fun checkNickName(nickName: String): Flow<ApiResponse<Unit>> =
-            flow {
-                val response =
-                    apiHandler {
-                        userApi.checkNickName(nickName)
+    override suspend fun login(
+        idToken: String,
+        email: String,
+    ): Flow<ApiResponse<Boolean>> =
+        flow {
+            val response =
+                apiHandler {
+                    userApi.login(
+                        LoginRequest(
+                            idToken = idToken,
+                            email = email,
+                        ),
+                    )
+                }
+            when (response) {
+                is ApiResponse.Success -> {
+                    response.data?.data?.let {
+                        dataStoreRepository.saveAccessToken(it.token ?: "")
+                        dataStoreRepository.saveUserEmail(email)
+                        emit(ApiResponse.Success(it.isRegister ?: true))
                     }
-                when (response) {
-                    is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(null))
-                    }
+                }
 
-                    is ApiResponse.Error -> {
-                        emit(
-                            ApiResponse.Error(
-                                errorCode = response.errorCode,
-                                errorMessage = response.errorMessage,
-                            ),
-                        )
-                    }
+                is ApiResponse.Error -> {
+                    emit(
+                        ApiResponse.Error(
+                            errorCode = response.errorCode,
+                            errorMessage = response.errorMessage,
+                        ),
+                    )
+                }
 
-                    ApiResponse.Init -> {}
+                ApiResponse.Init -> {
+                    emit(ApiResponse.Init)
                 }
             }
+        }
 
-        override suspend fun getUserInfo(): Flow<ApiResponse<UserInfo>> =
-            flow {
-                val response =
-                    apiHandler {
-                        userApi.getUserInfo()
-                    }
-                when (response) {
-                    is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
-                    }
-
-                    is ApiResponse.Error -> {
-                        emit(
-                            ApiResponse.Error(
-                                errorCode = response.errorCode,
-                                errorMessage = response.errorMessage,
-                            ),
-                        )
-                    }
-
-                    ApiResponse.Init -> {}
+    override suspend fun checkNickName(nickName: String): Flow<ApiResponse<Unit>> =
+        flow {
+            val response =
+                apiHandler {
+                    userApi.checkNickName(nickName)
                 }
+            when (response) {
+                is ApiResponse.Success -> {
+                    emit(ApiResponse.Success(null))
+                }
+
+                is ApiResponse.Error -> {
+                    emit(
+                        ApiResponse.Error(
+                            errorCode = response.errorCode,
+                            errorMessage = response.errorMessage,
+                        ),
+                    )
+                }
+
+                ApiResponse.Init -> {}
             }
+        }
+
+    override suspend fun getUserInfo(): Flow<ApiResponse<UserInfo>> =
+        flow {
+            val response =
+                apiHandler {
+                    userApi.getUserInfo()
+                }
+            when (response) {
+                is ApiResponse.Success -> {
+                    emit(ApiResponse.Success(response.data?.data))
+                }
+
+                is ApiResponse.Error -> {
+                    emit(
+                        ApiResponse.Error(
+                            errorCode = response.errorCode,
+                            errorMessage = response.errorMessage,
+                        ),
+                    )
+                }
+
+                ApiResponse.Init -> {}
+            }
+        }
+
+    override suspend fun checkUserEmail(userEmail: String): Flow<ApiResponse<Unit>> = flow {
+        val response = apiHandler {
+            userApi.checkUserEmail(userEmail)
+        }
+        when (response) {
+            is ApiResponse.Success -> {
+                emit(ApiResponse.Success(Unit))
+            }
+
+            is ApiResponse.Error -> {
+                emit(
+                    ApiResponse.Error(
+                        errorCode = response.errorCode,
+                        errorMessage = response.errorMessage
+                    )
+                )
+            }
+
+            ApiResponse.Init -> {}
+        }
     }
+}
