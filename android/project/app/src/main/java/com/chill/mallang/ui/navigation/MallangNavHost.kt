@@ -11,9 +11,9 @@ import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
-import com.chill.mallang.ui.feature.quiz_result.QuizResultScreen
 import com.chill.mallang.ui.feature.quiz.QuizScreen
 import com.chill.mallang.ui.feature.quiz.WordNoteScreen
+import com.chill.mallang.ui.feature.quiz_result.QuizResultScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -75,7 +75,8 @@ fun MallangNavHost(
                 modifier = Modifier,
                 navigateToGame = { navController.navigate(DestinationGameLobby.route) },
                 navigateToWordNote = { navController.navigate(DestinationWordNote.route) },
-                popUpBackStack = { (context as Activity).finish() }
+                popUpBackStack = { (context as Activity).finish() },
+                onShowErrorSnackBar = onShowErrorSnackBar,
             )
         }
 

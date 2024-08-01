@@ -20,6 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,6 +33,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.theme.Gray2
@@ -39,19 +43,70 @@ import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
 import com.chill.mallang.ui.util.noRippleClickable
 
-object TestData { // 화면 임시 구성할 데이터
-    const val USER_NAME = "짜이한"
-    const val USER_RANK = "다이아"
-    const val USER_ITEM = "15코인"
-    const val RANK_1 = "다이아"
-    const val RANK_2 = "골드"
-    const val RANK_3 = "실버"
-    const val RANK_4 = "브론즈"
-}
-
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    navigateToWordNote: () -> Unit = {},
+    navigateToGame: () -> Unit = {},
+    popUpBackStack: () -> Unit = {},
+    onShowErrorSnackBar: (String) -> Unit = {},
+) {
+    val viewModel: HomeViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 15.dp),
+    ) {
+        HomeContent(
+            modifier = modifier,
+            uiState = uiState,
+            navigateToGame = navigateToGame,
+            navigateToWordNote = navigateToWordNote,
+            popUpBackStack = popUpBackStack,
+            onShowErrorSnackBar = onShowErrorSnackBar,
+        )
+    }
+}
+
+@Composable
+fun HomeContent(
+    modifier: Modifier = Modifier,
+    uiState: HomeUiState,
+    navigateToWordNote: () -> Unit,
+    navigateToGame: () -> Unit,
+    popUpBackStack: () -> Unit,
+    onShowErrorSnackBar: (String) -> Unit,
+) {
+    LaunchedEffect(uiState) {
+        if (uiState is HomeUiState.Error) {
+            onShowErrorSnackBar(uiState.errorMessage)
+        }
+    }
+    when (uiState) {
+        is HomeUiState.Loading -> {} // 로딩 화면
+
+        is HomeUiState.LoadUserInfo -> {
+            HomeScreenContent(
+                modifier = modifier,
+                userNickName = uiState.userNickName,
+                userFaction = uiState.userFaction,
+                navigateToGame = navigateToGame,
+                navigateToWordNote = navigateToWordNote,
+                popUpBackStack = popUpBackStack,
+            )
+        }
+
+        is HomeUiState.Error -> {}
+    }
+}
+
+@Composable
+fun HomeScreenContent(
+    modifier: Modifier = Modifier,
+    userNickName: String = "",
+    userFaction: String = "",
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
     popUpBackStack: () -> Unit = {},
@@ -71,45 +126,42 @@ fun HomeScreen(
     BackHandler(onBack = {
         isBackPressed.value = true
     })
-    Box(
-        modifier =
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 15.dp),
-    ) {
-        Column {
-            Row { // 유저 아이템 수의 따라 LazyColumn
-                UserItem(
-                    icon = R.drawable.ic_stars,
-                    label = TestData.USER_ITEM
-                )
-                Spacer(modifier.width(5.dp))
-                UserItem(
-                    icon = R.drawable.ic_stars,
-                    label = TestData.USER_ITEM
-                )
-            }
-            SideUserButton() // 사이드 버튼
-            UserCharacter( // 유저 캐릭터 or 프로필
-                modifier = modifier,
-                userName = TestData.USER_NAME,
-                userRank = TestData.USER_RANK
+    Column {
+        Row {
+            // 유저 아이템 수의 따라 LazyColumn
+            UserItem(
+                icon = R.drawable.ic_stars,
+                label = "15코인",
             )
-            ModeButton( // 퀴즈 모드 버튼
-                icon = R.drawable.ic_question,
-                label = stringResource(R.string.mode_quiz),
-                modifier = Modifier.align(Alignment.End),
-                onClick = { navigateToWordNote() }
+            Spacer(modifier.width(5.dp))
+            UserItem(
+                icon = R.drawable.ic_stars,
+                label = "15코인",
             )
-            Spacer(modifier.weight(0.05f))
-            ModeButton( // 점령전 모드 버튼
-                icon = R.drawable.ic_location,
-                label = stringResource(R.string.mode_game),
-                modifier = Modifier.align(Alignment.End),
-                onClick = { navigateToGame() }
-            )
-            Spacer(modifier.weight(0.3f))
         }
+        SideUserButton() // 사이드 버튼
+        UserCharacter(
+            // 유저 캐릭터 or 프로필
+            modifier = modifier,
+            userNickName = userNickName,
+            userFaction = userFaction,
+        )
+        ModeButton(
+            // 퀴즈 모드 버튼
+            icon = R.drawable.ic_question,
+            label = stringResource(R.string.mode_quiz),
+            modifier = Modifier.align(Alignment.End),
+            onClick = { navigateToWordNote() },
+        )
+        Spacer(modifier.weight(0.05f))
+        ModeButton(
+            // 점령전 모드 버튼
+            icon = R.drawable.ic_location,
+            label = stringResource(R.string.mode_game),
+            modifier = Modifier.align(Alignment.End),
+            onClick = { navigateToGame() },
+        )
+        Spacer(modifier.weight(0.3f))
     }
 }
 
@@ -121,9 +173,9 @@ fun IconButton(
 ) {
     Column(
         modifier =
-        Modifier.noRippleClickable {
-            onClick()
-        },
+            Modifier.noRippleClickable {
+                onClick()
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
@@ -170,10 +222,10 @@ internal fun UserItem(
 ) {
     Row(
         modifier =
-        Modifier
-            .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
-            .padding(5.dp)
-            .height(IntrinsicSize.Min),
+            Modifier
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
+                .padding(5.dp)
+                .height(IntrinsicSize.Min),
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -195,30 +247,24 @@ internal fun UserItem(
 @Composable
 fun UserCharacter(
     modifier: Modifier = Modifier,
-    userName: String,
-    userRank: String,
+    userNickName: String,
+    userFaction: String,
 ) {
-    when (userRank) { // 티어별 이미지 할당
-        TestData.RANK_1 -> {}
-        TestData.RANK_2 -> {}
-        TestData.RANK_3 -> {}
-        TestData.RANK_4 -> {}
-    }
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max),
+                Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_stars),
-                contentDescription = userRank,
+                contentDescription = "",
                 modifier = Modifier.align(Alignment.CenterVertically),
             )
             Text(
-                text = userName,
+                text = userNickName,
                 style = Typography.headlineLarge,
                 modifier = Modifier.padding(start = 3.dp),
             )
@@ -232,9 +278,9 @@ fun UserCharacter(
             )
             Text(
                 modifier =
-                Modifier
-                    .padding(top = 10.dp)
-                    .align(Alignment.Center),
+                    Modifier
+                        .padding(top = 10.dp)
+                        .align(Alignment.Center),
                 text = stringResource(id = R.string.character_message),
                 style = Typography.bodyLarge,
                 color = Sub1,
@@ -253,12 +299,12 @@ fun ModeButton(
 ) {
     Column(
         modifier =
-        modifier
-            .width(75.dp)
-            .height(75.dp)
-            .noRippleClickable { onClick() }
-            .background(color = Gray2, shape = CircleShape)
-            .border(width = 2.dp, color = Color.Black, shape = CircleShape),
+            modifier
+                .width(75.dp)
+                .height(75.dp)
+                .noRippleClickable { onClick() }
+                .background(color = Gray2, shape = CircleShape)
+                .border(width = 2.dp, color = Color.Black, shape = CircleShape),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -278,6 +324,6 @@ fun ModeButton(
 @Composable
 fun HomePreview() {
     MallangTheme {
-        HomeScreen()
+        HomeScreenContent()
     }
 }

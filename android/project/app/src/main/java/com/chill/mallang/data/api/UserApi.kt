@@ -2,6 +2,7 @@ package com.chill.mallang.data.api
 
 import com.chill.mallang.data.model.request.JoinRequest
 import com.chill.mallang.data.model.request.LoginRequest
+import com.chill.mallang.data.model.response.GetUserInfoResponse
 import com.chill.mallang.data.model.response.JoinResponse
 import com.chill.mallang.data.model.response.LoginResponse
 import retrofit2.Response
@@ -13,16 +14,19 @@ import retrofit2.http.Path
 interface UserApi {
     @POST("user/join")
     suspend fun join(
-        @Body joinRequest: JoinRequest
+        @Body joinRequest: JoinRequest,
     ): Response<JoinResponse>
 
     @POST("user/login")
     suspend fun login(
-        @Body loginRequest: LoginRequest
+        @Body loginRequest: LoginRequest,
     ): Response<LoginResponse>
 
     @GET("user/exists/nickname/{nickname}")
     suspend fun checkNickName(
-        @Path("nickname") nickName: String
+        @Path("nickname") nickName: String,
     ): Response<Unit>
+
+    @GET("user/info")
+    suspend fun getUserInfo(): Response<GetUserInfoResponse>
 }
