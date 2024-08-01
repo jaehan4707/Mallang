@@ -10,6 +10,7 @@ import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.AreaRepository
+import com.chill.mallang.ui.feature.map.state.TryCountState
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,6 +36,9 @@ class MapViewModel
 
         private val _statusState = MutableStateFlow<TeamList>(TeamList(listOf()))
         val statusState: StateFlow<TeamList> = _statusState
+
+        private val _tryCountState = MutableStateFlow<TryCountState>(TryCountState.Empty)
+        val tryCountState: StateFlow<TryCountState> = _tryCountState
 
         var selectedArea by mutableStateOf<Area?>(null)
             private set
@@ -76,6 +80,24 @@ class MapViewModel
 
                         is ApiResponse.Error -> _areaState.emit(AreasState.Error(response.errorMessage))
                         ApiResponse.Init -> {}
+                    }
+                }
+            }
+        }
+
+        fun loadTryCount(areaId: Int) {
+            viewModelScope.launch {
+                areaRepository.getTryCount(areaId).collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            if (response.data != null) {
+                                _tryCountState.emit(TryCountState.HasValue(response.data.count))
+                            } else {
+                                _tryCountState.emit(TryCountState.Error())
+                            }
+                        }
+                        is ApiResponse.Error -> _tryCountState.emit(TryCountState.Error(response.errorMessage))
+                        else -> {}
                     }
                 }
             }
