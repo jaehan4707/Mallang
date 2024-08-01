@@ -1,5 +1,6 @@
 package com.chill.mallang.core.di
 
+import com.chill.mallang.data.api.AreaApi
 import com.chill.mallang.data.api.UserApi
 import dagger.Module
 import dagger.Provides
@@ -12,10 +13,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
+    @Provides
+    @Singleton
+    fun provideUserApi(retrofit: Retrofit): UserApi = retrofit.create()
 
     @Provides
     @Singleton
-    fun provideUserApi(
-        retrofit: Retrofit
-    ): UserApi = retrofit.create()
+    fun provideAreaApi(retrofit: Retrofit): AreaApi = retrofit.create()
 }
