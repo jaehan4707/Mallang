@@ -37,6 +37,8 @@ public class ChallengeRecordService {
     public Map<String, Object> getChallengeRecord(Long areaId, Long userId) {
         List<Answer> answers = answerRepository.findByAreaId(areaId);
         Optional<User> user = userRepository.findById(userId);
+        logger.info(user.toString());
+        logger.info(answers.toString());
         if (user.isPresent() && answers != null) {
             //아군
             List<ResponseTotalTeamInfo> myTeamRecords = answers.stream()
