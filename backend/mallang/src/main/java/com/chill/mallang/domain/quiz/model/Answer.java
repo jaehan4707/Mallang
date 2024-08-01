@@ -8,8 +8,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Answer {
@@ -17,18 +16,19 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "userID")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "quiz")
+    @JoinColumn(name = "quizID")
     private Quiz quiz;
 
     @Size(max =500, message ="최대 500자 입력 가능")
     private String answer;
-    private double score;
+    private float score;
     private int answerTime;
     private LocalDateTime created_at;
+    private LocalDateTime updated_at;
 
     private int check_fin;
 
@@ -38,8 +38,9 @@ public class Answer {
         this.check_fin = 0;
     }
 
+
     @Builder
-    public Answer(User user, Quiz quiz, String answer, double score, int answerTime, int check_fin) {
+    public Answer(User user, Quiz quiz, String answer, float score, int answerTime, int check_fin) {
         this.user = user;
         this.quiz = quiz;
         this.answer = answer;
