@@ -1,11 +1,8 @@
 package com.chill.mallang.domain.area.dto;
 
-import com.chill.mallang.domain.quiz.model.Quiz;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -15,5 +12,4 @@ public class AllAreaDTO {
     private String areaName;
     private double latitude;
     private double longitude;
-    private Long[] quizIds;
 }
