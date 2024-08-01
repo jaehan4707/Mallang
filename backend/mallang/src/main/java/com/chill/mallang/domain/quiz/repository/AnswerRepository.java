@@ -3,6 +3,7 @@ package com.chill.mallang.domain.quiz.repository;
 import com.chill.mallang.domain.quiz.model.Answer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -32,5 +33,5 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
         ORDER BY a1.score DESC, a1.answer_time ASC
         """, nativeQuery = true)
 
-    List<Answer> findByAreaId(Long areaId);
+    List<Answer> findByAreaId(@Param("areaId") Long areaId);
 }
