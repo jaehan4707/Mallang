@@ -45,7 +45,10 @@ import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
-fun FortDetailScreen(modifier: Modifier = Modifier) {
+fun FortDetailScreen(
+    modifier: Modifier = Modifier,
+    areaId: Long?,
+) {
     val viewModel: FortDetailViewModel = hiltViewModel()
     val occupationState by viewModel.occupationState.collectAsStateWithLifecycle()
     val teamLeadersState by viewModel.teamLeadersState.collectAsStateWithLifecycle()
@@ -57,9 +60,9 @@ fun FortDetailScreen(modifier: Modifier = Modifier) {
 
     Column(
         modifier =
-        modifier
-            .fillMaxSize()
-            .padding(top = 20.dp),
+            modifier
+                .fillMaxSize()
+                .padding(top = 20.dp),
     ) {
         MainBody(
             occupationState = occupationState,
@@ -100,9 +103,9 @@ fun MainBody(
         is OccupationState.Success -> {
             Surface(
                 modifier =
-                modifier
-                    .fillMaxSize()
-                    .padding(vertical = 20.dp, horizontal = 10.dp),
+                    modifier
+                        .fillMaxSize()
+                        .padding(vertical = 20.dp, horizontal = 10.dp),
             ) {
                 Column {
                     FortDetailHeader(
@@ -117,17 +120,17 @@ fun MainBody(
                         TeamScoreAndTopUser(
                             teamInfo = occupationState.myTeamInfo,
                             modifier =
-                            Modifier
-                                .weight(1F)
-                                .fillMaxHeight(),
+                                Modifier
+                                    .weight(1F)
+                                    .fillMaxHeight(),
                         )
                         Text("VS", fontSize = 40.sp)
                         TeamScoreAndTopUser(
                             teamInfo = occupationState.oppoTeamInfo,
                             modifier =
-                            Modifier
-                                .weight(1F)
-                                .fillMaxHeight(),
+                                Modifier
+                                    .weight(1F)
+                                    .fillMaxHeight(),
                         )
                     }
                 }
@@ -143,11 +146,11 @@ fun FortDetailHeader(
 ) {
     Box(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .background(Color.LightGray.copy(alpha = 0.4f))
-            .padding(vertical = 7.dp, horizontal = 10.dp),
+            modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(Color.LightGray.copy(alpha = 0.4f))
+                .padding(vertical = 7.dp, horizontal = 10.dp),
     ) {
         Row(
             modifier = Modifier.align(Alignment.Center),
@@ -170,7 +173,8 @@ fun TeamScoreAndTopUser(
     modifier: Modifier = Modifier,
 ) {
     val teamColor = if (teamInfo.teamId == 1) Color.Red else Color.Blue
-    val teamTopUserTitle = if (teamInfo.teamId == 1) stringResource(R.string.team_mal_title) else stringResource(R.string.team_rang_title)
+    val teamTopUserTitle =
+        if (teamInfo.teamId == 1) stringResource(R.string.team_mal_title) else stringResource(R.string.team_rang_title)
 
     Column(
         modifier = modifier,
@@ -210,17 +214,17 @@ fun TeamScoreAndTopUser(
 fun GameStartBody(modifier: Modifier = Modifier) {
     Column(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
+            modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Button(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 100.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 100.dp),
             onClick = { },
             shape = RoundedCornerShape(10.dp),
             colors =
@@ -229,7 +233,11 @@ fun GameStartBody(modifier: Modifier = Modifier) {
                     Color.White,
                 ),
         ) {
-            Text(stringResource(R.string.game_start), style = Typography.displayLarge, fontSize = 30.sp)
+            Text(
+                stringResource(R.string.game_start),
+                style = Typography.displayLarge,
+                fontSize = 30.sp,
+            )
         }
         Text(text = stringResource(R.string.remaining_chance, 3))
     }
@@ -241,7 +249,11 @@ fun RecordBody(
     modifier: Modifier = Modifier,
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf(stringResource(R.string.my_team_records_label), stringResource(R.string.oppo_team_records_label))
+    val tabs =
+        listOf(
+            stringResource(R.string.my_team_records_label),
+            stringResource(R.string.oppo_team_records_label),
+        )
 
     when (teamLeadersState) {
         is TeamLeadersState.Loading -> {
@@ -309,9 +321,9 @@ fun TeamTab(
 ) {
     LazyColumn(
         modifier =
-        modifier
-            .padding(horizontal = 10.dp)
-            .padding(vertical = 10.dp),
+            modifier
+                .padding(horizontal = 10.dp)
+                .padding(vertical = 10.dp),
     ) {
         items(recordList) { record ->
             RecordListItem(record)
@@ -327,18 +339,18 @@ fun RecordListItem(
     Box(
         contentAlignment = Alignment.Center,
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(vertical = 5.dp)
-            .height(height = 65.dp)
-            .background(Color.White, shape = RoundedCornerShape(16.dp))
-            .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.dp)
+                .height(height = 65.dp)
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
     ) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
@@ -372,30 +384,30 @@ fun CustomBorderBox(
     Box(modifier = modifier) {
         Box(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .border(
-                    width = 2.dp,
-                    color = Color.Black,
-                    shape =
-                    RoundedCornerShape(
-                        topStart = 16.dp,
-                        topEnd = 16.dp,
-                        bottomStart = 0.dp,
-                        bottomEnd = 0.dp,
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .border(
+                        width = 2.dp,
+                        color = Color.Black,
+                        shape =
+                            RoundedCornerShape(
+                                topStart = 16.dp,
+                                topEnd = 16.dp,
+                                bottomStart = 0.dp,
+                                bottomEnd = 0.dp,
+                            ),
                     ),
-                ),
         )
 
         Box(
             modifier =
-            Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 2.dp)
-                .height(bottomBorderWidth)
-                .fillMaxWidth()
-                .background(bottomBorderColor),
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 2.dp)
+                    .height(bottomBorderWidth)
+                    .fillMaxWidth()
+                    .background(bottomBorderColor),
         )
     }
 }
@@ -404,6 +416,6 @@ fun CustomBorderBox(
 @Composable
 fun FortDetailScreenPreview() {
     MallangTheme {
-        FortDetailScreen()
+        FortDetailScreen(areaId = 1)
     }
 }

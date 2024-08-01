@@ -13,7 +13,6 @@ interface ScreenDestinations {
      * NavGraph의 라우팅 경로
      */
     val route: String
-
 }
 
 /**
@@ -38,10 +37,28 @@ object DestinationMain : ScreenDestinations {
         get() = "main"
 }
 
+/**
+ * 지도화면
+ */
 object DestinationMap : ScreenDestinations {
     override val route: String
         get() = "map"
+}
 
+object DestinationAreaDetail : ScreenDestinationsWithArgument {
+    override val arg: String
+        get() = "areaId"
+    override val routeWithArgs: String
+        get() = "${this.route}/{areaId}"
+    override val arguments: List<NamedNavArgument>
+        get() =
+            listOf(
+                navArgument(name = arg) { type = NavType.LongType },
+            )
+    override val route: String
+        get() = "area_detail"
+
+    fun createRoute(areaId: Long) = "${this.route}/$areaId"
 }
 
 object DestinationNickName : ScreenDestinationsWithArgument {
@@ -52,10 +69,11 @@ object DestinationNickName : ScreenDestinationsWithArgument {
         get() = "${this.route}/{userEmail}/{userProfileImageUrl}"
 
     override val arguments: List<NamedNavArgument>
-        get() = listOf(
-            navArgument(name = "userEmail") { type = NavType.StringType },
-            navArgument(name = "userProfileImageUrl") { type = NavType.StringType }
-        )
+        get() =
+            listOf(
+                navArgument(name = "userEmail") { type = NavType.StringType },
+                navArgument(name = "userProfileImageUrl") { type = NavType.StringType },
+            )
 
     override val route: String
         get() = "nickname"
@@ -63,8 +81,7 @@ object DestinationNickName : ScreenDestinationsWithArgument {
     fun createRoute(
         userEmail: String,
         userProfileImageUrl: String,
-    ) = "${this.route}/${userEmail}/${userProfileImageUrl}"
-
+    ) = "${this.route}/$userEmail/$userProfileImageUrl"
 }
 
 object DestinationSelect : ScreenDestinationsWithArgument {
@@ -75,11 +92,12 @@ object DestinationSelect : ScreenDestinationsWithArgument {
         get() = "${this.route}/{userEmail}/{userProfileImageUrl}/{userNickName}"
 
     override val arguments: List<NamedNavArgument>
-        get() = listOf(
-            navArgument(name = "userEmail") { type = NavType.StringType },
-            navArgument(name = "userProfileImageUrl") { type = NavType.StringType },
-            navArgument(name = "userNickName") { type = NavType.StringType },
-        )
+        get() =
+            listOf(
+                navArgument(name = "userEmail") { type = NavType.StringType },
+                navArgument(name = "userProfileImageUrl") { type = NavType.StringType },
+                navArgument(name = "userNickName") { type = NavType.StringType },
+            )
 
     override val route: String
         get() = "select"
@@ -88,7 +106,7 @@ object DestinationSelect : ScreenDestinationsWithArgument {
         userEmail: String,
         userProfileImageUrl: String,
         userNickName: String,
-    ) = "${this.route}/${userEmail}/${userProfileImageUrl}/${userNickName}"
+    ) = "${this.route}/$userEmail/$userProfileImageUrl/$userNickName"
 }
 
 object DestinationUserDetail : ScreenDestinationsWithArgument {
@@ -97,9 +115,10 @@ object DestinationUserDetail : ScreenDestinationsWithArgument {
 
     override val arg = "user_id"
     override val routeWithArgs = "${this.route}/{$arg}"
-    override val arguments = listOf(
-        navArgument(name = arg) { type = NavType.LongType }
-    )
+    override val arguments =
+        listOf(
+            navArgument(name = arg) { type = NavType.LongType },
+        )
 }
 
 object DestinationWordNote : ScreenDestinations {
@@ -120,20 +139,18 @@ object DestinationQuizResult : ScreenDestinationsWithArgument {
         get() = "${this.route}/{studyId}"
 
     override val arguments: List<NamedNavArgument>
-        get() = listOf(
-            navArgument(name = "studyId") { type = NavType.IntType }
-        )
+        get() =
+            listOf(
+                navArgument(name = "studyId") { type = NavType.IntType },
+            )
 
     override val route: String
         get() = "quiz_result"
 
-    fun createRoute(
-        studyId: Int
-    ) = "${this.route}/${studyId}"
+    fun createRoute(studyId: Int) = "${this.route}/$studyId"
 }
 
 object DestinationGameLobby : ScreenDestinations {
     override val route: String
         get() = "GameLobby"
-
 }
