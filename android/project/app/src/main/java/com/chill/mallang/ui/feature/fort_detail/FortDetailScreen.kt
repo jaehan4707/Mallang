@@ -17,12 +17,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +47,13 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun FortDetailScreen(modifier: Modifier = Modifier) {
     val viewModel: FortDetailViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val occupationState by viewModel.occupationState.collectAsStateWithLifecycle()
+    val teamLeadersState by viewModel.teamLeadersState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadOccupationState()
+        viewModel.loadTeamLeadersState()
+    }
 
     Column(
         modifier =
@@ -54,14 +62,14 @@ fun FortDetailScreen(modifier: Modifier = Modifier) {
             .padding(top = 20.dp),
     ) {
         MainBody(
-            occupationState = uiState.occupationState,
+            occupationState = occupationState,
             modifier = Modifier.weight(7F),
         )
         GameStartBody(
             modifier = Modifier.weight(2F),
         )
         RecordBody(
-            teamLeadersState = uiState.teamLeadersState,
+            teamLeadersState = teamLeadersState,
             modifier = Modifier.weight(7F),
         )
     }
@@ -77,7 +85,7 @@ fun MainBody(
             Surface(
                 modifier = modifier.fillMaxSize(),
             ) {
-                Text(occupationState.loadingMessage)
+                CircularProgressIndicator()
             }
         }
 
@@ -240,7 +248,7 @@ fun RecordBody(
             Surface(
                 modifier = modifier.fillMaxSize(),
             ) {
-                Text(teamLeadersState.loadingMessage)
+                CircularProgressIndicator()
             }
         }
 
