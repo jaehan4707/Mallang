@@ -85,7 +85,20 @@ fun MapView(
 
     LaunchedEffect(areasState) {
         if (areasState is AreasState.HasValue) {
-            setMarkers(areasState.list.map { area -> CustomMarkerState(area) })
+            setMarkers(
+                areasState.list.map { area ->
+                    CustomMarkerState(area).apply {
+                        if (currentLocation is LocationState.Tracking) {
+                            distance =
+                                SphericalUtil
+                                    .computeDistanceBetween(
+                                        currentLocation.latLng,
+                                        area.latLng,
+                                    ).toInt()
+                        }
+                    }
+                },
+            )
         }
     }
 
