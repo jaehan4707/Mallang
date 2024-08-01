@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chill.mallang.R
-import com.chill.mallang.ui.feature.fort_detail.RecordListItem
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
@@ -145,7 +144,7 @@ fun LeaderBoardBody(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
         ){
             items(items) { item ->
-                RecordListItem()
+                //RecordListItem()
             }
         }
     }
