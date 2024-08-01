@@ -13,6 +13,7 @@ lifecycleRuntimeKtx = "2.8.3"
 activityCompose = "1.9.0"
 composeBom = "2024.04.01"
 googleMap = "4.4.1"
+lottie = "5.2.0"
 mapsUtil = "5.1.1"
 secretGradle = "2.0.1"
 navigationCompose = "2.7.7"
@@ -59,6 +60,7 @@ google-maps-secrets-gradle = { group = "com.google.android.libraries.mapsplatfor
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
+lottie = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
