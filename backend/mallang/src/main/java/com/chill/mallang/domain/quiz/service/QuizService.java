@@ -1,16 +1,21 @@
 package com.chill.mallang.domain.quiz.service;
 
+import com.chill.mallang.domain.area.repository.AreaRepository;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizResult;
 import com.chill.mallang.domain.quiz.dto.response.ResponseQuiz;
 import com.chill.mallang.domain.quiz.error.QuizErrorCode;
 import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.quiz.model.Quiz;
+import com.chill.mallang.domain.quiz.model.TotalScore;
 import com.chill.mallang.domain.quiz.repository.AnswerRepository;
 import com.chill.mallang.domain.quiz.repository.QuizRepository;
+import com.chill.mallang.domain.quiz.service.core.CoreService;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.errors.exception.RestApiException;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,17 +24,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 @Slf4j
 @Service
 public class QuizService {
-
-
     private Logger logger = LoggerFactory.getLogger(QuizService.class);
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     private GPTService gptService;
+    @Autowired
+    private CoreService coreService;
 
     @Autowired
     private QuizRepository quizRepository;
@@ -37,6 +44,8 @@ public class QuizService {
     private UserRepository userRepository;
     @Autowired
     private AnswerRepository answerRepository;
+    @Autowired
+    private AreaRepository areaRepository;
 
     public Map<String, Object> getById(Long quizID) {
         Optional<Quiz> quiz = quizRepository.findById(quizID);
@@ -103,29 +112,35 @@ public class QuizService {
 
         // 최종 제출 세팅
         Long[] idx = requestQuizResult.getQuizID();
+        List<Float> responseScore = new ArrayList<>();
 
+        // User Score 확인
+        float sum = 0;
         for(Long quizID : idx){
             answerRepository.setAnswerTrue(userID, quizID);
             logger.info(quizID + "번 Answer 최종 제출 완료");
-            float score = answerRepository.findTop1AnswerScore(quizID);
+            Float nowScore =answerRepository.findTop1AnswerScore(quizID);
+            sum += nowScore;
+            responseScore.add(nowScore);
         }
 
-
-
-        LocalDateTime now = LocalDateTime.now();
-        System.out.println(now);
-        int year = now.getYear();
-        int month = now.getMonthValue();
-        int day = now.getDayOfMonth();
-
-        logger.info("결과 조회 필요한 Quiz ID " + Arrays.toString(idx));
-        List<Object[]> result = answerRepository.getResultUser(year, month, day, idx, userID);
-        System.out.println(result.size());
-        for(Object[] row : result){
-            for(Object o : row){
-                System.out.println(o.toString());
-            }
-        }
+        // 라운드 최종 점수 저장
+        coreService.storeTotalScore(userID, areaID, sum);
+        /*---------------------------------------여기 아래 부터는 Team 영역 계산 필요-------------------------------------------*/
+//        LocalDateTime now = LocalDateTime.now();
+//        System.out.println(now);
+//        int year = now.getYear();
+//        int month = now.getMonthValue();
+//        int day = now.getDayOfMonth();
+//
+//        logger.info("결과 조회 필요한 Quiz ID " + Arrays.toString(idx));
+//        List<Object[]> result = answerRepository.getResultUser(year, month, day, idx, userID);
+//        System.out.println(result.size());
+//        for(Object[] row : result){
+//            for(Object o : row){
+//                System.out.println(o.toString());
+//            }
+//        }
         // Response Result User Setting
 
         // 1. 오늘 기준 Answer 테이블의 순서대로 긁어와서 몇번째 인지 확인하기
@@ -134,9 +149,8 @@ public class QuizService {
 
 
         Map<String, Object> response = new HashMap<>();
-
-
-
     }
+
+
 
 }
