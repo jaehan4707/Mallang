@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.data.model.entity.Area
+import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.AreaRepository
 import com.google.android.gms.maps.model.LatLng
@@ -32,6 +33,9 @@ class MapViewModel
         private val _areaState = MutableStateFlow<AreasState>(AreasState.Empty)
         val areaState: StateFlow<AreasState> = _areaState
 
+        private val _statusState = MutableStateFlow<TeamList>(TeamList(listOf()))
+        val statusState: StateFlow<TeamList> = _statusState
+
         var selectedArea by mutableStateOf<Area?>(null)
             private set
 
@@ -50,6 +54,23 @@ class MapViewModel
                                 AreasState.HasValue(
                                     response.data ?: listOf(),
                                 ),
+                            )
+                        }
+
+                        is ApiResponse.Error -> _areaState.emit(AreasState.Error(response.errorMessage))
+                        ApiResponse.Init -> {}
+                    }
+                }
+            }
+        }
+
+        fun loadStatus() {
+            viewModelScope.launch {
+                areaRepository.getOccupationStatus().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            _statusState.emit(
+                                response.data ?: TeamList(listOf()),
                             )
                         }
 

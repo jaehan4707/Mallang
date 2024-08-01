@@ -11,5 +11,5 @@ data class TeamList(
 data class Team(
     val teamName: String,
     val area: Int,
-    val teamId: Long
+    val teamId: Int,
 )
