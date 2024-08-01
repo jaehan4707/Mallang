@@ -1,6 +1,7 @@
 package com.chill.mallang.domain.quiz.controller.v1;
 
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
+import com.chill.mallang.domain.quiz.dto.request.RequestQuizResult;
 import com.chill.mallang.domain.quiz.service.QuizService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,15 +33,24 @@ public class QuizController {
         quizService.submitAnswer(requestQuizAnswer);
         return new ResponseEntity<>("정답 제출 완료", HttpStatus.OK);
     }
+
     @Operation(summary ="전체 결과 확인", description = "라운드 최종 결과를 확인합니다.")
-    @GetMapping("/result")
-    public ResponseEntity<?> getQuizResult() {
+    @PostMapping("/result")
+    public ResponseEntity<?> getQuizResult(@RequestBody RequestQuizResult requestQuizResult) {
+        quizService.quizResult(requestQuizResult);
         return new ResponseEntity<>("정답을 조회합니다.", HttpStatus.OK);
     }
+
     @Operation(summary = "정답 확인", description = "특정 문제의 AI 기준 정답 확인")
     @GetMapping("/{quizID}/corret-answer")
     public ResponseEntity<?> getQuizAnswer(@PathVariable Long quizID) {
         return null;
     }
-    
+
+    // 점령지에 포함된 퀴즈 PK 불러오기
+    @Operation(summary ="점령 시작을 위한 Quiz 호출", description = "해당 점령지가 가지고 있는 Quiz PK 3개 조회")
+    @GetMapping("/start/{areaID}")
+    public ResponseEntity<?> startQuiz(@PathVariable Long areaID) {
+        return new ResponseEntity<>(quizService.getAreaQuiz(areaID), HttpStatus.OK);
+    }
 }

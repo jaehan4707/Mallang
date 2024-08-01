@@ -72,7 +72,7 @@ public class GPTService {
         }
 
     }
-    public double getScore(String question, String userAnswer){
+    public float getScore(String question, String userAnswer){
         StringBuilder sb = new StringBuilder();
 
         String prompt = "너는 지금부터 문제를 채점하는 채점자야. " +
@@ -94,7 +94,7 @@ public class GPTService {
 
         System.out.println(jsonString);
 
-        return Double.valueOf(jsonString);
+        return Float.parseFloat(jsonString);
     }
 
     public void checkModels() {

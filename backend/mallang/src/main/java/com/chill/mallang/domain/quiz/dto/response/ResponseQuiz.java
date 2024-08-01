@@ -11,6 +11,4 @@ public class ResponseQuiz {
     private String question;
     private String answer;
     private int difficulty; // 상 중 하
-    private String type; // 주관식 or 객관식
-
 }
