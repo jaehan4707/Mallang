@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chill.mallang.ui.component.BackConfirmHandler
-import com.chill.mallang.ui.feature.word.TopAppBar
+import com.chill.mallang.ui.component.TopAppBar
 import com.chill.mallang.ui.navigation.DestinationLogin
 import com.chill.mallang.ui.navigation.DestinationMain
 import com.chill.mallang.ui.navigation.DestinationNickName
