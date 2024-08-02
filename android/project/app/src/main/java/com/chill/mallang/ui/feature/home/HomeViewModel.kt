@@ -24,6 +24,37 @@ class HomeViewModel
             getUserInfo()
         }
 
+        fun sendEvent(event: HomeUiEvent) {
+            when (event) {
+                HomeUiEvent.ShowSettingDialog -> {
+                    updateHomeUiState { it.copy(showSettingDialog = true) }
+                }
+
+                HomeUiEvent.CloseSettingDialog -> {
+                    updateHomeUiState { it.copy(showSettingDialog = false) }
+                }
+
+                HomeUiEvent.ShowEditNickNameDialog -> {
+                    updateHomeUiState { it.copy(showEditNickNameDialog = true) }
+                }
+
+                HomeUiEvent.CloseEditNickNameDialog -> {
+                    updateHomeUiState {
+                        it.copy(showEditNickNameDialog = false)
+                    }
+                }
+            }
+        }
+
+        private fun updateHomeUiState(update: (HomeUiState.LoadUserInfo) -> HomeUiState.LoadUserInfo) {
+            viewModelScope.launch {
+                val currentState = _uiState.value
+                if (currentState is HomeUiState.LoadUserInfo) {
+                    _uiState.value = update(currentState)
+                }
+            }
+        }
+
         private fun getUserInfo() {
             viewModelScope.launch {
                 userRepository.getUserInfo().collectLatest { response ->
