@@ -1,53 +1,34 @@
 package com.chill.mallang.ui.feature.fort_detail
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.chill.mallang.data.model.entity.AreaDetail
+import com.chill.mallang.data.model.entity.TeamRecords
 
 @Stable
-sealed interface OccupationState {
-    data object Loading : OccupationState
+sealed interface AreaDetailState {
+    @Immutable
+    data object Loading : AreaDetailState
 
+    @Immutable
     data class Success(
-        val areaName: String,
-        val myTeamInfo: TeamInfo,
-        val oppoTeamInfo: TeamInfo,
-    ) : OccupationState
+        val areaDetail: AreaDetail,
+    ) : AreaDetailState
 
     data class Error(
         val errorMessage: String,
-    ) : OccupationState
+    ) : AreaDetailState
 }
 
 @Stable
-sealed interface TeamLeadersState {
-    data object Loading : TeamLeadersState
+sealed interface TeamRecordState {
+    data object Loading : TeamRecordState
 
     data class Success(
-        val userRecord: UserRecord,
-        val myTeamRecords: List<UserRecord>,
-        val oppoTeamRecords: List<UserRecord>,
-    ) : TeamLeadersState
+        val teamRecords: TeamRecords,
+    ) : TeamRecordState
 
     data class Error(
         val errorMessage: String,
-    ) : TeamLeadersState
+    ) : TeamRecordState
 }
-
-data class TeamInfo(
-    val teamId: Int,
-    val teamPoint: Int,
-    val topUser: UserInfo,
-)
-
-data class UserInfo(
-    val userId: Int,
-    val userName: String,
-    val userTier: Int,
-)
-
-data class UserRecord(
-    val userPlace: Int,
-    val userId: Int,
-    val userName: String,
-    val userScore: Int,
-    val userPlayTime: Int,
-)
