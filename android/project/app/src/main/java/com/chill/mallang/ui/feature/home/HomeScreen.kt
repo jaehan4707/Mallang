@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.feature.setting.EditNickNameDialogScreen
 import com.chill.mallang.ui.feature.setting.SettingDialog
 import com.chill.mallang.ui.theme.Gray2
 import com.chill.mallang.ui.theme.MallangTheme
@@ -56,10 +57,7 @@ fun HomeScreen(
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val (showSettingDialog, setShowSettingDialog) =
-        remember {
-            mutableStateOf(false)
-        }
+
     Box(
         modifier =
             Modifier
@@ -75,17 +73,8 @@ fun HomeScreen(
             onShowErrorSnackBar = onShowErrorSnackBar,
             navigateToQuest = navigateToQuest,
             navigateToRank = navigateToRank,
-            onClickSetting = { setShowSettingDialog(showSettingDialog.not()) },
+            sendEvent = { viewModel.sendEvent(it) },
         )
-
-        if (showSettingDialog) {
-            SettingDialog(
-                onClose = { setShowSettingDialog(false) },
-                onShowEditNickNameDialog = { },
-                onLogOut = {},
-                onSignOut = {},
-            )
-        }
     }
 }
 
@@ -99,7 +88,7 @@ fun HomeContent(
     onShowErrorSnackBar: (String) -> Unit,
     navigateToQuest: () -> Unit,
     navigateToRank: () -> Unit,
-    onClickSetting: () -> Unit,
+    sendEvent: (HomeUiEvent) -> Unit,
 ) {
     LaunchedEffect(uiState) {
         if (uiState is HomeUiState.Error) {
@@ -119,8 +108,22 @@ fun HomeContent(
                 popUpBackStack = popUpBackStack,
                 navigateToQuest = navigateToQuest,
                 navigateToRank = navigateToRank,
-                onClickSetting = onClickSetting,
+                onClickSetting = { sendEvent(HomeUiEvent.ShowSettingDialog) },
             )
+            if (uiState.showSettingDialog) {
+                SettingDialog(
+                    onClose = { sendEvent(HomeUiEvent.CloseSettingDialog) },
+                    onShowEditNickNameDialog = { sendEvent(HomeUiEvent.ShowEditNickNameDialog) },
+                    onLogOut = {},
+                    onSignOut = {},
+                )
+            }
+            if (uiState.showEditNickNameDialog) {
+                EditNickNameDialogScreen(
+                    onChangeNickName = {},
+                    onDismiss = { sendEvent(HomeUiEvent.CloseEditNickNameDialog) },
+                )
+            }
         }
 
         is HomeUiState.Error -> {}
