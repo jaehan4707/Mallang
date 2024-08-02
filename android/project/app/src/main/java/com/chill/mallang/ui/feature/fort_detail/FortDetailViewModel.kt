@@ -3,6 +3,7 @@ package com.chill.mallang.ui.feature.fort_detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chill.mallang.R
 import com.chill.mallang.data.repository.remote.AreaRepository
 import com.chill.mallang.ui.util.transformToUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,11 @@ class FortDetailViewModel
         private val _teamRecordStateFlow = MutableStateFlow<TeamRecordState>(TeamRecordState.Loading)
         val teamRecordStateFlow = _teamRecordStateFlow.asStateFlow()
 
+        fun invalidateData() {
+            _areaDetailStateFlow.value = AreaDetailState.Error(ErrorMessage.RuntimeError(R.string.invalid_entry))
+            _teamRecordStateFlow.value = TeamRecordState.Error(ErrorMessage.RuntimeError(R.string.invalid_entry))
+        }
+
         fun loadOccupationState(
             areaId: Int,
             userTeam: Int,
@@ -33,7 +39,7 @@ class FortDetailViewModel
                     .getAreaDetail(areaId, userTeam)
                     .transformToUiState(
                         onSuccess = { AreaDetailState.Success(it) },
-                        onError = { AreaDetailState.Error(it) },
+                        onError = { AreaDetailState.Error(ErrorMessage.NetworkError(it)) },
                     ).collect {
                         _areaDetailStateFlow.value = it
                     }
@@ -49,7 +55,7 @@ class FortDetailViewModel
                     .getAreaRecords(areaId, userId)
                     .transformToUiState(
                         onSuccess = { TeamRecordState.Success(it) },
-                        onError = { TeamRecordState.Error(it) },
+                        onError = { TeamRecordState.Error(ErrorMessage.NetworkError(it)) },
                     ).collect {
                         _teamRecordStateFlow.value = it
                     }

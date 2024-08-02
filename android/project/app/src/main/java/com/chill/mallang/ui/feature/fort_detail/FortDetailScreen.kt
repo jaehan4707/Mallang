@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,23 +42,44 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
+import com.chill.mallang.data.model.entity.TeamInfo
+import com.chill.mallang.data.model.entity.UserRecord
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun FortDetailScreen(
     modifier: Modifier = Modifier,
-    areaId: Long?,
+    areaId: Int?,
+    userId: Int?,
+    teamId: Int?,
 ) {
     val viewModel: FortDetailViewModel = hiltViewModel()
-    val occupationState by viewModel.occupationState.collectAsStateWithLifecycle()
-    val teamLeadersState by viewModel.teamLeadersState.collectAsStateWithLifecycle()
+    val occupationState by viewModel.areaDetailStateFlow.collectAsStateWithLifecycle()
+    val teamLeadersState by viewModel.teamRecordStateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.loadOccupationState()
-        viewModel.loadTeamLeadersState()
+        if (areaId == null || userId == null || teamId == null) {
+            viewModel.invalidateData()
+        } else {
+            viewModel.loadOccupationState(areaId, teamId)
+            viewModel.loadTeamLeadersState(areaId, userId)
+        }
     }
 
+    AreaDetailContent(
+        modifier = modifier,
+        areaDetailState = occupationState,
+        teamLeadersState = teamLeadersState,
+    )
+}
+
+@Composable
+fun AreaDetailContent(
+    modifier: Modifier,
+    areaDetailState: AreaDetailState,
+    teamLeadersState: TeamRecordState,
+) {
     Column(
         modifier =
             modifier
@@ -65,14 +87,14 @@ fun FortDetailScreen(
                 .padding(top = 20.dp),
     ) {
         MainBody(
-            occupationState = occupationState,
+            occupationState = areaDetailState,
             modifier = Modifier.weight(7F),
         )
         GameStartBody(
             modifier = Modifier.weight(2F),
         )
         RecordBody(
-            teamLeadersState = teamLeadersState,
+            teamRecordState = teamLeadersState,
             modifier = Modifier.weight(7F),
         )
     }
@@ -80,11 +102,11 @@ fun FortDetailScreen(
 
 @Composable
 fun MainBody(
-    occupationState: OccupationState,
+    occupationState: AreaDetailState,
     modifier: Modifier = Modifier,
 ) {
     when (occupationState) {
-        is OccupationState.Loading -> {
+        is AreaDetailState.Loading -> {
             Surface(
                 modifier = modifier.fillMaxSize(),
             ) {
@@ -92,15 +114,15 @@ fun MainBody(
             }
         }
 
-        is OccupationState.Error -> {
+        is AreaDetailState.Error -> {
             Surface(
                 modifier = modifier.fillMaxSize(),
             ) {
-                Text(occupationState.errorMessage)
+                Text(occupationState.errorMessage.getErrorMessage(LocalContext.current))
             }
         }
 
-        is OccupationState.Success -> {
+        is AreaDetailState.Success -> {
             Surface(
                 modifier =
                     modifier
@@ -109,7 +131,7 @@ fun MainBody(
             ) {
                 Column {
                     FortDetailHeader(
-                        fortName = occupationState.areaName,
+                        fortName = occupationState.areaDetail.areaName,
                         modifier = Modifier.weight(1F),
                     )
                     Row(
@@ -118,7 +140,7 @@ fun MainBody(
                         modifier = Modifier.weight(6F),
                     ) {
                         TeamScoreAndTopUser(
-                            teamInfo = occupationState.myTeamInfo,
+                            teamInfo = occupationState.areaDetail.myTeamInfo,
                             modifier =
                                 Modifier
                                     .weight(1F)
@@ -126,7 +148,7 @@ fun MainBody(
                         )
                         Text("VS", fontSize = 40.sp)
                         TeamScoreAndTopUser(
-                            teamInfo = occupationState.oppoTeamInfo,
+                            teamInfo = occupationState.areaDetail.oppoTeamInfo,
                             modifier =
                                 Modifier
                                     .weight(1F)
@@ -172,7 +194,7 @@ fun TeamScoreAndTopUser(
     teamInfo: TeamInfo,
     modifier: Modifier = Modifier,
 ) {
-    val teamColor = if (teamInfo.teamId == 1) Color.Red else Color.Blue
+    val teamColor by remember(teamInfo.teamId) { mutableStateOf(if (teamInfo.teamId == 1) Color.Red else Color.Blue) }
     val teamTopUserTitle =
         if (teamInfo.teamId == 1) stringResource(R.string.team_mal_title) else stringResource(R.string.team_rang_title)
 
@@ -195,11 +217,13 @@ fun TeamScoreAndTopUser(
                 contentDescription = "",
                 modifier = Modifier.height(30.dp),
             )
-            Text(
-                text = teamInfo.topUser.userName,
-                style = Typography.displayLarge,
-                fontSize = 28.sp,
-            )
+            if (teamInfo.topUser != null) {
+                Text(
+                    text = teamInfo.topUser.userName,
+                    style = Typography.displayLarge,
+                    fontSize = 28.sp,
+                )
+            }
         }
         Text(
             text = stringResource(R.string.team_score, teamInfo.teamPoint),
@@ -245,7 +269,7 @@ fun GameStartBody(modifier: Modifier = Modifier) {
 
 @Composable
 fun RecordBody(
-    teamLeadersState: TeamLeadersState,
+    teamRecordState: TeamRecordState,
     modifier: Modifier = Modifier,
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -255,8 +279,8 @@ fun RecordBody(
             stringResource(R.string.oppo_team_records_label),
         )
 
-    when (teamLeadersState) {
-        is TeamLeadersState.Loading -> {
+    when (teamRecordState) {
+        is TeamRecordState.Loading -> {
             Surface(
                 modifier = modifier.fillMaxSize(),
             ) {
@@ -264,15 +288,15 @@ fun RecordBody(
             }
         }
 
-        is TeamLeadersState.Error -> {
+        is TeamRecordState.Error -> {
             Surface(
                 modifier = modifier.fillMaxSize(),
             ) {
-                Text(teamLeadersState.errorMessage)
+                Text(teamRecordState.errorMessage.getErrorMessage(LocalContext.current))
             }
         }
 
-        is TeamLeadersState.Success -> {
+        is TeamRecordState.Success -> {
             Column(
                 modifier = modifier,
             ) {
@@ -306,8 +330,8 @@ fun RecordBody(
                     }
                 }
                 when (selectedTabIndex) {
-                    0 -> TeamTab(recordList = teamLeadersState.myTeamRecords)
-                    1 -> TeamTab(recordList = teamLeadersState.oppoTeamRecords)
+                    0 -> TeamTab(recordList = teamRecordState.teamRecords.myTeamRecords)
+                    1 -> TeamTab(recordList = teamRecordState.teamRecords.oppoTeamRecords)
                 }
             }
         }
@@ -416,6 +440,6 @@ fun CustomBorderBox(
 @Composable
 fun FortDetailScreenPreview() {
     MallangTheme {
-        FortDetailScreen(areaId = 1)
+        FortDetailScreen(areaId = 1, userId = 1, teamId = 1)
     }
 }

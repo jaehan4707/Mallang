@@ -15,8 +15,8 @@ import com.chill.mallang.ui.feature.map.MapScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.quiz.QuizScreen
 import com.chill.mallang.ui.feature.quiz_result.QuizResultScreen
-import com.chill.mallang.ui.feature.word.WordNoteScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
+import com.chill.mallang.ui.feature.word.WordNoteScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -110,10 +110,10 @@ fun MallangNavHost(
 
         composable(
             route = DestinationAreaDetail.routeWithArgs,
-            arguments = DestinationAreaDetail.arguments
+            arguments = DestinationAreaDetail.arguments,
         ) { navBackStackEntry ->
             val areaId = navBackStackEntry.arguments?.getLong(DestinationAreaDetail.arg)
-            FortDetailScreen(areaId = areaId)
+            FortDetailScreen(areaId = 1, userId = 1, teamId = 1)
         }
 
         composable(
