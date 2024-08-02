@@ -11,14 +11,19 @@ import com.chill.mallang.domain.user.dto.TopUserDTO;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.errors.exception.RestApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 // 점령지 상세정보 1. 점령자 대표 유저 정보 조회
 @Service
 public class AreaTopUserService {
+    private static final Logger logger = LoggerFactory.getLogger(ChallengeRecordService.class);
+
     @Autowired
     private AreaRepository areaRepository;
 
@@ -34,9 +39,15 @@ public class AreaTopUserService {
     public Map<String, Object> getAreaInfo(Long areaId, Long userTeamId) {
         Optional<Area> area = areaRepository.findById(areaId);
 
+        // team은 1 혹은 2
         if (area.isPresent() && userTeamId != null) {
+            if (userTeamId != 1 && userTeamId != 2) {
+                throw new RestApiException(AreaErrorCode.INVALID_TEAM);
+            }
 
             List<Answer> answers = answerRepository.findByAreaId(areaId);
+            logger.info(LocalDate.now().toString());
+            logger.info("answers List is : " + answers.toString());
 
             // 팀 별 점수 합산 및 최고 득점자 찾기
             FactionDTO myTeamInfo = calculateTeamInfo(answers, userTeamId);
@@ -62,17 +73,22 @@ public class AreaTopUserService {
         int maxScore = 0;
         for (Answer answer : answers) {
             if (answer.getUser().getFaction() != null && answer.getCheck_fin() == 1) {
+                logger.info("start calculate TopUser and team point!");
                 if (answer.getUser().getFaction().getId() == teamId){
+                    logger.info("start calculate team point");
                     double score = answer.getScore();
                     int tryCount = answer.getAnswerTime();
                     teamPoint += (int) score;
                     if (score > maxScore) {
                         maxScore = (int)score;
                         topUser = answer.getUser();
+                        logger.info("topUser is changed");
                     }
                 }
             }
         }
+
+
 
         TopUserDTO topUserDTO = null;
         if (topUser != null) {

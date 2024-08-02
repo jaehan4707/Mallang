@@ -79,7 +79,7 @@ public class ChallengeRecordService {
 
     //같은 팀인지 확인
     private boolean isSameTeam(User logUserId, User user) {
-        logger.info("isSameTeam 실행");
+        logger.info("isSameTeam start");
         Optional<User> logUserOptional = userRepository.findById(logUserId.getId());
         logger.info("USER DATA : {}", String.valueOf(logUserOptional));
         if (logUserOptional.isPresent()) {
