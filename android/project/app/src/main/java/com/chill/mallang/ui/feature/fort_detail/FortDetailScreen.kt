@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +43,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
+import com.chill.mallang.data.model.entity.AreaDetail
 import com.chill.mallang.data.model.entity.TeamInfo
+import com.chill.mallang.data.model.entity.TeamRecords
+import com.chill.mallang.data.model.entity.UserInfo
 import com.chill.mallang.data.model.entity.UserRecord
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
@@ -70,21 +74,20 @@ fun FortDetailScreen(
     AreaDetailContent(
         modifier = modifier,
         areaDetailState = occupationState,
-        teamLeadersState = teamLeadersState,
+        teamRecordState = teamLeadersState,
     )
 }
 
 @Composable
 fun AreaDetailContent(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     areaDetailState: AreaDetailState,
-    teamLeadersState: TeamRecordState,
+    teamRecordState: TeamRecordState,
 ) {
     Column(
         modifier =
             modifier
-                .fillMaxSize()
-                .padding(top = 20.dp),
+                .fillMaxSize(),
     ) {
         MainBody(
             occupationState = areaDetailState,
@@ -94,7 +97,7 @@ fun AreaDetailContent(
             modifier = Modifier.weight(2F),
         )
         RecordBody(
-            teamRecordState = teamLeadersState,
+            teamRecordState = teamRecordState,
             modifier = Modifier.weight(7F),
         )
     }
@@ -110,7 +113,11 @@ fun MainBody(
             Surface(
                 modifier = modifier.fillMaxSize(),
             ) {
-                CircularProgressIndicator()
+                Box(
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(48.dp))
+                }
             }
         }
 
@@ -125,9 +132,9 @@ fun MainBody(
         is AreaDetailState.Success -> {
             Surface(
                 modifier =
-                    modifier
-                        .fillMaxSize()
-                        .padding(vertical = 20.dp, horizontal = 10.dp),
+                modifier
+                    .fillMaxSize()
+                    .padding(vertical = 20.dp, horizontal = 10.dp),
             ) {
                 Column {
                     FortDetailHeader(
@@ -142,17 +149,17 @@ fun MainBody(
                         TeamScoreAndTopUser(
                             teamInfo = occupationState.areaDetail.myTeamInfo,
                             modifier =
-                                Modifier
-                                    .weight(1F)
-                                    .fillMaxHeight(),
+                            Modifier
+                                .weight(1F)
+                                .fillMaxHeight(),
                         )
                         Text("VS", fontSize = 40.sp)
                         TeamScoreAndTopUser(
                             teamInfo = occupationState.areaDetail.oppoTeamInfo,
                             modifier =
-                                Modifier
-                                    .weight(1F)
-                                    .fillMaxHeight(),
+                            Modifier
+                                .weight(1F)
+                                .fillMaxHeight(),
                         )
                     }
                 }
@@ -168,11 +175,11 @@ fun FortDetailHeader(
 ) {
     Box(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .background(Color.LightGray.copy(alpha = 0.4f))
-                .padding(vertical = 7.dp, horizontal = 10.dp),
+        modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(Color.LightGray.copy(alpha = 0.4f))
+            .padding(vertical = 7.dp, horizontal = 10.dp),
     ) {
         Row(
             modifier = Modifier.align(Alignment.Center),
@@ -238,9 +245,9 @@ fun TeamScoreAndTopUser(
 fun GameStartBody(modifier: Modifier = Modifier) {
     Column(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
+        modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
@@ -284,7 +291,11 @@ fun RecordBody(
             Surface(
                 modifier = modifier.fillMaxSize(),
             ) {
-                CircularProgressIndicator()
+                Box(
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
 
@@ -440,6 +451,35 @@ fun CustomBorderBox(
 @Composable
 fun FortDetailScreenPreview() {
     MallangTheme {
-        FortDetailScreen(areaId = 1, userId = 1, teamId = 1)
+        AreaDetailContent(
+            modifier = Modifier,
+            areaDetailState = AreaDetailState.Loading,
+            teamRecordState = TeamRecordState.Loading,
+        )
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun FortDetailScreenPreviewWithData() {
+    MallangTheme {
+        AreaDetailContent(
+            modifier = Modifier,
+            areaDetailState =
+                AreaDetailState.Success(
+                    AreaDetail(
+                        areaName = "Name",
+                        TeamInfo(1, 1, UserInfo(1, "Name")),
+                        TeamInfo(1, 1, UserInfo(1, "Name")),
+                    ),
+                ),
+            teamRecordState = TeamRecordState.Success(
+                TeamRecords(
+                    UserRecord(1, 1, 1),
+                    listOf(UserRecord(1, 1, 1)),
+                    listOf(UserRecord(1, 1, 1)),
+                ),
+            ),
+        )
     }
 }
