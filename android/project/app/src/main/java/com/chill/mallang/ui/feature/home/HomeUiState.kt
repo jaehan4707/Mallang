@@ -12,6 +12,8 @@ sealed interface HomeUiState {
     data class LoadUserInfo(
         val userNickName: String = "",
         val userFaction: String = "",
+        val showSettingDialog: Boolean = false,
+        val showEditNickNameDialog: Boolean = false,
     ) : HomeUiState
 
     @Immutable
