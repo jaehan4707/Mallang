@@ -24,5 +24,4 @@ data class TeamInfo(
 data class UserInfo(
     val userId: Int,
     val userName: String,
-    val userTier: Int,
 )
