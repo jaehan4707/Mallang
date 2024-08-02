@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.word
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -120,8 +119,6 @@ fun WordNoteScreen(
         }
     }
 
-    Log.d("nakyung", selectedWordIndex.toString())
-
     selectedWordIndex?.let { index ->
         WordCardDialog(
             index = index,
@@ -197,12 +194,12 @@ fun QuizListItem(
         if (wordList.isNotEmpty()) {
             Text(
                 text = wordList[number - 1].word,
-                style = Typography.displayLarge, // 자간 조절한 폰트
+                style = Typography.headlineMedium, // 자간 조절한 폰트
             )
         } else {
             Text(
                 text = "",
-                style = Typography.displayLarge, // 자간 조절한 폰트
+                style = Typography.headlineMedium, // 자간 조절한 폰트
             )
         }
     }
