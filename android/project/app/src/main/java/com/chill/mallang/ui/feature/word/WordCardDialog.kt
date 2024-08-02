@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.chill.mallang.R
-import com.chill.mallang.ui.feature.home.IconButton
+import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
@@ -103,7 +103,7 @@ fun WordCardDialog(
                                 .weight(1f),
                         contentAlignment = Alignment.CenterEnd,
                     ) {
-                        IconButton(
+                        ImageButton(
                             icon = R.drawable.ic_close,
                             label = "",
                             onClick = onDismiss,
@@ -134,7 +134,7 @@ fun WordCardDialog(
                             contentAlignment = Alignment.CenterStart,
                         ) {
                             if (page > 0) {
-                                IconButton(
+                                ImageButton(
                                     icon = R.drawable.ic_prev,
                                     label = "",
                                     onClick = {
@@ -154,7 +154,7 @@ fun WordCardDialog(
                             contentAlignment = Alignment.CenterEnd,
                         ) {
                             if (page < wordCards.size - 1) {
-                                IconButton(icon = R.drawable.ic_next, label = "", onClick = {
+                                ImageButton(icon = R.drawable.ic_next, label = "", onClick = {
                                     scope.launch {
                                         pagerState.animateScrollToPage(
                                             page + 1,
