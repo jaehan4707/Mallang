@@ -9,7 +9,6 @@ import com.theokanning.openai.OpenAiService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -24,7 +23,7 @@ import java.net.URL;
 @Service
 @Slf4j
 public class GPTService {
-    private final OpenAiService openAiService;
+
     private final Logger logger = LoggerFactory.getLogger(GPTService.class);
 
     @Value("${openai.model}")
@@ -32,13 +31,14 @@ public class GPTService {
     @Value("${openai.api.url}")
     private String apiUrl;
 
-    @Autowired
-    private RestTemplate template;
-    @Autowired
-    private QuizRepository quizRepository;
+    private final RestTemplate template;
+    private final QuizRepository quizRepository;
+    private final OpenAiService openAiService;
 
-    public GPTService(OpenAiService openAiService) {
+    public GPTService(RestTemplate template, OpenAiService openAiService, QuizRepository quizRepository) {
+        this.template = template;
         this.openAiService = openAiService;
+        this.quizRepository = quizRepository;
     }
 
     public void createQuizFromPrompt() {

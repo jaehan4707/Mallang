@@ -1,15 +1,14 @@
 package com.chill.mallang.domain.quiz.service;
 
-import com.chill.mallang.domain.area.repository.AreaRepository;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizResult;
 import com.chill.mallang.domain.quiz.dto.response.ResponseQuiz;
 import com.chill.mallang.domain.quiz.error.QuizErrorCode;
 import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.quiz.model.Quiz;
-import com.chill.mallang.domain.quiz.model.TotalScore;
 import com.chill.mallang.domain.quiz.repository.AnswerRepository;
 import com.chill.mallang.domain.quiz.repository.QuizRepository;
+import com.chill.mallang.domain.quiz.repository.TotalScoreRepository;
 import com.chill.mallang.domain.quiz.service.core.CoreService;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.errors.exception.RestApiException;
@@ -38,14 +37,21 @@ public class QuizService {
     @Autowired
     private CoreService coreService;
 
-    @Autowired
-    private QuizRepository quizRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AnswerRepository answerRepository;
-    @Autowired
-    private AreaRepository areaRepository;
+    private final QuizRepository quizRepository;
+    private final UserRepository userRepository;
+    private final AnswerRepository answerRepository;
+    private final TotalScoreRepository totalScoreRepository;
+
+    public QuizService( QuizRepository quizRepository, UserRepository userRepository,
+                        AnswerRepository answerRepository, TotalScoreRepository totalScoreRepository,
+                        EntityManager entityManager ) {
+        this.quizRepository = quizRepository;
+        this.userRepository = userRepository;
+        this.answerRepository = answerRepository;
+        this.totalScoreRepository = totalScoreRepository;
+        this.entityManager = entityManager;
+    }
+
 
     public Map<String, Object> getById(Long quizID) {
         Optional<Quiz> quiz = quizRepository.findById(quizID);
@@ -106,9 +112,22 @@ public class QuizService {
     }
 
     @Transactional
-    public void quizResult(RequestQuizResult requestQuizResult){
+    public Map<String, Object> quizResult(RequestQuizResult requestQuizResult){
         Long userID = requestQuizResult.getUserID();
+        if (userID == null) {
+            throw new RestApiException(QuizErrorCode.USER_ID_NULL);
+        }
         Long areaID = requestQuizResult.getAreaID();
+        if (areaID == null) {
+            throw new RestApiException(QuizErrorCode.AREA_ID_NULL);
+        }
+        Long factionID = requestQuizResult.getFactionID();
+        if (factionID == null) {
+            throw new RestApiException(QuizErrorCode.FACTION_ID_NULL);
+        }
+
+        Map<String, Object> user = new HashMap<>();
+        Map<String, Object> team = new HashMap<>();
 
         // 최종 제출 세팅
         Long[] idx = requestQuizResult.getQuizID();
@@ -116,39 +135,34 @@ public class QuizService {
 
         // User Score 확인
         float sum = 0;
+        int roundNum = 0;
         for(Long quizID : idx){
             answerRepository.setAnswerTrue(userID, quizID);
             logger.info(quizID + "번 Answer 최종 제출 완료");
             Float nowScore =answerRepository.findTop1AnswerScore(quizID);
             sum += nowScore;
             responseScore.add(nowScore);
+            roundNum++;
         }
+        user.put("Score", responseScore);
+        user.put("Total Score", sum);
+        logger.info("라운드 최종 점수 저장 시작");
 
-        // 라운드 최종 점수 저장
-        coreService.storeTotalScore(userID, areaID, sum);
-        /*---------------------------------------여기 아래 부터는 Team 영역 계산 필요-------------------------------------------*/
-//        LocalDateTime now = LocalDateTime.now();
-//        System.out.println(now);
-//        int year = now.getYear();
-//        int month = now.getMonthValue();
-//        int day = now.getDayOfMonth();
-//
-//        logger.info("결과 조회 필요한 Quiz ID " + Arrays.toString(idx));
-//        List<Object[]> result = answerRepository.getResultUser(year, month, day, idx, userID);
-//        System.out.println(result.size());
-//        for(Object[] row : result){
-//            for(Object o : row){
-//                System.out.println(o.toString());
-//            }
-//        }
-        // Response Result User Setting
-
-        // 1. 오늘 기준 Answer 테이블의 순서대로 긁어와서 몇번째 인지 확인하기
-        // 2. 오늘 기준 Answer 테이블의 데이터에서 quizID와 동일한 최신 데이터의 점수 확인
-        // 3. 해당 점수들의 합 구하기.
-
+        coreService.storeTotalScore(userID, areaID, sum, factionID);
 
         Map<String, Object> response = new HashMap<>();
+        List<Float> teamScoreList = totalScoreRepository.findTotalScoreByAreaID(areaID);
+
+        team.put("My Team Total Score", teamScoreList.get(0));
+        team.put("Oppo Team Total Score", teamScoreList.get(1));
+        team.put("My Team Rank", totalScoreRepository.findTop3(areaID, factionID));
+
+        Map<String, Object> data = new HashMap<>();
+
+        data.put("User", user);
+        data.put("Team", team);
+        response.put("data", data);
+        return response;
     }
 
 

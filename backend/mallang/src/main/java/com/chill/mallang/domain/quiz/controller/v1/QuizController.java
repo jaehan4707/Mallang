@@ -38,7 +38,7 @@ public class QuizController {
     @PostMapping("/result")
     public ResponseEntity<?> getQuizResult(@RequestBody RequestQuizResult requestQuizResult) {
         quizService.quizResult(requestQuizResult);
-        return new ResponseEntity<>("정답을 조회합니다.", HttpStatus.OK);
+        return new ResponseEntity<>(quizService.quizResult(requestQuizResult), HttpStatus.OK);
     }
 
     @Operation(summary = "정답 확인", description = "특정 문제의 AI 기준 정답 확인")
