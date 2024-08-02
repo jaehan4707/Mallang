@@ -4,12 +4,18 @@ import com.chill.mallang.domain.area.model.Area;
 import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TotalScore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
