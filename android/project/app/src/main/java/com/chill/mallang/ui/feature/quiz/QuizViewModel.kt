@@ -6,42 +6,47 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class QuizViewModel : ViewModel() {
-    var state by mutableStateOf(QuizState())
-        private set
+@HiltViewModel
+class QuizViewModel
+    @Inject
+    constructor() : ViewModel() {
+        var state by mutableStateOf(QuizState())
+            private set
 
-    var selectedAnswer by mutableIntStateOf(-1)
+        var selectedAnswer by mutableIntStateOf(-1)
 
-    init {
-        loadQuizData()
-    }
+        init {
+            loadQuizData()
+        }
 
-    // 퀴즈 데이터 로드
-    private fun loadQuizData() {
-        viewModelScope.launch {
-            // api 호출 및 통신
-            state =
-                state.copy(
-                    quizTitle = "빈칸을 채워 주세요",
-                    quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다.",
-                    wordList =
-                        arrayListOf(
-                            "괄목",
-                            "상대",
-                            "과장",
-                            "시기",
-                        ),
-                )
+        // 퀴즈 데이터 로드
+        private fun loadQuizData() {
+            viewModelScope.launch {
+                // api 호출 및 통신
+                state =
+                    state.copy(
+                        quizTitle = "빈칸을 채워 주세요",
+                        quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다.",
+                        wordList =
+                            arrayListOf(
+                                "괄목",
+                                "상대",
+                                "과장",
+                                "시기",
+                            ),
+                    )
+            }
+        }
+
+        fun selectAnswer(index: Int) {
+            selectedAnswer = index + 1
+        }
+
+        fun submitQuiz() {
+            // 퀴즈 채점 api
         }
     }
-
-    fun selectAnswer(index: Int) {
-        selectedAnswer = index + 1
-    }
-
-    fun submitQuiz() {
-        // 퀴즈 채점 api
-    }
-}
