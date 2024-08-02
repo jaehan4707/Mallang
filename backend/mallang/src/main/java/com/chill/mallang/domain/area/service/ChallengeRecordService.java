@@ -37,6 +37,8 @@ public class ChallengeRecordService {
     public Map<String, Object> getChallengeRecord(Long areaId, Long userId) {
         List<Answer> answers = answerRepository.findByAreaId(areaId);
         Optional<User> user = userRepository.findById(userId);
+        logger.info(user.toString());
+        logger.info(answers.toString());
         if (user.isPresent() && answers != null) {
             //아군
             List<ResponseTotalTeamInfo> myTeamRecords = answers.stream()
@@ -77,7 +79,7 @@ public class ChallengeRecordService {
 
     //같은 팀인지 확인
     private boolean isSameTeam(User logUserId, User user) {
-        logger.info("isSameTeam 실행");
+        logger.info("isSameTeam start");
         Optional<User> logUserOptional = userRepository.findById(logUserId.getId());
         logger.info("USER DATA : {}", String.valueOf(logUserOptional));
         if (logUserOptional.isPresent()) {

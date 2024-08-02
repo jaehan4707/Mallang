@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum AreaErrorCode implements ErrorCode {
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "Invalid parameter included"),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Cannot find resource"),
+    INVALID_TEAM(HttpStatus.BAD_REQUEST,"teamId는 1또는 2입니다."),
     ;
 
     private final HttpStatus httpStatus;
