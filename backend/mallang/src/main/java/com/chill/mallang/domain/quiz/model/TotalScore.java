@@ -1,6 +1,7 @@
 package com.chill.mallang.domain.quiz.model;
 
 import com.chill.mallang.domain.area.model.Area;
+import com.chill.mallang.domain.faction.model.Faction;
 import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -27,6 +28,9 @@ public class TotalScore {
     @ManyToOne
     @JoinColumn(name = "area")
     private Area area;
+    @ManyToOne
+    @JoinColumn(name = "faction")
+    private Faction faction;
 
     @NotNull
     private float totalScore;
