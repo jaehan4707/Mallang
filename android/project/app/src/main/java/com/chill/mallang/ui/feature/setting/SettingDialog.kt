@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.component.MallangSwitch
 import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.theme.Gray6
@@ -32,6 +34,9 @@ import com.chill.mallang.ui.theme.MallangTheme
 fun SettingDialog(
     modifier: Modifier = Modifier,
     onClose: () -> Unit = {},
+    onShowEditNickNameDialog: () -> Unit = {},
+    onLogOut: () -> Unit = {},
+    onSignOut: () -> Unit = {},
 ) {
     val (backGroundMusicChecked, setBackGroundMusic) =
         remember {
@@ -45,7 +50,7 @@ fun SettingDialog(
         remember {
             mutableStateOf(false)
         }
-    Dialog(onDismissRequest = { }) {
+    Dialog(onDismissRequest = onClose) {
         Surface(
             modifier =
                 Modifier
@@ -126,11 +131,38 @@ fun SettingDialog(
                     )
                     Spacer(modifier = Modifier.weight(0.45f))
                 }
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    LongBlackButton(
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .height(40.dp),
+                        onClick = onShowEditNickNameDialog,
+                        text = stringResource(R.string.setting_edit_nickname),
+                    )
+                    Spacer(modifier = Modifier.weight(0.5f))
+                    LongBlackButton(
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .height(40.dp),
+                        onClick = onLogOut,
+                        text = stringResource(R.string.setting_logout),
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                LongBlackButton(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(40.dp),
+                    onClick = onSignOut,
+                    text = stringResource(R.string.setting_sign_out),
+                )
             }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
