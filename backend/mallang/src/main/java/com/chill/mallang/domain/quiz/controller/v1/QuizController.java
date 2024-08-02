@@ -42,7 +42,7 @@ public class QuizController {
     }
 
     @Operation(summary = "정답 확인", description = "특정 문제의 AI 기준 정답 확인")
-    @GetMapping("/{quizID}/corret-answer")
+    @GetMapping("/{quizID}/correct-answer")
     public ResponseEntity<?> getQuizAnswer(@PathVariable Long quizID) {
         return null;
     }
