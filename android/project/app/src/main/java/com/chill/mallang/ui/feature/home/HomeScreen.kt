@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.feature.setting.SettingDialog
 import com.chill.mallang.ui.theme.Gray2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
@@ -48,16 +49,22 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
+    navigateToQuest: () -> Unit = {},
+    navigateToRank: () -> Unit = {},
     popUpBackStack: () -> Unit = {},
     onShowErrorSnackBar: (String) -> Unit = {},
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val (showSettingDialog, setShowSettingDialog) =
+        remember {
+            mutableStateOf(false)
+        }
     Box(
         modifier =
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 15.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 15.dp),
     ) {
         HomeContent(
             modifier = modifier,
@@ -66,7 +73,19 @@ fun HomeScreen(
             navigateToWordNote = navigateToWordNote,
             popUpBackStack = popUpBackStack,
             onShowErrorSnackBar = onShowErrorSnackBar,
+            navigateToQuest = navigateToQuest,
+            navigateToRank = navigateToRank,
+            onClickSetting = { setShowSettingDialog(showSettingDialog.not()) },
         )
+
+        if (showSettingDialog) {
+            SettingDialog(
+                onClose = { setShowSettingDialog(false) },
+                onShowEditNickNameDialog = { },
+                onLogOut = {},
+                onSignOut = {},
+            )
+        }
     }
 }
 
@@ -78,6 +97,9 @@ fun HomeContent(
     navigateToGame: () -> Unit,
     popUpBackStack: () -> Unit,
     onShowErrorSnackBar: (String) -> Unit,
+    navigateToQuest: () -> Unit,
+    navigateToRank: () -> Unit,
+    onClickSetting: () -> Unit,
 ) {
     LaunchedEffect(uiState) {
         if (uiState is HomeUiState.Error) {
@@ -95,6 +117,9 @@ fun HomeContent(
                 navigateToGame = navigateToGame,
                 navigateToWordNote = navigateToWordNote,
                 popUpBackStack = popUpBackStack,
+                navigateToQuest = navigateToQuest,
+                navigateToRank = navigateToRank,
+                onClickSetting = onClickSetting,
             )
         }
 
@@ -110,6 +135,9 @@ fun HomeScreenContent(
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
     popUpBackStack: () -> Unit = {},
+    navigateToRank: () -> Unit = {},
+    navigateToQuest: () -> Unit = {},
+    onClickSetting: () -> Unit = {},
 ) {
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
@@ -138,15 +166,30 @@ fun HomeScreenContent(
                 label = "15코인",
             )
         }
-        SideUserButton() // 사이드 버튼
+        ImageButton(
+            modifier = Modifier.align(Alignment.End),
+            icon = R.drawable.ic_setting,
+            label = stringResource(id = R.string.side_button_setting),
+            onClick = onClickSetting,
+        )
+        ImageButton(
+            modifier = Modifier.align(Alignment.End),
+            icon = R.drawable.ic_quest,
+            label = stringResource(id = R.string.side_button_quest),
+            onClick = navigateToQuest,
+        )
+        ImageButton(
+            modifier = Modifier.align(Alignment.End),
+            icon = R.drawable.ic_ranking,
+            label = stringResource(id = R.string.side_button_ranking),
+            onClick = navigateToRank,
+        )
         UserCharacter(
-            // 유저 캐릭터 or 프로필
             modifier = modifier,
             userNickName = userNickName,
             userFaction = userFaction,
         )
         ModeButton(
-            // 퀴즈 모드 버튼
             icon = R.drawable.ic_question,
             label = stringResource(R.string.mode_quiz),
             modifier = Modifier.align(Alignment.End),
@@ -154,7 +197,6 @@ fun HomeScreenContent(
         )
         Spacer(modifier.weight(0.05f))
         ModeButton(
-            // 점령전 모드 버튼
             icon = R.drawable.ic_location,
             label = stringResource(R.string.mode_game),
             modifier = Modifier.align(Alignment.End),
@@ -166,15 +208,16 @@ fun HomeScreenContent(
 
 @Composable
 fun ImageButton(
+    modifier: Modifier = Modifier,
     icon: Int,
     label: String,
     onClick: () -> Unit,
 ) {
     Column(
         modifier =
-        Modifier.noRippleClickable {
-            onClick()
-        },
+            modifier.noRippleClickable {
+                onClick()
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
@@ -191,40 +234,16 @@ fun ImageButton(
 }
 
 @Composable
-fun SideUserButton(modifier: Modifier = Modifier) {
-    Column(
-        modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.End,
-    ) {
-        ImageButton(
-            icon = R.drawable.ic_setting,
-            label = stringResource(R.string.side_button_setting),
-            onClick = { },
-        )
-        ImageButton(
-            icon = R.drawable.ic_quest,
-            label = stringResource(R.string.side_button_quest),
-            onClick = { },
-        )
-        ImageButton(
-            icon = R.drawable.ic_ranking,
-            label = stringResource(R.string.side_button_ranking),
-            onClick = { },
-        )
-    }
-}
-
-@Composable
 internal fun UserItem(
     icon: Int,
     label: String,
 ) {
     Row(
         modifier =
-        Modifier
-            .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
-            .padding(5.dp)
-            .height(IntrinsicSize.Min),
+            Modifier
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
+                .padding(5.dp)
+                .height(IntrinsicSize.Min),
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -252,9 +271,9 @@ fun UserCharacter(
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max),
+                Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
@@ -277,9 +296,9 @@ fun UserCharacter(
             )
             Text(
                 modifier =
-                Modifier
-                    .padding(top = 10.dp)
-                    .align(Alignment.Center),
+                    Modifier
+                        .padding(top = 10.dp)
+                        .align(Alignment.Center),
                 text = stringResource(id = R.string.character_message),
                 style = Typography.bodyLarge,
                 color = Sub1,
@@ -298,12 +317,12 @@ fun ModeButton(
 ) {
     Column(
         modifier =
-        modifier
-            .width(75.dp)
-            .height(75.dp)
-            .noRippleClickable { onClick() }
-            .background(color = Gray2, shape = CircleShape)
-            .border(width = 2.dp, color = Color.Black, shape = CircleShape),
+            modifier
+                .width(75.dp)
+                .height(75.dp)
+                .noRippleClickable { onClick() }
+                .background(color = Gray2, shape = CircleShape)
+                .border(width = 2.dp, color = Color.Black, shape = CircleShape),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
