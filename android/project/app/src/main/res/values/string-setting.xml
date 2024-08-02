@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setting_title">설정</string>
+    <string name="setting_background_music">배경음</string>
+    <string name="setting_effect_music">효과음</string>
+    <string name="setting_notification">푸시알림</string>
+    <string name="setting_edit_nickname">닉네임 변경</string>
+    <string name="setting_logout">로그아웃</string>
+    <string name="setting_sign_out">회원 탈퇴</string>
+</resources>
