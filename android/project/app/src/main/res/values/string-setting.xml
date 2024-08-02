@@ -7,4 +7,7 @@
     <string name="setting_edit_nickname">닉네임 변경</string>
     <string name="setting_logout">로그아웃</string>
     <string name="setting_sign_out">회원 탈퇴</string>
+    <string name="edit_nick_name_confirm">변경하기</string>
+    <string name="edit_nick_name_dismiss">취소하기</string>
+    <string name="edit_nick_name">닉네임 변경</string>
 </resources>
