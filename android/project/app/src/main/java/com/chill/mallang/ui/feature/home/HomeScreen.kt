@@ -94,6 +94,7 @@ fun HomeScreen(
             onShowSettingDialog = showSettingDialog,
             onShowEditNickNameDialog = showEditNickNameDialog,
             onSignOut = viewModel::signOut,
+            onLogOut = viewModel::logout,
             popUpBackStack = popUpBackStack,
         )
     }
@@ -121,6 +122,8 @@ fun HandleHomeUiEvent(
                     onShowErrorSnackBar(homeUiEvent.message)
                     popUpBackStack()
                 }
+
+                HomeUiEvent.Logout -> popUpBackStack()
             }
         }
     }
@@ -138,6 +141,7 @@ fun HomeContent(
     onShowSettingDialog: Boolean,
     onShowEditNickNameDialog: Boolean,
     onSignOut: () -> Unit,
+    onLogOut: () -> Unit,
     popUpBackStack: () -> Unit,
 ) {
     when (uiState) {
@@ -159,7 +163,7 @@ fun HomeContent(
                 SettingDialog(
                     onClose = { sendEvent(HomeUiEvent.CloseSettingDialog) },
                     onShowEditNickNameDialog = { sendEvent(HomeUiEvent.ShowEditNickNameDialog) },
-                    onLogOut = {},
+                    onLogOut = onLogOut,
                     onSignOut = onSignOut,
                 )
             }
