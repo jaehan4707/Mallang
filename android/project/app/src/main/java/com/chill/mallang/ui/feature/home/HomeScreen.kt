@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,6 +45,8 @@ import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
 import com.chill.mallang.ui.util.noRippleClickable
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(
@@ -57,12 +60,24 @@ fun HomeScreen(
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val (showSettingDialog, setShowSettingDialog) = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val (showEditNickNameDialog, setShowEditNickNameDialog) = rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    HandleHomeUiEvent(
+        event = viewModel.event,
+        setShowSettingDialog = setShowSettingDialog,
+        setShowEditNickNameDialog = setShowEditNickNameDialog
+    )
 
     Box(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(horizontal = 15.dp),
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 15.dp),
     ) {
         HomeContent(
             modifier = modifier,
@@ -74,7 +89,27 @@ fun HomeScreen(
             navigateToQuest = navigateToQuest,
             navigateToRank = navigateToRank,
             sendEvent = { viewModel.sendEvent(it) },
+            onShowSettingDialog = showSettingDialog,
+            onShowEditNickNameDialog = showEditNickNameDialog,
         )
+    }
+}
+
+@Composable
+fun HandleHomeUiEvent(
+    event: SharedFlow<HomeUiEvent>,
+    setShowSettingDialog: (Boolean) -> Unit,
+    setShowEditNickNameDialog: (Boolean) -> Unit,
+) {
+    LaunchedEffect(Unit) {
+        event.collectLatest { homeUiEvent ->
+            when (homeUiEvent) {
+                HomeUiEvent.CloseEditNickNameDialog -> setShowEditNickNameDialog(false)
+                HomeUiEvent.CloseSettingDialog -> setShowSettingDialog(false)
+                HomeUiEvent.ShowEditNickNameDialog -> setShowEditNickNameDialog(true)
+                HomeUiEvent.ShowSettingDialog -> setShowSettingDialog(true)
+            }
+        }
     }
 }
 
@@ -89,6 +124,8 @@ fun HomeContent(
     navigateToQuest: () -> Unit,
     navigateToRank: () -> Unit,
     sendEvent: (HomeUiEvent) -> Unit,
+    onShowSettingDialog: Boolean,
+    onShowEditNickNameDialog: Boolean
 ) {
     LaunchedEffect(uiState) {
         if (uiState is HomeUiState.Error) {
@@ -110,7 +147,7 @@ fun HomeContent(
                 navigateToRank = navigateToRank,
                 onClickSetting = { sendEvent(HomeUiEvent.ShowSettingDialog) },
             )
-            if (uiState.showSettingDialog) {
+            if (onShowSettingDialog) {
                 SettingDialog(
                     onClose = { sendEvent(HomeUiEvent.CloseSettingDialog) },
                     onShowEditNickNameDialog = { sendEvent(HomeUiEvent.ShowEditNickNameDialog) },
@@ -118,7 +155,7 @@ fun HomeContent(
                     onSignOut = {},
                 )
             }
-            if (uiState.showEditNickNameDialog) {
+            if (onShowEditNickNameDialog) {
                 EditNickNameDialogScreen(
                     onChangeNickName = {},
                     onDismiss = { sendEvent(HomeUiEvent.CloseEditNickNameDialog) },
@@ -218,9 +255,9 @@ fun ImageButton(
 ) {
     Column(
         modifier =
-            modifier.noRippleClickable {
-                onClick()
-            },
+        modifier.noRippleClickable {
+            onClick()
+        },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
@@ -243,10 +280,10 @@ internal fun UserItem(
 ) {
     Row(
         modifier =
-            Modifier
-                .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
-                .padding(5.dp)
-                .height(IntrinsicSize.Min),
+        Modifier
+            .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
+            .padding(5.dp)
+            .height(IntrinsicSize.Min),
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -274,9 +311,9 @@ fun UserCharacter(
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Max),
+            Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
@@ -299,9 +336,9 @@ fun UserCharacter(
             )
             Text(
                 modifier =
-                    Modifier
-                        .padding(top = 10.dp)
-                        .align(Alignment.Center),
+                Modifier
+                    .padding(top = 10.dp)
+                    .align(Alignment.Center),
                 text = stringResource(id = R.string.character_message),
                 style = Typography.bodyLarge,
                 color = Sub1,
@@ -320,12 +357,12 @@ fun ModeButton(
 ) {
     Column(
         modifier =
-            modifier
-                .width(75.dp)
-                .height(75.dp)
-                .noRippleClickable { onClick() }
-                .background(color = Gray2, shape = CircleShape)
-                .border(width = 2.dp, color = Color.Black, shape = CircleShape),
+        modifier
+            .width(75.dp)
+            .height(75.dp)
+            .noRippleClickable { onClick() }
+            .background(color = Gray2, shape = CircleShape)
+            .border(width = 2.dp, color = Color.Black, shape = CircleShape),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
