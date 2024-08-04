@@ -3,6 +3,7 @@ package com.chill.mallang.ui.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.data.model.response.ApiResponse
+import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,6 +19,7 @@ class HomeViewModel
 @Inject
 constructor(
     private val userRepository: UserRepository,
+    private val dataStoreRepository: DataStoreRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -75,6 +77,24 @@ constructor(
                     ApiResponse.Init -> {}
 
                     is ApiResponse.Success -> _event.emit(HomeUiEvent.SignOut(response.data ?: ""))
+                }
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            dataStoreRepository.logout().collectLatest { response ->
+                when (response) {
+                    is ApiResponse.Error -> _event.emit(
+                        HomeUiEvent.Error(
+                            errorCode = response.errorCode,
+                            errorMessage = response.errorMessage
+                        )
+                    )
+
+                    ApiResponse.Init -> {}
+                    is ApiResponse.Success -> _event.emit(HomeUiEvent.Logout)
                 }
             }
         }
