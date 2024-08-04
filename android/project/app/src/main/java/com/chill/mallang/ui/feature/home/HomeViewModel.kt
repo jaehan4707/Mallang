@@ -35,7 +35,7 @@ constructor(
     }
 
 
-    private fun getUserInfo() {
+    fun getUserInfo() {
         viewModelScope.launch {
             userRepository.getUserInfo().collectLatest { response ->
                 _uiState.value =
