@@ -16,4 +16,7 @@ sealed interface HomeUiEvent {
 
     @Immutable
     data object CloseEditNickNameDialog : HomeUiEvent
+
+    @Immutable
+    data object Refresh : HomeUiEvent
 }
