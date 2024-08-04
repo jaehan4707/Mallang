@@ -3,8 +3,6 @@ package com.chill.mallang.ui.feature.topbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
@@ -17,29 +15,25 @@ class TopbarViewModel
     @Inject
     constructor(
         private val savedStateHandle: SavedStateHandle,
+        private val topbarRepository: TopbarRepository,
     ) : ViewModel() {
-        var titleContent by mutableStateOf<@Composable () -> Unit>({})
-            private set
-        var onBack by mutableStateOf<(NavController) -> Unit>({})
-            private set
-        var onHome by mutableStateOf<(NavController) -> Unit>({})
-            private set
+        val titleContent = topbarRepository.titleContent
+        val onBack by topbarRepository.onBack
+        val onHome by topbarRepository.onHome
 
         fun updateTitle(title: String) {
-            titleContent = {
-                Text(text = title, style = Typography.titleMedium)
-            }
+            topbarRepository.updateTitle { Text(text = title, style = Typography.titleMedium) }
         }
 
         fun updateTitle(title: @Composable () -> Unit) {
-            titleContent = title
+            topbarRepository.updateTitle(title)
         }
 
         fun updateOnBack(onBack: (NavController) -> Unit) {
-            this.onBack = onBack
+            topbarRepository.updateOnBack(onBack)
         }
 
         fun updateOnHome(onHome: (NavController) -> Unit) {
-            this.onHome = onHome
+            topbarRepository.updateOnHome(onHome)
         }
     }
