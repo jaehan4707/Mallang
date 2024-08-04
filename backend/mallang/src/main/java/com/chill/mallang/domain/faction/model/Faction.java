@@ -24,7 +24,4 @@ public class Faction {
     public Faction(FactionType name) {
         this.name = name;
     }
-
-    @OneToOne
-    private User topUser;
 }
