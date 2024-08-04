@@ -67,6 +67,11 @@ constructor(
             }
         }
     }
+
+    fun resetUiState() {
+        _uiState.value = NickNameUiState.Init
+        nicknameState.clearNickname()
+    }
 }
 
 class NicknameState {
