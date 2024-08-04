@@ -60,4 +60,23 @@ constructor(
             }
         }
     }
+
+    fun signOut() {
+        viewModelScope.launch {
+            userRepository.signOut().collectLatest { response ->
+                when (response) {
+                    is ApiResponse.Error -> _event.emit(
+                        HomeUiEvent.Error(
+                            errorMessage = response.errorMessage,
+                            errorCode = response.errorCode
+                        )
+                    )
+
+                    ApiResponse.Init -> {}
+
+                    is ApiResponse.Success -> _event.emit(HomeUiEvent.SignOut(response.data ?: ""))
+                }
+            }
+        }
+    }
 }
