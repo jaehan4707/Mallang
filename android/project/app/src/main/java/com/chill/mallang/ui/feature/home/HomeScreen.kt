@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.feature.setting.EditNickNameDialogScreen
 import com.chill.mallang.ui.feature.setting.SettingDialog
 import com.chill.mallang.ui.theme.Gray2
@@ -71,7 +72,9 @@ fun HomeScreen(
         event = viewModel.event,
         setShowSettingDialog = setShowSettingDialog,
         setShowEditNickNameDialog = setShowEditNickNameDialog,
-        loadUserInfo = viewModel::getUserInfo
+        loadUserInfo = viewModel::getUserInfo,
+        onShowErrorSnackBar = onShowErrorSnackBar,
+        popUpBackStack = popUpBackStack,
     )
 
     Box(
@@ -85,13 +88,13 @@ fun HomeScreen(
             uiState = uiState,
             navigateToGame = navigateToGame,
             navigateToWordNote = navigateToWordNote,
-            popUpBackStack = popUpBackStack,
-            onShowErrorSnackBar = onShowErrorSnackBar,
             navigateToQuest = navigateToQuest,
             navigateToRank = navigateToRank,
             sendEvent = { viewModel.sendEvent(it) },
             onShowSettingDialog = showSettingDialog,
             onShowEditNickNameDialog = showEditNickNameDialog,
+            onSignOut = viewModel::signOut,
+            popUpBackStack = popUpBackStack,
         )
     }
 }
@@ -101,7 +104,9 @@ fun HandleHomeUiEvent(
     event: SharedFlow<HomeUiEvent>,
     setShowSettingDialog: (Boolean) -> Unit,
     setShowEditNickNameDialog: (Boolean) -> Unit,
+    popUpBackStack: () -> Unit,
     loadUserInfo: () -> Unit,
+    onShowErrorSnackBar: (String) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         event.collectLatest { homeUiEvent ->
@@ -111,6 +116,11 @@ fun HandleHomeUiEvent(
                 HomeUiEvent.ShowEditNickNameDialog -> setShowEditNickNameDialog(true)
                 HomeUiEvent.ShowSettingDialog -> setShowSettingDialog(true)
                 HomeUiEvent.Refresh -> loadUserInfo()
+                is HomeUiEvent.Error -> onShowErrorSnackBar(homeUiEvent.errorMessage)
+                is HomeUiEvent.SignOut -> {
+                    onShowErrorSnackBar(homeUiEvent.message)
+                    popUpBackStack()
+                }
             }
         }
     }
@@ -122,21 +132,16 @@ fun HomeContent(
     uiState: HomeUiState,
     navigateToWordNote: () -> Unit,
     navigateToGame: () -> Unit,
-    popUpBackStack: () -> Unit,
-    onShowErrorSnackBar: (String) -> Unit,
     navigateToQuest: () -> Unit,
     navigateToRank: () -> Unit,
     sendEvent: (HomeUiEvent) -> Unit,
     onShowSettingDialog: Boolean,
-    onShowEditNickNameDialog: Boolean
+    onShowEditNickNameDialog: Boolean,
+    onSignOut: () -> Unit,
+    popUpBackStack: () -> Unit,
 ) {
-    LaunchedEffect(uiState) {
-        if (uiState is HomeUiState.Error) {
-            onShowErrorSnackBar(uiState.errorMessage)
-        }
-    }
     when (uiState) {
-        is HomeUiState.Loading -> {} // 로딩 화면
+        is HomeUiState.Loading -> LoadingDialog()
 
         is HomeUiState.LoadUserInfo -> {
             HomeScreenContent(
@@ -155,7 +160,7 @@ fun HomeContent(
                     onClose = { sendEvent(HomeUiEvent.CloseSettingDialog) },
                     onShowEditNickNameDialog = { sendEvent(HomeUiEvent.ShowEditNickNameDialog) },
                     onLogOut = {},
-                    onSignOut = {},
+                    onSignOut = onSignOut,
                 )
             }
             if (onShowEditNickNameDialog) {
@@ -169,8 +174,6 @@ fun HomeContent(
                 )
             }
         }
-
-        is HomeUiState.Error -> {}
     }
 }
 
