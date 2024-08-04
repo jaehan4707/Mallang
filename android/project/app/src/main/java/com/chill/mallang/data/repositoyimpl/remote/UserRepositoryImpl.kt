@@ -180,4 +180,21 @@ constructor(
                 ApiResponse.Init -> {}
             }
         }
+
+    override suspend fun signOut(): Flow<ApiResponse<String>> = flow {
+        val response = apiHandler {
+            userApi.signOut()
+        }
+        when (response) {
+            is ApiResponse.Error -> emit(
+                ApiResponse.Error(
+                    errorCode = response.errorCode,
+                    errorMessage = response.errorMessage
+                )
+            )
+
+            ApiResponse.Init -> {}
+            is ApiResponse.Success -> emit(ApiResponse.Success(response.data?.success))
+        }
+    }
 }

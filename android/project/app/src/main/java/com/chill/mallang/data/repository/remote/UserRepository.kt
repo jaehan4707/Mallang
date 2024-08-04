@@ -20,4 +20,6 @@ interface UserRepository {
     suspend fun checkUserEmail(userEmail: String): Flow<ApiResponse<Unit>>
 
     suspend fun updateNickName(userNickName: String): Flow<ApiResponse<String>>
+
+    suspend fun signOut(): Flow<ApiResponse<String>>
 }
