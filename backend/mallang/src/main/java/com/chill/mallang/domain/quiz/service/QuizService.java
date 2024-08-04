@@ -30,7 +30,7 @@ import static com.chill.mallang.util.ValidationUtils.requireNonNull;
 @Slf4j
 @Service
 public class QuizService {
-    private Logger logger = LoggerFactory.getLogger(QuizService.class);
+    private final Logger logger = LoggerFactory.getLogger(QuizService.class);
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -108,6 +108,7 @@ public class QuizService {
 
     @Transactional
     public Map<String, Object> getAreaQuiz(Long areaID){
+        requireNonNull(areaID, QuizErrorCode.AREA_ID_NULL);
         Map<String, Object> response = new HashMap<>();
         response.put("data",quizRepository.getQuizByArea(areaID));
         return response;
