@@ -67,8 +67,6 @@ public class UserServiceImpl implements UserService {
         logger.info("userDTO: " + userDTO);
         Map<String, Object> response = new HashMap<>();
         if (userDTO.isPresent()) {
-            response.put("status", 200);
-            response.put("success", "회원조회에 성공했습니다.");
             response.put("data", userDTO.get());
         } else {
             throw new RestApiException(CustomUserErrorCode.JOIN_IS_FAILED);

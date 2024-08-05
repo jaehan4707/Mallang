@@ -1,4 +1,4 @@
-package com.chill.mallang.domain.word.model;
+package com.chill.mallang.domain.study.model;
 
 import jakarta.persistence.*;
 
@@ -9,9 +9,11 @@ public class WordMean {
     private Long id;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name= "word")
     private Word word;
 
-    @Column(length = 500)
     private String mean;
+
+    private String type;
+    private String level;
 }
