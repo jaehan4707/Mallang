@@ -5,8 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.chill.mallang.ui.feature.fort_detail.FortDetailScreen
 import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
@@ -15,8 +17,8 @@ import com.chill.mallang.ui.feature.map.MapScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.quiz.QuizScreen
 import com.chill.mallang.ui.feature.quiz_result.QuizResultScreen
-import com.chill.mallang.ui.feature.word.WordNoteScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
+import com.chill.mallang.ui.feature.word.WordNoteScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -89,7 +91,9 @@ fun MallangNavHost(
                 modifier = modifier,
                 popUpBackStack = { navController.popBackStack() },
                 navigateToQuiz = {
-                    navController.navigate(DestinationQuiz.route) {
+                    navController.navigate(
+                        DestinationQuiz.createRoute(studyId = it),
+                    ) {
                         popUpTo(DestinationMain.route) {
                             inclusive = false
                         }
@@ -104,21 +108,22 @@ fun MallangNavHost(
             MapScreen(
                 onShowAreaDetail = { area ->
                     navController.navigate(DestinationAreaDetail.createRoute(area.areaId))
-                }
+                },
             )
         }
 
         composable(
             route = DestinationAreaDetail.routeWithArgs,
-            arguments = DestinationAreaDetail.arguments
+            arguments = DestinationAreaDetail.arguments,
         ) { navBackStackEntry ->
             val areaId = navBackStackEntry.arguments?.getLong(DestinationAreaDetail.arg)
             FortDetailScreen(areaId = areaId)
         }
 
         composable(
-            route = DestinationQuiz.route,
-        ) {
+            route = DestinationQuiz.routeWithArgs,
+            arguments = listOf(navArgument("studyId") { type = NavType.IntType }),
+        ) { backStackEntry ->
             QuizScreen(
                 modifier = modifier,
                 popUpBackStack = { navController.popBackStack() },
@@ -133,6 +138,7 @@ fun MallangNavHost(
                         }
                     }
                 },
+                studyId = backStackEntry.arguments?.getInt("studyId") ?: -1,
             )
         }
 
