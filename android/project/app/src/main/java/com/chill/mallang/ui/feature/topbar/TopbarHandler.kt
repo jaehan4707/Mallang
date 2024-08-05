@@ -57,7 +57,7 @@ fun TopbarHandler(
 ) {
     val viewModel: TopbarViewModel = hiltViewModel()
 
-    DisposableEffect(Unit) {
+    DisposableEffect(title, titleContent, onBack, onHome) {
         if (titleContent == null) {
             viewModel.updateTitle(title)
         } else {
