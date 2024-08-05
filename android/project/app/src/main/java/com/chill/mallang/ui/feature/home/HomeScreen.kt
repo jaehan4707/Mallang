@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,22 +38,41 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.feature.setting.EditNickNameDialogScreen
+import com.chill.mallang.ui.feature.setting.SettingDialog
 import com.chill.mallang.ui.theme.Gray2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
 import com.chill.mallang.ui.util.noRippleClickable
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
+    navigateToQuest: () -> Unit = {},
+    navigateToRank: () -> Unit = {},
     popUpBackStack: () -> Unit = {},
     onShowErrorSnackBar: (String) -> Unit = {},
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val (showSettingDialog, setShowSettingDialog) = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val (showEditNickNameDialog, setShowEditNickNameDialog) = rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    HandleHomeUiEvent(
+        event = viewModel.event,
+        setShowSettingDialog = setShowSettingDialog,
+        setShowEditNickNameDialog = setShowEditNickNameDialog
+    )
+
     Box(
         modifier =
         Modifier
@@ -66,7 +86,30 @@ fun HomeScreen(
             navigateToWordNote = navigateToWordNote,
             popUpBackStack = popUpBackStack,
             onShowErrorSnackBar = onShowErrorSnackBar,
+            navigateToQuest = navigateToQuest,
+            navigateToRank = navigateToRank,
+            sendEvent = { viewModel.sendEvent(it) },
+            onShowSettingDialog = showSettingDialog,
+            onShowEditNickNameDialog = showEditNickNameDialog,
         )
+    }
+}
+
+@Composable
+fun HandleHomeUiEvent(
+    event: SharedFlow<HomeUiEvent>,
+    setShowSettingDialog: (Boolean) -> Unit,
+    setShowEditNickNameDialog: (Boolean) -> Unit,
+) {
+    LaunchedEffect(Unit) {
+        event.collectLatest { homeUiEvent ->
+            when (homeUiEvent) {
+                HomeUiEvent.CloseEditNickNameDialog -> setShowEditNickNameDialog(false)
+                HomeUiEvent.CloseSettingDialog -> setShowSettingDialog(false)
+                HomeUiEvent.ShowEditNickNameDialog -> setShowEditNickNameDialog(true)
+                HomeUiEvent.ShowSettingDialog -> setShowSettingDialog(true)
+            }
+        }
     }
 }
 
@@ -78,6 +121,11 @@ fun HomeContent(
     navigateToGame: () -> Unit,
     popUpBackStack: () -> Unit,
     onShowErrorSnackBar: (String) -> Unit,
+    navigateToQuest: () -> Unit,
+    navigateToRank: () -> Unit,
+    sendEvent: (HomeUiEvent) -> Unit,
+    onShowSettingDialog: Boolean,
+    onShowEditNickNameDialog: Boolean
 ) {
     LaunchedEffect(uiState) {
         if (uiState is HomeUiState.Error) {
@@ -95,7 +143,24 @@ fun HomeContent(
                 navigateToGame = navigateToGame,
                 navigateToWordNote = navigateToWordNote,
                 popUpBackStack = popUpBackStack,
+                navigateToQuest = navigateToQuest,
+                navigateToRank = navigateToRank,
+                onClickSetting = { sendEvent(HomeUiEvent.ShowSettingDialog) },
             )
+            if (onShowSettingDialog) {
+                SettingDialog(
+                    onClose = { sendEvent(HomeUiEvent.CloseSettingDialog) },
+                    onShowEditNickNameDialog = { sendEvent(HomeUiEvent.ShowEditNickNameDialog) },
+                    onLogOut = {},
+                    onSignOut = {},
+                )
+            }
+            if (onShowEditNickNameDialog) {
+                EditNickNameDialogScreen(
+                    onChangeNickName = {},
+                    onDismiss = { sendEvent(HomeUiEvent.CloseEditNickNameDialog) },
+                )
+            }
         }
 
         is HomeUiState.Error -> {}
@@ -110,6 +175,9 @@ fun HomeScreenContent(
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
     popUpBackStack: () -> Unit = {},
+    navigateToRank: () -> Unit = {},
+    navigateToQuest: () -> Unit = {},
+    onClickSetting: () -> Unit = {},
 ) {
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
@@ -138,15 +206,30 @@ fun HomeScreenContent(
                 label = "15코인",
             )
         }
-        SideUserButton() // 사이드 버튼
+        ImageButton(
+            modifier = Modifier.align(Alignment.End),
+            icon = R.drawable.ic_setting,
+            label = stringResource(id = R.string.side_button_setting),
+            onClick = onClickSetting,
+        )
+        ImageButton(
+            modifier = Modifier.align(Alignment.End),
+            icon = R.drawable.ic_quest,
+            label = stringResource(id = R.string.side_button_quest),
+            onClick = navigateToQuest,
+        )
+        ImageButton(
+            modifier = Modifier.align(Alignment.End),
+            icon = R.drawable.ic_ranking,
+            label = stringResource(id = R.string.side_button_ranking),
+            onClick = navigateToRank,
+        )
         UserCharacter(
-            // 유저 캐릭터 or 프로필
             modifier = modifier,
             userNickName = userNickName,
             userFaction = userFaction,
         )
         ModeButton(
-            // 퀴즈 모드 버튼
             icon = R.drawable.ic_question,
             label = stringResource(R.string.mode_quiz),
             modifier = Modifier.align(Alignment.End),
@@ -154,7 +237,6 @@ fun HomeScreenContent(
         )
         Spacer(modifier.weight(0.05f))
         ModeButton(
-            // 점령전 모드 버튼
             icon = R.drawable.ic_location,
             label = stringResource(R.string.mode_game),
             modifier = Modifier.align(Alignment.End),
@@ -166,13 +248,14 @@ fun HomeScreenContent(
 
 @Composable
 fun ImageButton(
+    modifier: Modifier = Modifier,
     icon: Int,
     label: String,
     onClick: () -> Unit,
 ) {
     Column(
         modifier =
-        Modifier.noRippleClickable {
+        modifier.noRippleClickable {
             onClick()
         },
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -187,30 +270,6 @@ fun ImageButton(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(5.dp))
-    }
-}
-
-@Composable
-fun SideUserButton(modifier: Modifier = Modifier) {
-    Column(
-        modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.End,
-    ) {
-        ImageButton(
-            icon = R.drawable.ic_setting,
-            label = stringResource(R.string.side_button_setting),
-            onClick = { },
-        )
-        ImageButton(
-            icon = R.drawable.ic_quest,
-            label = stringResource(R.string.side_button_quest),
-            onClick = { },
-        )
-        ImageButton(
-            icon = R.drawable.ic_ranking,
-            label = stringResource(R.string.side_button_ranking),
-            onClick = { },
-        )
     }
 }
 

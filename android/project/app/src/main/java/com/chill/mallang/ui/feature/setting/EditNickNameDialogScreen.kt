@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.setting
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +60,7 @@ fun EditNickNameDialogContent(
             mutableStateOf("")
         }
     val focusManager = LocalFocusManager.current
+    BackHandler(onBack = onDismiss)
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             modifier =
