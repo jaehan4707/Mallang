@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import org.w3c.dom.Text;
 
+@Entity
 public class StudyGame {
 
     @Id

@@ -2,6 +2,7 @@ package com.chill.mallang.domain.study.model;
 
 import jakarta.persistence.*;
 
+@Entity
 public class Question {
 
     @Id
