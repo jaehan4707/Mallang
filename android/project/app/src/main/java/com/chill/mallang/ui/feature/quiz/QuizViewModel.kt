@@ -19,26 +19,38 @@ class QuizViewModel
 
         var selectedAnswer by mutableIntStateOf(-1)
 
-        init {
-            loadQuizData()
-        }
-
         // 퀴즈 데이터 로드
-        private fun loadQuizData() {
+        fun loadQuizData(studyId: Int) {
             viewModelScope.launch {
-                // api 호출 및 통신
-                state =
-                    state.copy(
-                        quizTitle = "빈칸을 채워 주세요",
-                        quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다.",
-                        wordList =
-                            arrayListOf(
-                                "괄목",
-                                "상대",
-                                "과장",
-                                "시기",
-                            ),
-                    )
+                if (studyId != -1) {
+                    // 풀었던 문제 api 호출 및 통신
+                    state =
+                        state.copy(
+                            quizTitle = "풀었던 문제 빈칸을 채워 주세요",
+                            quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다.",
+                            wordList =
+                                arrayListOf(
+                                    "괄목",
+                                    "상대",
+                                    "과장",
+                                    "시기",
+                                ),
+                        )
+                } else {
+                    // 새로운 문제 api 호출 및 통신
+                    state =
+                        state.copy(
+                            quizTitle = "빈칸을 채워 주세요",
+                            quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다.",
+                            wordList =
+                                arrayListOf(
+                                    "괄목",
+                                    "상대",
+                                    "과장",
+                                    "시기",
+                                ),
+                        )
+                }
             }
         }
 
