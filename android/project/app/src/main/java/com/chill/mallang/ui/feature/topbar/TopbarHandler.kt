@@ -14,6 +14,34 @@ import com.chill.mallang.ui.navigation.DestinationMain
  * @param titleContent 상단바 커스텀 컴포넌트. 값이 존재한다면 `title`을 무시하고 표시된다.
  * @param onBack 뒤로가기.
  * @param onHome 홈으로.
+ * ---
+ * - Example
+ *
+ * ```kotlin
+ *     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
+ *     val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
+ *
+ *     BackConfirmHandler(
+ *         isBackPressed = isBackPressed,
+ *         onConfirm = {
+ *             setBackPressed(false)
+ *             navController?.popBackStack()
+ *         },
+ *         onDismiss = {
+ *             setBackPressed(false)
+ *         },
+ *     )
+ *     BackHandler(onBack = { setBackPressed(true) })
+ *
+ *     TopbarHandler(
+ *         title = "Some Title",
+ *         onBack = { nav->
+ *             setBackPressed(true)
+ *             setNavController(nav)
+ *         }
+ *     )
+ * ```
+ *
  */
 @Composable
 fun TopbarHandler(
