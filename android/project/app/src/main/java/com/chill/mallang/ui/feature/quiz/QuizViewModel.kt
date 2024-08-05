@@ -26,7 +26,7 @@ class QuizViewModel
                     // 풀었던 문제 api 호출 및 통신
                     state =
                         state.copy(
-                            quizTitle = "풀었던 문제 빈칸을 채워 주세요",
+                            quizTitle = "풀었던 문제입니당당 오답노트요",
                             quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 ___ 할만한 성장을 이루었다.",
                             wordList =
                                 arrayListOf(
