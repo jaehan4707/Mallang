@@ -48,15 +48,13 @@ public class UserSettingService {
             user.setNickname(nickname);
             userRepository.save(user);
             dataMap.put("nickname", user.getNickname());
-            response.put("status", 200);
-            response.put("success", "닉네임 변경에 성공했습니다.");
             response.put("data", dataMap);
         } else {
             throw new RestApiException(CustomUserErrorCode.USER_NOT_FOUND);
         }
         return response;
     }
-    public Map<String, Object> deleteUser(HttpServletRequest request) {
+    public boolean deleteUser(HttpServletRequest request) {
         if (!request.getMethod().equalsIgnoreCase("Delete")) {
             throw new RestApiException(CustomUserErrorCode.METHOD_NOT_ALLOWED);
         }
@@ -64,16 +62,13 @@ public class UserSettingService {
         String email = jwtUtil.extractEmail(token.substring(7));
         Optional<User> optionalUser = userRepository.findByEmail(email);
         logger.info("optionalUser: " + optionalUser);
-        Map<String, Object> response = new HashMap<>();
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             String nickname = user.getNickname();
             userRepository.delete(user);
-            response.put("status", 200);
-            response.put("success", String.format("%s님 회원탈퇴에 성공하였습니다.", nickname));
         } else {
             throw new RestApiException(CustomUserErrorCode.USER_NOT_FOUND);
         }
-        return response;
+        return true;
     }
 }

@@ -5,6 +5,7 @@ import com.chill.mallang.domain.faction.repository.FactionRepository;
 import com.chill.mallang.domain.user.dto.JoinRequestDTO;
 import com.chill.mallang.domain.user.dto.JoinResponseDTO;
 import com.chill.mallang.domain.user.errors.CustomUserErrorCode;
+import com.chill.mallang.domain.user.jwt.JWTUtil;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.errors.errorcode.CustomErrorCode;
@@ -23,11 +24,13 @@ public class JoinService {
     private static final Logger logger = LoggerFactory.getLogger(JoinService.class);
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
+    private final JWTUtil jwtUtil;
 
     @Autowired
-    public JoinService(UserRepository userRepository, FactionRepository factionRepository) {
+    public JoinService(UserRepository userRepository, FactionRepository factionRepository, JWTUtil jwtUtil) {
         this.userRepository = userRepository;
         this.factionRepository = factionRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     public Map<String, Object> joinProcess(JoinRequestDTO joinRequestDTO, String token) {
@@ -37,7 +40,12 @@ public class JoinService {
                 throw new RestApiException(CustomErrorCode.INVALID_PARAMETER);
             }
 
+            String tokenEmail = jwtUtil.extractEmail(token.substring(7));
             String email = joinRequestDTO.getEmail();
+
+            if (!tokenEmail.equals(email)){
+                throw new RestApiException(CustomUserErrorCode.EMAIL_NOT_MATCHED);
+            }
             String nickname = joinRequestDTO.getNickname();
             String picture = joinRequestDTO.getPicture();
 
@@ -72,9 +80,6 @@ public class JoinService {
             Map<String, String> dataMap = new HashMap<>();
             dataMap.put("token", token.substring(7));
             dataMap.put("is_registered", joinResponseDTO.getIs_registered());
-
-            response.put("status", 200);
-            response.put("success", "회원가입이 완료되었습니다.");
             response.put("data", dataMap);
         } catch (Exception e) {
             logger.error("회원가입 중 오류 발생", e);

@@ -77,8 +77,6 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         dataMap.put("token", jwtToken);
         dataMap.put("is_registered", is_registered);
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("status", 200);
-        responseMap.put("success", "로그인에 성공하였습니다.");
         responseMap.put("data", dataMap);
         // Convert the response map to JSON
         ObjectMapper objectMapper = new ObjectMapper();

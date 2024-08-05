@@ -37,8 +37,8 @@ public class UserSettingController {
     @Operation(summary = "user 탈퇴 API", description = "헤더에 토큰 첨부 필수")
     public ResponseEntity<?> deleteUser(HttpServletRequest request){
         logger.info("deleteContoller request"+request);
-        Map<String, Object> response = userSettingService.deleteUser(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        userSettingService.deleteUser(request);
+        return ResponseEntity.ok().build();
     }
 
 }
