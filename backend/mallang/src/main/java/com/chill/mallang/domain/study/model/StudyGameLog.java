@@ -2,7 +2,11 @@ package com.chill.mallang.domain.study.model;
 
 import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 public class StudyGameLog {
 
