@@ -1,5 +1,7 @@
 package com.chill.mallang.domain.quiz.service;
 
+import com.chill.mallang.domain.quiz.converter.QuizDtoConverter;
+import com.chill.mallang.domain.quiz.dto.ResponseWrapper;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizResult;
 import com.chill.mallang.domain.quiz.dto.response.ResponseQuiz;
@@ -10,79 +12,52 @@ import com.chill.mallang.domain.quiz.repository.AnswerRepository;
 import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.chill.mallang.domain.quiz.repository.TotalScoreRepository;
 import com.chill.mallang.domain.quiz.service.core.CoreService;
+import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.errors.exception.RestApiException;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
-
-import static com.chill.mallang.util.ValidationUtils.requireNonNull;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class QuizService {
     private final Logger logger = LoggerFactory.getLogger(QuizService.class);
+
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private GPTService gptService;
-    @Autowired
-    private CoreService coreService;
+    private final GPTService gptService;
+    private final CoreService coreService;
 
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
     private final TotalScoreRepository totalScoreRepository;
 
-    public QuizService( QuizRepository quizRepository, UserRepository userRepository,
-                        AnswerRepository answerRepository, TotalScoreRepository totalScoreRepository,
-                        EntityManager entityManager ) {
-        this.quizRepository = quizRepository;
-        this.userRepository = userRepository;
-        this.answerRepository = answerRepository;
-        this.totalScoreRepository = totalScoreRepository;
-        this.entityManager = entityManager;
-    }
 
-
-    public Map<String, Object> getById(Long quizID) {
-        Optional<Quiz> quiz = quizRepository.findById(quizID);
-        logger.info(String.valueOf("QuizDTO : "), quiz);
-
-        if (quiz.isPresent()) {
-            ResponseQuiz responseQuiz = ResponseQuiz.builder()
-                    .id(quiz.get().getId())
-                    .question(quiz.get().getQuestion())  // 추가된 부분
-                    .answer(quiz.get().getAnswer())
-                    .difficulty(quiz.get().getDifficulty())
-                    .build();
-
-            return new HashMap<String, Object>() {{
-                    put("Data", responseQuiz);
-            }};
-
-        } else {
-            throw new RestApiException(QuizErrorCode.INVALID_QUIZ_PK);
-        }
+    public ResponseWrapper<ResponseQuiz> getById(Long quizID) {
+        Quiz quiz = quizRepository.findById(quizID)
+                .orElseThrow(() -> new RestApiException(QuizErrorCode.QUIZ_NOT_FOUND));
+        return new ResponseWrapper<>(QuizDtoConverter.convert(quiz));
     }
 
     public void submitAnswer(RequestQuizAnswer requestQuizAnswer){
         logger.info(String.valueOf(requestQuizAnswer));
 
-        String question = quizRepository.findById(requestQuizAnswer.getQuizId()).get().getQuestion();
+        String question = quizRepository.findById(requestQuizAnswer.getQuizId())
+                .orElseThrow(() -> new RestApiException(QuizErrorCode.QUIZ_NOT_FOUND))
+                .getQuestion();
         String answer = requestQuizAnswer.getUserAnswer();
-
-        System.out.println(answer);
 
         float score = gptService.getScore(question, answer);
 
@@ -92,10 +67,15 @@ public class QuizService {
     }
 
     public Answer saveAnswer(RequestQuizAnswer requestQuizAnswer, float score){
+        User user = userRepository.findById(requestQuizAnswer.getUserId())
+                .orElseThrow(() -> new RestApiException(QuizErrorCode.USER_NOT_FOUND));
+
+        Quiz quiz = quizRepository
+                .findById(requestQuizAnswer.getQuizId()).orElseThrow(() -> new RestApiException(QuizErrorCode.QUIZ_NOT_FOUND));
 
         Answer answer = Answer.builder()
-                .user(userRepository.findById(requestQuizAnswer.getUserId()).orElseThrow(() -> new RestApiException(QuizErrorCode.USER_NOT_FOUND)))
-                .quiz(quizRepository.findById(requestQuizAnswer.getQuizId()).orElseThrow(() -> new RestApiException(QuizErrorCode.QUIZ_NOT_FOUND)))
+                .user(user)
+                .quiz(quiz)
                 .answer(requestQuizAnswer.getUserAnswer())
                 .answerTime(requestQuizAnswer.getAnswerTime())
                 .score(score)
@@ -108,7 +88,6 @@ public class QuizService {
 
     @Transactional
     public Map<String, Object> getAreaQuiz(Long areaID){
-        requireNonNull(areaID, QuizErrorCode.AREA_ID_NULL);
         Map<String, Object> response = new HashMap<>();
         response.put("data",quizRepository.getQuizByArea(areaID));
         return response;
@@ -116,9 +95,9 @@ public class QuizService {
 
     @Transactional
     public Map<String, Object> quizResult(RequestQuizResult requestQuizResult){
-        Long userID = requireNonNull(requestQuizResult.getUserID(), QuizErrorCode.USER_ID_NULL);
-        Long areaID = requireNonNull(requestQuizResult.getAreaID(), QuizErrorCode.AREA_ID_NULL);
-        Long factionID = requireNonNull(requestQuizResult.getFactionID(), QuizErrorCode.FACTION_ID_NULL);
+        Long userID = requestQuizResult.getUserID();
+        Long areaID = requestQuizResult.getAreaID();
+        Long factionID = requestQuizResult.getFactionID();
 
         Map<String, Object> user = new HashMap<>();
         Map<String, Object> team = new HashMap<>();
@@ -158,7 +137,4 @@ public class QuizService {
         response.put("data", data);
         return response;
     }
-
-
-
 }

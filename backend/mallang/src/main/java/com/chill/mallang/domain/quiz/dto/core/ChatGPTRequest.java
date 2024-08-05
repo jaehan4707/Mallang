@@ -15,6 +15,5 @@ public class ChatGPTRequest {
         this.model = model;
         this.messages = new ArrayList<>();
         this.messages.add(new Message("user", prompt));
-
     }
 }

@@ -1,7 +1,6 @@
 package com.chill.mallang.domain.quiz.service.core;
 
-import com.chill.mallang.domain.area.model.Area;
-import com.chill.mallang.domain.area.repository.AreaRepository;
+
 import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
