@@ -25,10 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.chill.mallang.util.ValidationUtils.requireNonNull;
+
 @Slf4j
 @Service
 public class QuizService {
-    private Logger logger = LoggerFactory.getLogger(QuizService.class);
+    private final Logger logger = LoggerFactory.getLogger(QuizService.class);
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -106,6 +108,7 @@ public class QuizService {
 
     @Transactional
     public Map<String, Object> getAreaQuiz(Long areaID){
+        requireNonNull(areaID, QuizErrorCode.AREA_ID_NULL);
         Map<String, Object> response = new HashMap<>();
         response.put("data",quizRepository.getQuizByArea(areaID));
         return response;
@@ -113,18 +116,9 @@ public class QuizService {
 
     @Transactional
     public Map<String, Object> quizResult(RequestQuizResult requestQuizResult){
-        Long userID = requestQuizResult.getUserID();
-        if (userID == null) {
-            throw new RestApiException(QuizErrorCode.USER_ID_NULL);
-        }
-        Long areaID = requestQuizResult.getAreaID();
-        if (areaID == null) {
-            throw new RestApiException(QuizErrorCode.AREA_ID_NULL);
-        }
-        Long factionID = requestQuizResult.getFactionID();
-        if (factionID == null) {
-            throw new RestApiException(QuizErrorCode.FACTION_ID_NULL);
-        }
+        Long userID = requireNonNull(requestQuizResult.getUserID(), QuizErrorCode.USER_ID_NULL);
+        Long areaID = requireNonNull(requestQuizResult.getAreaID(), QuizErrorCode.AREA_ID_NULL);
+        Long factionID = requireNonNull(requestQuizResult.getFactionID(), QuizErrorCode.FACTION_ID_NULL);
 
         Map<String, Object> user = new HashMap<>();
         Map<String, Object> team = new HashMap<>();
