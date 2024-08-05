@@ -23,20 +23,25 @@ fun MallangTopbar(
     navController: NavController,
 ) {
     val viewModel: TopbarViewModel = hiltViewModel()
+    val isVisible by viewModel.isVisible
     val title by viewModel.titleContent
+    val onBack by viewModel.onBack
+    val onHome by viewModel.onHome
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        BackButtion(
-            onBack = { viewModel.onBack(navController) },
-        )
-        title()
-        HomeButton(
-            onHome = { viewModel.onHome(navController) },
-        )
+    if (isVisible) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            BackButtion(
+                onBack = { onBack(navController) },
+            )
+            title()
+            HomeButton(
+                onHome = { onHome(navController) },
+            )
+        }
     }
 }
 
