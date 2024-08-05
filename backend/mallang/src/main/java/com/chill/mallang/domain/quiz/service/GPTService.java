@@ -5,7 +5,7 @@ import com.chill.mallang.domain.quiz.dto.core.ChatGPTResponse;
 import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.theokanning.openai.OpenAiService;
+
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +33,9 @@ public class GPTService {
 
     private final RestTemplate template;
     private final QuizRepository quizRepository;
-    private final OpenAiService openAiService;
 
-    public GPTService(RestTemplate template, OpenAiService openAiService, QuizRepository quizRepository) {
+    public GPTService(RestTemplate template, QuizRepository quizRepository) {
         this.template = template;
-        this.openAiService = openAiService;
         this.quizRepository = quizRepository;
     }
 

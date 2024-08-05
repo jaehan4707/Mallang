@@ -20,22 +20,19 @@ public class QuizAssignmentService {
     @Transactional
     public void assignQuizzesToAreas() {
         // 모든 퀴즈의 사용 상태 초기화
-        quizRepository.resetAllisUsed();
+        quizRepository.resetAllArea();
 
         // 모든 퀴즈의 ID 가져오기
         List<Long> quizIds = quizRepository.findAllQuizIds();
         // 퀴즈 ID 섞기
         Collections.shuffle(quizIds);
 
-//        List<Area> areas = areaRepository.findAll();
         int[] areaCnt = new int[10];
         Long areaIdx = 1L;
         for (int i = 1; i <= 30; i++) {
             // 퀴즈에 해당 areaPK 세팅
             quizRepository.setAreaID(quizIds.get(i), areaIdx);
-            if(i % 3 == 0){
-                areaIdx++;
-            }
+            if(i % 3 == 0){areaIdx++;}
         }
 
     }
