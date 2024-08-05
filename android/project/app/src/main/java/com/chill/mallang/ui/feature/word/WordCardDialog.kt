@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun WordCardDialog(
     index: Int,
-    wordCards: List<WordCard>,
+    wordCards: List<Word>,
     onDismiss: () -> Unit,
 ) {
     BasicAlertDialog(
@@ -177,47 +177,49 @@ fun WordCardDialog(
 @Composable
 fun WordCardContent(
     modifier: Modifier = Modifier,
-    card: WordCard,
+    card: Word,
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    if (card is Word.WordCard) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = card.word,
-                style = Typography.headlineLarge,
-                color = Gray6,
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = card.word,
+                    style = Typography.headlineLarge,
+                    color = Gray6,
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = card.meaning,
+                    style = Typography.headlineSmall,
+                    color = Gray6,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(
+                modifier =
+                    Modifier
+                        .height(1.dp)
+                        .fillMaxWidth()
+                        .background(Gray3),
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(25.dp))
             Text(
-                text = card.meaning,
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
+                text = card.example,
                 style = Typography.headlineSmall,
+                textAlign = TextAlign.Center,
                 color = Gray6,
             )
         }
-
-        Spacer(modifier = Modifier.height(25.dp))
-        Spacer(
-            modifier =
-                Modifier
-                    .height(1.dp)
-                    .fillMaxWidth()
-                    .background(Gray3),
-        )
-        Spacer(modifier = Modifier.height(25.dp))
-        Text(
-            modifier =
-                Modifier
-                    .fillMaxWidth(),
-            text = card.example,
-            style = Typography.headlineSmall,
-            textAlign = TextAlign.Center,
-            color = Gray6,
-        )
     }
 }
 
@@ -229,22 +231,22 @@ fun WordCardPreview() {
             index = 1,
             wordCards =
                 arrayListOf(
-                    WordCard(
+                    Word.WordCard(
                         word = "괄목",
                         meaning = "눈을 비비고 볼 정도로 매우 놀라다.",
                         example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
                     ),
-                    WordCard(
+                    Word.WordCard(
                         word = "상대",
                         meaning = "서로 마주 대하다.",
                         example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
                     ),
-                    WordCard(
+                    Word.WordCard(
                         word = "과장",
                         meaning = "사실보다 지나치게 불려서 말하거나 행동하다.",
                         example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
                     ),
-                    WordCard(
+                    Word.WordCard(
                         word = "시기",
                         meaning = "때나 경우.",
                         example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
