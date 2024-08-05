@@ -38,15 +38,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun WordNoteScreen(
     modifier: Modifier = Modifier,
-    popUpBackStack: () -> Unit = {},
     navigateToQuiz: (Int) -> Unit = {},
 ) {
     val wordViewModel: WordNoteViewModel = hiltViewModel()
@@ -55,18 +56,29 @@ fun WordNoteScreen(
     var isWordScreen by remember { mutableStateOf(true) }
     var selectedWordIndex by remember { mutableStateOf<Int?>(null) }
 
-    val isBackPressed = remember { mutableStateOf(false) }
+    // TopBar
+    val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
+    val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
+
     BackConfirmHandler(
-        isBackPressed = isBackPressed.value,
+        isBackPressed = isBackPressed,
         onConfirm = {
-            isBackPressed.value = false
-            popUpBackStack()
+            setBackPressed(false)
+            navController?.popBackStack()
         },
         onDismiss = {
-            isBackPressed.value = false
+            setBackPressed(false)
         },
     )
-    BackHandler(onBack = { isBackPressed.value = true })
+    BackHandler(onBack = { setBackPressed(true) })
+
+    TopbarHandler(
+        title = if (isWordScreen) "단어장" else "오답노트",
+        onBack = { nav ->
+            setBackPressed(true)
+            setNavController(nav)
+        },
+    )
 
     Box(
         modifier =

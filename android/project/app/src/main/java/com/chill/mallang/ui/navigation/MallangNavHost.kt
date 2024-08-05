@@ -89,7 +89,7 @@ fun MallangNavHost(
         ) {
             WordNoteScreen(
                 modifier = modifier,
-                popUpBackStack = { navController.popBackStack() },
+//                popUpBackStack = { navController.popBackStack() },
                 navigateToQuiz = {
                     navController.navigate(
                         DestinationQuiz.createRoute(studyId = it),
@@ -126,7 +126,7 @@ fun MallangNavHost(
         ) { backStackEntry ->
             QuizScreen(
                 modifier = modifier,
-                popUpBackStack = { navController.popBackStack() },
+//                popUpBackStack = { navController.popBackStack() },
                 navigateToQuizResult = {
                     navController.navigate(
                         DestinationQuizResult.createRoute(
