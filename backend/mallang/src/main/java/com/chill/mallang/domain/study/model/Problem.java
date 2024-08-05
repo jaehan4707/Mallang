@@ -1,19 +1,17 @@
 package com.chill.mallang.domain.study.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import org.w3c.dom.Text;
+import jakarta.persistence.*;
 
+@Entity
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "questionId")
     private Question question;
 
     private String word;
-    private Text mean;
+    private String mean;
 }

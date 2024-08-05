@@ -1,12 +1,9 @@
 package com.chill.mallang.domain.study.model;
 
 import com.chill.mallang.domain.user.model.User;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import org.hibernate.type.descriptor.jdbc.TinyIntJdbcType;
+import jakarta.persistence.*;
 
+@Entity
 public class StudyGameLog {
 
     @Id
