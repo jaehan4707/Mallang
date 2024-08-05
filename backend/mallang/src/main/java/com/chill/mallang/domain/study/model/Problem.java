@@ -1,7 +1,6 @@
 package com.chill.mallang.domain.study.model;
 
 import jakarta.persistence.*;
-import org.w3c.dom.Text;
 
 @Entity
 public class Problem {
@@ -10,8 +9,9 @@ public class Problem {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "questionId")
     private Question question;
 
     private String word;
-    private Text mean;
+    private String mean;
 }

@@ -2,6 +2,8 @@ package com.chill.mallang.domain.study.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Question {
 
@@ -12,7 +14,7 @@ public class Question {
     @OneToOne
     private StudyGame studyGame;
 
-    @OneToMany
-    private Problem problem;
+    @OneToMany(mappedBy = "question")
+    private List<Problem> problems;
 
 }

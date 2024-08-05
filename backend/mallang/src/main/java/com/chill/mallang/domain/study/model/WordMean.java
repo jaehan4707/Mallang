@@ -1,7 +1,6 @@
 package com.chill.mallang.domain.study.model;
 
 import jakarta.persistence.*;
-import org.w3c.dom.Text;
 
 @Entity
 public class WordMean {
@@ -10,10 +9,10 @@ public class WordMean {
     private Long id;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name= "word")
     private Word word;
 
-    private Text mean;
+    private String mean;
 
     private String type;
     private String level;

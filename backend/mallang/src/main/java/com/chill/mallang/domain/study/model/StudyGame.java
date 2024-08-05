@@ -1,8 +1,6 @@
 package com.chill.mallang.domain.study.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import org.w3c.dom.Text;
 
 @Entity
 public class StudyGame {
@@ -14,5 +12,5 @@ public class StudyGame {
     @ManyToOne
     private WordMean wordmean;
 
-    private Text question;
+    private String question;
 }
