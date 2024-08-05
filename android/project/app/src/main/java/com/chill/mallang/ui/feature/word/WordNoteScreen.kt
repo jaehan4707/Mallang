@@ -47,7 +47,7 @@ import com.chill.mallang.ui.theme.Typography
 fun WordNoteScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
-    navigateToQuiz: () -> Unit = {},
+    navigateToQuiz: (Int) -> Unit = {},
 ) {
     val wordViewModel: WordNoteViewModel = hiltViewModel()
     val state = wordViewModel.state
@@ -113,12 +113,16 @@ fun WordNoteScreen(
             WordList(
                 wordList = state.wordList,
                 onWordClick = { index ->
-                    if (isWordScreen) selectedWordIndex = index
+                    selectedWordIndex = index
                 },
             )
         }
         Button(
-            onClick = { navigateToQuiz() },
+            onClick = {
+                if (isWordScreen) {
+                    navigateToQuiz(-1) // 일반적인 문제 풀이
+                }
+            },
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
@@ -132,7 +136,7 @@ fun WordNoteScreen(
             shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
         ) {
             Text(
-                text = "퀴즈 풀기      >",
+                text = if (isWordScreen) "퀴즈 풀기 >" else "비슷한 문제 풀기 >",
                 style = Typography.headlineLarge,
             )
         }
@@ -145,6 +149,14 @@ fun WordNoteScreen(
                 wordCards = state.wordList,
                 onDismiss = { selectedWordIndex = null },
             )
+        }
+    } else {
+        // 오답노트일 때는 그때 풀었던 거 보여줌.
+        selectedWordIndex?.let { index ->
+            val word = state.wordList[index]
+            if (word is Word.IncorrectWord) {
+                navigateToQuiz(word.studyId)
+            }
         }
     }
 }
@@ -212,19 +224,12 @@ fun QuizListItem(
             )
         }
         Box(modifier = Modifier.width(4.dp))
-        if (wordList.isNotEmpty()) {
-            Text(
-                text = wordList[number - 1].word,
-                style = Typography.headlineMedium, // 자간 조절한 폰트
-            )
-        } else {
-            Text(
-                text = "",
-                style = Typography.headlineMedium, // 자간 조절한 폰트
-            )
-        }
+        Text(
+            text = if (wordList.isNotEmpty()) wordList[number - 1].word else "",
+            style = Typography.headlineMedium,
+        )
     }
-    Box(modifier = Modifier.height(4.dp))
+    Box(modifier = Modifier.height(7.dp))
     HorizontalDivider(thickness = 2.dp, color = Gray6)
 }
 
