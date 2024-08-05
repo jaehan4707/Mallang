@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -19,5 +20,13 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     @Transactional
     @Query("UPDATE Quiz q SET q.isUsed = false")
     void resetAllisUsed();
+
+    @Query("SELECT q.id FROM Quiz q")
+    List<Long> findAllQuizIds();
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Quiz q SET q.area.id = :areaID WHERE q.id = :quizID")
+    void setAreaID(@Param("quizID")Long quizId, @Param("areaID") Long areaId);
 
 }
