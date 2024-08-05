@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.quiz
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,9 +59,14 @@ fun QuizScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     navigateToQuizResult: (Int) -> Unit = {},
+    studyId: Int = -1,
 ) {
     val quizViewModel: QuizViewModel = hiltViewModel()
     val quizState = quizViewModel.state
+
+    Log.d("nakyung", studyId.toString())
+
+    quizViewModel.loadQuizData(studyId)
 
     // SnackBarHostState 생성
     val snackBarHostState = remember { SnackbarHostState() }
