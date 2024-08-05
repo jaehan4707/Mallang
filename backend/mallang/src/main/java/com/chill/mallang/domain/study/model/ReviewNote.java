@@ -4,6 +4,7 @@ import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 public class ReviewNote {
@@ -21,5 +22,5 @@ public class ReviewNote {
     @OneToOne
     private Word word;
 
-    private Timestamp created_at;
+    private LocalDateTime created_at;
 }
