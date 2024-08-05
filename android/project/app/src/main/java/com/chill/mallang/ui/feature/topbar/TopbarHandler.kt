@@ -1,7 +1,7 @@
 package com.chill.mallang.ui.feature.topbar
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.chill.mallang.ui.navigation.DestinationMain
@@ -45,6 +45,7 @@ import com.chill.mallang.ui.navigation.DestinationMain
  */
 @Composable
 fun TopbarHandler(
+    isVisible: Boolean = false,
     title: String = "",
     titleContent: (@Composable () -> Unit)? = null,
     onBack: (NavController) -> Unit = { navController -> navController.popBackStack() },
@@ -57,23 +58,23 @@ fun TopbarHandler(
 ) {
     val viewModel: TopbarViewModel = hiltViewModel()
 
-    DisposableEffect(Unit) {
+    LaunchedEffect(isVisible) {
+        viewModel.updateVisibility(isVisible)
+    }
+
+    LaunchedEffect(Unit) {
         if (titleContent == null) {
             viewModel.updateTitle(title)
         } else {
             viewModel.updateTitle(titleContent)
         }
-        viewModel.updateOnBack(onBack)
-        viewModel.updateOnHome(onHome)
+    }
 
-        onDispose {
-            viewModel.updateOnBack { navController -> navController.popBackStack() }
-            viewModel.updateOnHome { navController ->
-                navController.popBackStack(
-                    DestinationMain.route,
-                    inclusive = false,
-                )
-            }
-        }
+    LaunchedEffect(onBack) {
+        viewModel.updateOnBack(onBack)
+    }
+
+    LaunchedEffect(onHome) {
+        viewModel.updateOnHome(onHome)
     }
 }

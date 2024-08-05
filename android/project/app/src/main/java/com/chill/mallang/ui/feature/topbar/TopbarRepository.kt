@@ -9,23 +9,31 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TopbarRepository @Inject constructor() {
-    private val _titleContent = mutableStateOf<@Composable () -> Unit>({ Text(text = "title") })
+class TopbarRepository
+    @Inject
+    constructor() {
+        private val _isVisible = mutableStateOf(false)
+        val isVisible: State<Boolean> = _isVisible
+        private val _titleContent = mutableStateOf<@Composable () -> Unit>({ Text(text = "title") })
         val titleContent: State<@Composable () -> Unit> = _titleContent
-    private val _onBack = mutableStateOf<(NavController) -> Unit>({})
+        private val _onBack = mutableStateOf<(NavController) -> Unit>({})
         val onBack: State<(NavController) -> Unit> = _onBack
-    private val _onHome = mutableStateOf<(NavController) -> Unit>({})
+        private val _onHome = mutableStateOf<(NavController) -> Unit>({})
         val onHome: State<(NavController) -> Unit> = _onHome
 
-    fun updateTitle(title: @Composable () -> Unit) {
-        _titleContent.value = title
-    }
+        fun updateVisibility(isVisible: Boolean) {
+            _isVisible.value = isVisible
+        }
 
-    fun updateOnBack(onBack: (NavController) -> Unit) {
-        _onBack.value = onBack
-    }
+        fun updateTitle(title: @Composable () -> Unit) {
+            _titleContent.value = title
+        }
 
-    fun updateOnHome(onHome: (NavController) -> Unit) {
-        _onHome.value = onHome
+        fun updateOnBack(onBack: (NavController) -> Unit) {
+            _onBack.value = onBack
+        }
+
+        fun updateOnHome(onHome: (NavController) -> Unit) {
+            _onHome.value = onHome
+        }
     }
-}
