@@ -4,7 +4,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -59,8 +61,23 @@ class DataStoreRepositoryImpl
                 )
             }
 
-        companion object {
-            val ACCESS_TOKEN_KEY = stringPreferencesKey("ACCESS_TOKEN_KEY")
-            val USER_EMAIL_KEY = stringPreferencesKey("USER_EMAIL_KEY")
+    override suspend fun logout(): Flow<ApiResponse<Unit>> = flow {
+        val emailDeletionResult = runCatching { deleteUserEmail() }
+        val tokenDeletionResult = runCatching { deleteAccessToken() }
+        if (emailDeletionResult.isSuccess && tokenDeletionResult.isSuccess) {
+            emit(ApiResponse.Success(Unit))
+        } else {
+            val errors = mutableListOf<String>()
+            emailDeletionResult.exceptionOrNull()?.message?.let { errors.add(it) }
+            tokenDeletionResult.exceptionOrNull()?.message?.let { errors.add(it) }
+            if (errors.isNotEmpty()) {
+                emit(ApiResponse.Error(errorCode = 500, errorMessage = errors.joinToString(", ")))
+            }
         }
     }
+
+    companion object {
+        val ACCESS_TOKEN_KEY = stringPreferencesKey("ACCESS_TOKEN_KEY")
+        val USER_EMAIL_KEY = stringPreferencesKey("USER_EMAIL_KEY")
+    }
+}
