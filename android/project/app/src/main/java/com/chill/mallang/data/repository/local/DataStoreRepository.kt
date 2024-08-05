@@ -1,5 +1,6 @@
 package com.chill.mallang.data.repository.local
 
+import com.chill.mallang.data.model.response.ApiResponse
 import kotlinx.coroutines.flow.Flow
 
 interface DataStoreRepository {
@@ -14,4 +15,6 @@ interface DataStoreRepository {
     suspend fun deleteUserEmail()
 
     suspend fun getUserEmail(): Flow<String?>
+
+    suspend fun logout(): Flow<ApiResponse<Unit>>
 }

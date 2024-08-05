@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="round_title_format">라운드 %d</string>
+    <string name="question_message_format">Q. %s</string>
+    <string name="loading_message_default">로딩중...</string>
+    <string name="loading_message_init">게임 준비중...</string>
+    <string name="loading_message_done">답안 제출중...</string>
+    <string name="question_message">지문을 요약하시오.</string>
+    <string name="remaing_time_format">%s</string>
+    <string name="submit_message">제출하기</string>
+    <string name="win_message_format">상대팀보다 %d 점 앞서고 있습니다.</string>
+    <string name="lose_message_format">상대팀보다 %d 점 뒤지고 있습니다.</string>
+    <string name="draw_message_format">상대팀과 동점 입니다.</string>
+</resources>

@@ -64,7 +64,6 @@ fun NicknameScreen(
         NickNameContent(
             focusManager = focusManager,
             uiState = nicknameState,
-            onSuccess = { onSuccess(it) },
             checkNickName = {
                 nicknameViewModel.checkNickName()
             },
@@ -76,12 +75,13 @@ fun NicknameScreen(
 fun HandleNickNameUiEvent(
     uiState: NickNameUiState,
     onSuccess: (String) -> Unit = {},
+    onEditSuccess: (Boolean) -> Unit = {},
 ) {
     LaunchedEffect(uiState) {
         when (uiState) {
-            is NickNameUiState.Success -> {
-                onSuccess(uiState.nickName)
-            }
+            is NickNameUiState.Success -> onSuccess(uiState.nickName)
+
+            is NickNameUiState.UpdateNickName -> onEditSuccess(true)
 
             else -> {}
         }
@@ -92,7 +92,6 @@ fun HandleNickNameUiEvent(
 fun NickNameContent(
     focusManager: FocusManager = LocalFocusManager.current,
     uiState: NicknameState = NicknameState(),
-    onSuccess: (String) -> Unit = {},
     checkNickName: () -> Unit = { },
 ) {
     Column(
@@ -120,7 +119,8 @@ fun NickNameContent(
                     uiState.updateNickname(it)
                 },
                 focusManager = focusManager,
-                nicknameState = uiState,
+                nickName = uiState.nickname,
+                errorMessage = uiState.errorMessage,
                 onClearPressed = {
                     uiState.clearNickname()
                 },
@@ -143,7 +143,8 @@ fun CustomTextField(
     onValueChange: (String) -> Unit,
     focusManager: FocusManager,
     placeholder: String = "닉네임",
-    nicknameState: NicknameState,
+    nickName: String = "",
+    errorMessage: String = "",
     onClearPressed: () -> Unit = {},
 ) {
     Column(
@@ -153,12 +154,12 @@ fun CustomTextField(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         OutlinedTextField(
-            value = nicknameState.nickname,
+            value = nickName,
             onValueChange = {
                 onValueChange(it)
             },
             placeholder = {
-                if (nicknameState.nickname.isEmpty()) {
+                if (nickName.isEmpty()) {
                     Text(
                         text = placeholder,
                         style = Typography.displayMedium,
@@ -199,10 +200,10 @@ fun CustomTextField(
                     )
                 }
             },
-            isError = nicknameState.errorMessage != "",
+            isError = errorMessage != "",
         )
         Text(
-            text = nicknameState.errorMessage,
+            text = errorMessage,
             modifier =
                 Modifier
                     .fillMaxWidth()

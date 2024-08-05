@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.setting
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,8 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,11 +26,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.feature.nickname.CustomTextField
+import com.chill.mallang.ui.feature.nickname.HandleNickNameUiEvent
 import com.chill.mallang.ui.feature.nickname.NicknameState
+import com.chill.mallang.ui.feature.nickname.NicknameViewModel
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
@@ -37,29 +42,38 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun EditNickNameDialogScreen(
     modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = {},
-    onChangeNickName: () -> Unit = {},
+    onDismiss: (Boolean) -> Unit = {},
 ) {
+    val viewModel: NicknameViewModel = hiltViewModel()
+    val nicknameState = viewModel.nicknameState
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    HandleNickNameUiEvent(uiState = uiState, onSuccess = {
+        viewModel.updateNickName(it)
+    }, onEditSuccess = onDismiss)
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetUiState()
+        }
+    }
     EditNickNameDialogContent(
         modifier = modifier,
         onDismiss = onDismiss,
-        onChangeNickName = onChangeNickName,
+        nicknameState = nicknameState,
+        onChangeNickName = viewModel::checkNickName,
     )
 }
 
 @Composable
 fun EditNickNameDialogContent(
     modifier: Modifier = Modifier,
-    uiState: NicknameState = NicknameState(),
-    onDismiss: () -> Unit = {},
+    nicknameState: NicknameState = NicknameState(),
+    onDismiss: (Boolean) -> Unit = {},
     onChangeNickName: () -> Unit = {},
 ) {
-    val (nickName, setNickName) =
-        remember {
-            mutableStateOf("")
-        }
     val focusManager = LocalFocusManager.current
-    Dialog(onDismissRequest = onDismiss) {
+    BackHandler(onBack = { onDismiss(false) })
+    Dialog(onDismissRequest = { onDismiss(false) }) {
         Surface(
             modifier =
                 Modifier
@@ -90,18 +104,19 @@ fun EditNickNameDialogContent(
                         ImageButton(
                             icon = R.drawable.ic_close,
                             label = "",
-                            onClick = onDismiss,
+                            onClick = { onDismiss(false) },
                         )
                     }
                 }
                 CustomTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    onValueChange = { setNickName(it) },
+                    onValueChange = { nicknameState.updateNickname(it) },
                     focusManager = focusManager,
-                    nickName = nickName,
-                    onClearPressed = { setNickName("") },
-                    errorMessage = "",
+                    nickName = nicknameState.nickname,
+                    onClearPressed = { nicknameState.clearNickname() },
+                    errorMessage = nicknameState.errorMessage,
                 )
+                Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = stringResource(R.string.nick_name_validation_info),
                     style = Typography.bodySmall,
@@ -111,19 +126,19 @@ fun EditNickNameDialogContent(
                 Row {
                     LongBlackButton(
                         modifier =
-                            Modifier
-                                .weight(1f)
-                                .height(40.dp),
+                        Modifier
+                            .weight(1f)
+                            .height(40.dp),
                         onClick = onChangeNickName,
                         text = stringResource(R.string.edit_nick_name_confirm),
                     )
                     Spacer(modifier = Modifier.weight(0.5f))
                     LongBlackButton(
                         modifier =
-                            Modifier
-                                .weight(1f)
-                                .height(40.dp),
-                        onClick = onDismiss,
+                        Modifier
+                            .weight(1f)
+                            .height(40.dp),
+                        onClick = { onDismiss(false) },
                         text = stringResource(R.string.edit_nick_name_dismiss),
                     )
                 }
