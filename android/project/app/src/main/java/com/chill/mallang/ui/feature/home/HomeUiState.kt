@@ -13,10 +13,4 @@ sealed interface HomeUiState {
         val userNickName: String = "",
         val userFaction: String = "",
     ) : HomeUiState
-
-    @Immutable
-    data class Error(
-        val errorCode: Int = 0,
-        val errorMessage: String = "",
-    ) : HomeUiState
 }

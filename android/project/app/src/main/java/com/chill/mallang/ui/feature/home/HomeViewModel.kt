@@ -38,24 +38,44 @@ constructor(
     fun getUserInfo() {
         viewModelScope.launch {
             userRepository.getUserInfo().collectLatest { response ->
-                _uiState.value =
-                    when (response) {
-                        is ApiResponse.Error -> {
-                            HomeUiState.Error(
+                when (response) {
+                    is ApiResponse.Error -> {
+                        _event.emit(
+                            HomeUiEvent.Error(
                                 errorCode = response.errorCode,
                                 errorMessage = response.errorMessage,
                             )
-                        }
-
-                        is ApiResponse.Success -> {
-                            HomeUiState.LoadUserInfo(
-                                userNickName = response.data?.nickName ?: "",
-                                userFaction = response.data?.faction ?: "",
-                            )
-                        }
-
-                        ApiResponse.Init -> HomeUiState.Loading
+                        )
                     }
+
+                    is ApiResponse.Success -> {
+                        _uiState.value = HomeUiState.LoadUserInfo(
+                            userNickName = response.data?.nickName ?: "",
+                            userFaction = response.data?.faction ?: "",
+                        )
+                    }
+
+                    ApiResponse.Init -> _uiState.value = HomeUiState.Loading
+                }
+            }
+        }
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            userRepository.signOut().collectLatest { response ->
+                when (response) {
+                    is ApiResponse.Error -> _event.emit(
+                        HomeUiEvent.Error(
+                            errorMessage = response.errorMessage,
+                            errorCode = response.errorCode
+                        )
+                    )
+
+                    ApiResponse.Init -> {}
+
+                    is ApiResponse.Success -> _event.emit(HomeUiEvent.SignOut(response.data ?: ""))
+                }
             }
         }
     }
