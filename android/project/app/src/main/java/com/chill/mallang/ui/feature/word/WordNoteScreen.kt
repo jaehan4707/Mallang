@@ -129,28 +129,28 @@ fun WordNoteScreen(
                 },
             )
         }
-        Button(
-            onClick = {
-                if (isWordScreen) {
+        if (isWordScreen) {
+            Button(
+                onClick = {
                     navigateToQuiz(-1) // 일반적인 문제 풀이
-                }
-            },
-            modifier =
-                Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                    .widthIn(min = 180.dp) // 버튼의 최소 너비
-                    .heightIn(min = 80.dp),
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = Gray6,
-                ),
-            shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
-        ) {
-            Text(
-                text = if (isWordScreen) "퀴즈 풀기 >" else "비슷한 문제 풀기 >",
-                style = Typography.headlineLarge,
-            )
+                },
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올
+                        .widthIn(min = 180.dp) // 버튼의 최소 너비
+                        .heightIn(min = 80.dp),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Gray6,
+                    ),
+                shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
+            ) {
+                Text(
+                    text = "퀴즈 풀기   >",
+                    style = Typography.headlineLarge,
+                )
+            }
         }
     }
 
