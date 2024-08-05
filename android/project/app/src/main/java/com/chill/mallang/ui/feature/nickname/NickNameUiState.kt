@@ -18,4 +18,9 @@ sealed interface NickNameUiState {
 
     @Immutable
     data object Init : NickNameUiState
+
+    @Immutable
+    data class UpdateNickName(
+        val nickName: String = "",
+    ) : NickNameUiState
 }

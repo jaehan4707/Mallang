@@ -4,6 +4,7 @@ import com.chill.mallang.data.api.UserApi
 import com.chill.mallang.data.model.apiHandler
 import com.chill.mallang.data.model.request.JoinRequest
 import com.chill.mallang.data.model.request.LoginRequest
+import com.chill.mallang.data.model.request.UpdateNickNameRequest
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.model.response.UserInfo
 import com.chill.mallang.data.repository.local.DataStoreRepository
@@ -132,25 +133,51 @@ constructor(
             }
         }
 
-    override suspend fun checkUserEmail(userEmail: String): Flow<ApiResponse<Unit>> = flow {
-        val response = apiHandler {
-            userApi.checkUserEmail(userEmail)
-        }
-        when (response) {
-            is ApiResponse.Success -> {
-                emit(ApiResponse.Success(Unit))
-            }
+    override suspend fun checkUserEmail(userEmail: String): Flow<ApiResponse<Unit>> =
+        flow {
+            val response =
+                apiHandler {
+                    userApi.checkUserEmail(userEmail)
+                }
+            when (response) {
+                is ApiResponse.Success -> {
+                    emit(ApiResponse.Success(Unit))
+                }
 
-            is ApiResponse.Error -> {
-                emit(
-                    ApiResponse.Error(
-                        errorCode = response.errorCode,
-                        errorMessage = response.errorMessage
+                is ApiResponse.Error -> {
+                    emit(
+                        ApiResponse.Error(
+                            errorCode = response.errorCode,
+                            errorMessage = response.errorMessage,
+                        ),
                     )
-                )
-            }
+                }
 
-            ApiResponse.Init -> {}
+                ApiResponse.Init -> {}
+            }
         }
-    }
+
+    override suspend fun updateNickName(userNickName: String): Flow<ApiResponse<String>> =
+        flow {
+            val response =
+                apiHandler {
+                    userApi.updateNickName(UpdateNickNameRequest(userNickName))
+                }
+            when (response) {
+                is ApiResponse.Success -> {
+                    emit(ApiResponse.Success(userNickName))
+                }
+
+                is ApiResponse.Error -> {
+                    emit(
+                        ApiResponse.Error(
+                            errorCode = response.errorCode,
+                            errorMessage = response.errorMessage,
+                        ),
+                    )
+                }
+
+                ApiResponse.Init -> {}
+            }
+        }
 }

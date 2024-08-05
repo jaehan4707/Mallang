@@ -64,7 +64,6 @@ fun NicknameScreen(
         NickNameContent(
             focusManager = focusManager,
             uiState = nicknameState,
-            onSuccess = { onSuccess(it) },
             checkNickName = {
                 nicknameViewModel.checkNickName()
             },
@@ -76,12 +75,13 @@ fun NicknameScreen(
 fun HandleNickNameUiEvent(
     uiState: NickNameUiState,
     onSuccess: (String) -> Unit = {},
+    onEditSuccess: (Boolean) -> Unit = {},
 ) {
     LaunchedEffect(uiState) {
         when (uiState) {
-            is NickNameUiState.Success -> {
-                onSuccess(uiState.nickName)
-            }
+            is NickNameUiState.Success -> onSuccess(uiState.nickName)
+
+            is NickNameUiState.UpdateNickName -> onEditSuccess(true)
 
             else -> {}
         }
@@ -92,7 +92,6 @@ fun HandleNickNameUiEvent(
 fun NickNameContent(
     focusManager: FocusManager = LocalFocusManager.current,
     uiState: NicknameState = NicknameState(),
-    onSuccess: (String) -> Unit = {},
     checkNickName: () -> Unit = { },
 ) {
     Column(

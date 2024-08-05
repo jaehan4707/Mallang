@@ -70,7 +70,8 @@ fun HomeScreen(
     HandleHomeUiEvent(
         event = viewModel.event,
         setShowSettingDialog = setShowSettingDialog,
-        setShowEditNickNameDialog = setShowEditNickNameDialog
+        setShowEditNickNameDialog = setShowEditNickNameDialog,
+        loadUserInfo = viewModel::getUserInfo
     )
 
     Box(
@@ -100,6 +101,7 @@ fun HandleHomeUiEvent(
     event: SharedFlow<HomeUiEvent>,
     setShowSettingDialog: (Boolean) -> Unit,
     setShowEditNickNameDialog: (Boolean) -> Unit,
+    loadUserInfo: () -> Unit,
 ) {
     LaunchedEffect(Unit) {
         event.collectLatest { homeUiEvent ->
@@ -108,6 +110,7 @@ fun HandleHomeUiEvent(
                 HomeUiEvent.CloseSettingDialog -> setShowSettingDialog(false)
                 HomeUiEvent.ShowEditNickNameDialog -> setShowEditNickNameDialog(true)
                 HomeUiEvent.ShowSettingDialog -> setShowSettingDialog(true)
+                HomeUiEvent.Refresh -> loadUserInfo()
             }
         }
     }
@@ -157,8 +160,12 @@ fun HomeContent(
             }
             if (onShowEditNickNameDialog) {
                 EditNickNameDialogScreen(
-                    onChangeNickName = {},
-                    onDismiss = { sendEvent(HomeUiEvent.CloseEditNickNameDialog) },
+                    onDismiss = { onEditNickName ->
+                        sendEvent(HomeUiEvent.CloseEditNickNameDialog)
+                        if (onEditNickName) {
+                            sendEvent(HomeUiEvent.Refresh)
+                        }
+                    },
                 )
             }
         }

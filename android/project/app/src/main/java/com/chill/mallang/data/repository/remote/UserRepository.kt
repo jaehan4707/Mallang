@@ -18,4 +18,6 @@ interface UserRepository {
     suspend fun getUserInfo(): Flow<ApiResponse<UserInfo>>
 
     suspend fun checkUserEmail(userEmail: String): Flow<ApiResponse<Unit>>
+
+    suspend fun updateNickName(userNickName: String): Flow<ApiResponse<String>>
 }
