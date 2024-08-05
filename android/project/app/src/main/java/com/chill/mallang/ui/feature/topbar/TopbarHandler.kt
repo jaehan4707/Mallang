@@ -62,7 +62,7 @@ fun TopbarHandler(
         viewModel.updateVisibility(isVisible)
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(title, titleContent) {
         if (titleContent == null) {
             viewModel.updateTitle(title)
         } else {
