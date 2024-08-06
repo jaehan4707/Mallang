@@ -68,7 +68,7 @@ public class QuizService {
                     .build();
 
             return new HashMap<String, Object>() {{
-                    put("Data", responseQuiz);
+                    put("data", responseQuiz);
             }};
 
         } else {
@@ -134,6 +134,7 @@ public class QuizService {
             answerRepository.setAnswerTrue(userID, quizID);
             logger.info(quizID + "번 Answer 최종 제출 완료");
             Float nowScore =answerRepository.findTop1AnswerScore(quizID);
+            //Float nowScore =answerRepository.findTotalScoreByAreaID(quizID);
             sum += nowScore;
             responseScore.add(nowScore);
             roundNum++;
@@ -147,8 +148,12 @@ public class QuizService {
         Map<String, Object> response = new HashMap<>();
         List<Float> teamScoreList = totalScoreRepository.findTotalScoreByAreaID(areaID);
 
-        team.put("My Team Total Score", teamScoreList.get(0));
-        team.put("Oppo Team Total Score", teamScoreList.get(1));
+        if (teamScoreList.size() > 0) {
+            team.put("My Team Total Score", teamScoreList.get(0));
+        }
+        if (teamScoreList.size() > 1) {
+            team.put("Oppo Team Total Score", teamScoreList.get(1));
+        }
         team.put("My Team Rank", totalScoreRepository.findTop3(areaID, factionID));
 
         Map<String, Object> data = new HashMap<>();

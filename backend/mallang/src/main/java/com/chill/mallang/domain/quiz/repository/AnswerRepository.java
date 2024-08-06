@@ -12,16 +12,19 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
     // 최종 제출 쿼리
     @Modifying
-    @Query(value = "UPDATE Answer SET check_fin = 1, updated_at = CURRENT_TIMESTAMP " +
+    @Query(value = "UPDATE answer SET check_fin = 1, updated_at = CURRENT_TIMESTAMP " +
             "WHERE userID = :userID AND quizID = :quizID " +
-            "AND id = (SELECT id FROM Answer WHERE userID = :userID AND quizID = :quizID " +
+            "AND id = (SELECT id FROM answer WHERE userID = :userID AND quizID = :quizID " +
             "ORDER BY created_at DESC LIMIT 1)", nativeQuery = true)
     void setAnswerTrue(@Param("userID") Long userID, @Param("quizID") Long quizID);
 
     // 마지막으로 제출된 쿼리 확인
-    @Query("SELECT a.score FROM Answer a WHERE a.quiz.id = :quizID " +
-            "ORDER BY a.updated_at DESC ")
-    float findTop1AnswerScore(@Param("quizID") Long quizID);
+    @Query(value = "SELECT a.score " +
+            "FROM answer a " +
+            "WHERE a.quizID = :quizID " +
+            "ORDER BY a.updated_at " +
+            "DESC LIMIT 1", nativeQuery = true)
+    Float findTop1AnswerScore(@Param("quizID") Long quizID);
 
     @Query("SELECT a " +
             "FROM Answer a " +

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum CustomStudyErrorCode implements ErrorCode {
     WORDMEAN_IS_NOT_FOUND(HttpStatus.NOT_FOUND, "WordMean not found"),
     WORD_IS_SOLD_OUT(HttpStatus.NO_CONTENT, "No unused word means available."),
+    NOT_WRONG_WORD(HttpStatus.NOT_FOUND,"This user didn't get that wrong.")
     ;
 
     private final HttpStatus httpStatus;

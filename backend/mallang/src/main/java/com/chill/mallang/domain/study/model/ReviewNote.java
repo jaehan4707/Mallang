@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -25,5 +26,5 @@ public class ReviewNote {
     @OneToOne
     private Word word;
 
-    private Timestamp created_at;
+    private LocalDateTime created_at;
 }

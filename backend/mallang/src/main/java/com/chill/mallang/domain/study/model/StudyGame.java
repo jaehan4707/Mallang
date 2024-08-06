@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
+@Getter
+@Setter
 public class StudyGame {
 
     @Id

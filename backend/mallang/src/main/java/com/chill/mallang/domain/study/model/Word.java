@@ -11,6 +11,8 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@Getter
+@Setter
 public class Word {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

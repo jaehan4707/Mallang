@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
+@Getter
+@Setter
 public class WordMean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

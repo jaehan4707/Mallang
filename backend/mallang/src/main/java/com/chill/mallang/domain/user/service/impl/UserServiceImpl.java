@@ -57,7 +57,6 @@ public class UserServiceImpl implements UserService {
                 user.getTry_count()
         ));
     }
-
     @Override
     public Map<String, Object> findByEmailFromToken(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);

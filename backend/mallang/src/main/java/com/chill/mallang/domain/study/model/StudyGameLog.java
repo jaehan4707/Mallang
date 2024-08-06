@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
+@Getter
+@Setter
 public class StudyGameLog {
     // 풀었던 문제 또 나올 수도 있도록?
     @Id
