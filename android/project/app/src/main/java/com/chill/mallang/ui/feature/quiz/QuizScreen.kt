@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.quiz
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,11 +42,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.CustomSnackBar
 import com.chill.mallang.ui.feature.quiz_result.AnswerResultListItem
 import com.chill.mallang.ui.feature.quiz_result.QuizResultState
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
@@ -56,28 +59,44 @@ import kotlinx.coroutines.launch
 @Composable
 fun QuizScreen(
     modifier: Modifier = Modifier,
-    popUpBackStack: () -> Unit = {},
     navigateToQuizResult: (Int) -> Unit = {},
+    studyId: Int = -1,
 ) {
     val quizViewModel: QuizViewModel = hiltViewModel()
     val quizState = quizViewModel.state
+
+    Log.d("nakyung", studyId.toString())
+
+    quizViewModel.loadQuizData(studyId)
 
     // SnackBarHostState 생성
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val isBackPressed = remember { mutableStateOf(false) }
+    // TopBar
+    val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
+    val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
+
     BackConfirmHandler(
-        isBackPressed = isBackPressed.value,
+        isBackPressed = isBackPressed,
         onConfirm = {
-            isBackPressed.value = false
-            popUpBackStack()
+            setBackPressed(false)
+            navController?.popBackStack()
         },
         onDismiss = {
-            isBackPressed.value = false
+            setBackPressed(false)
         },
     )
-    BackHandler(onBack = { isBackPressed.value = true })
+    BackHandler(onBack = { setBackPressed(true) })
+
+    TopbarHandler(
+        title = "학습 퀴즈",
+        onBack = { nav ->
+            Log.d("nakyung", "QuizScreen: a")
+            setBackPressed(true)
+            setNavController(nav)
+        },
+    )
 
     Scaffold(
         snackbarHost = {
@@ -95,10 +114,10 @@ fun QuizScreen(
     ) { innerPadding ->
         Box(
             modifier =
-                modifier
-                    .fillMaxSize()
-                    .background(color = Color.White)
-                    .padding(innerPadding),
+            modifier
+                .fillMaxSize()
+                .background(color = Color.White)
+                .padding(innerPadding),
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Box(modifier = Modifier.height(15.dp))
@@ -132,11 +151,11 @@ fun QuizScreen(
                     }
                 },
                 modifier =
-                    Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                        .widthIn(min = 180.dp) // 버튼의 최소 너비
-                        .heightIn(min = 80.dp),
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(y = (-30).dp) // 버튼을 20dp 위로 올
+                    .widthIn(min = 180.dp) // 버튼의 최소 너비
+                    .heightIn(min = 80.dp),
                 colors =
                     ButtonDefaults.buttonColors(
                         containerColor = Gray6,
@@ -159,10 +178,10 @@ fun QuizBox(
 ) {
     Box(
         modifier =
-            Modifier
-                .padding(12.dp)
-                .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
-                .fillMaxWidth(),
+        Modifier
+            .padding(12.dp)
+            .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
+            .fillMaxWidth(),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 30.dp, vertical = 20.dp),
@@ -185,10 +204,10 @@ fun QuizBox(
             Box(modifier = Modifier.height(15.dp))
             Spacer(
                 modifier =
-                    Modifier
-                        .height(2.dp)
-                        .fillMaxWidth()
-                        .background(Gray3),
+                Modifier
+                    .height(2.dp)
+                    .fillMaxWidth()
+                    .background(Gray3),
             )
             Box(modifier = Modifier.height(15.dp))
             Text(

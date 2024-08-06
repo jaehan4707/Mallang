@@ -126,9 +126,20 @@ object DestinationWordNote : ScreenDestinations {
         get() = "wordNote"
 }
 
-object DestinationQuiz : ScreenDestinations {
+object DestinationQuiz : ScreenDestinationsWithArgument {
+    override val arg: String
+        get() = "quiz"
+    override val routeWithArgs: String
+        get() = "${this.route}/{studyId}"
+    override val arguments: List<NamedNavArgument>
+        get() =
+            listOf(
+                navArgument(name = "studyId") { type = NavType.IntType },
+            )
     override val route: String
         get() = "quiz"
+
+    fun createRoute(studyId: Int) = "${this.route}/$studyId"
 }
 
 object DestinationQuizResult : ScreenDestinationsWithArgument {
