@@ -1,8 +1,8 @@
 package com.chill.mallang.data.repository.remote
 
+import com.chill.mallang.data.model.entity.User
 import com.chill.mallang.data.model.request.JoinRequest
 import com.chill.mallang.data.model.response.ApiResponse
-import com.chill.mallang.data.model.response.GetUserInfoResponse
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
@@ -15,7 +15,7 @@ interface UserRepository {
 
     suspend fun checkNickName(nickName: String): Flow<ApiResponse<Unit>>
 
-    suspend fun getUserInfo(): Flow<ApiResponse<GetUserInfoResponse>>
+    suspend fun getUserInfo(): Flow<ApiResponse<User>>
 
     suspend fun checkUserEmail(userEmail: String): Flow<ApiResponse<Unit>>
 
