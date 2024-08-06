@@ -38,16 +38,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun WordNoteScreen(
     modifier: Modifier = Modifier,
-    popUpBackStack: () -> Unit = {},
-    navigateToQuiz: () -> Unit = {},
+    navigateToQuiz: (Int) -> Unit = {},
 ) {
     val wordViewModel: WordNoteViewModel = hiltViewModel()
     val state = wordViewModel.state
@@ -55,18 +56,29 @@ fun WordNoteScreen(
     var isWordScreen by remember { mutableStateOf(true) }
     var selectedWordIndex by remember { mutableStateOf<Int?>(null) }
 
-    val isBackPressed = remember { mutableStateOf(false) }
+    // TopBar
+    val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
+    val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
+
     BackConfirmHandler(
-        isBackPressed = isBackPressed.value,
+        isBackPressed = isBackPressed,
         onConfirm = {
-            isBackPressed.value = false
-            popUpBackStack()
+            setBackPressed(false)
+            navController?.popBackStack()
         },
         onDismiss = {
-            isBackPressed.value = false
+            setBackPressed(false)
         },
     )
-    BackHandler(onBack = { isBackPressed.value = true })
+    BackHandler(onBack = { setBackPressed(true) })
+
+    TopbarHandler(
+        title = if (isWordScreen) "단어장" else "오답노트",
+        onBack = { nav ->
+            setBackPressed(true)
+            setNavController(nav)
+        },
+    )
 
     Box(
         modifier =
@@ -113,28 +125,32 @@ fun WordNoteScreen(
             WordList(
                 wordList = state.wordList,
                 onWordClick = { index ->
-                    if (isWordScreen) selectedWordIndex = index
+                    selectedWordIndex = index
                 },
             )
         }
-        Button(
-            onClick = { navigateToQuiz() },
-            modifier =
-                Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                    .widthIn(min = 180.dp) // 버튼의 최소 너비
-                    .heightIn(min = 80.dp),
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = Gray6,
-                ),
-            shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
-        ) {
-            Text(
-                text = "퀴즈 풀기      >",
-                style = Typography.headlineLarge,
-            )
+        if (isWordScreen) {
+            Button(
+                onClick = {
+                    navigateToQuiz(-1) // 일반적인 문제 풀이
+                },
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올
+                        .widthIn(min = 180.dp) // 버튼의 최소 너비
+                        .heightIn(min = 80.dp),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Gray6,
+                    ),
+                shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
+            ) {
+                Text(
+                    text = "퀴즈 풀기   >",
+                    style = Typography.headlineLarge,
+                )
+            }
         }
     }
 
@@ -145,6 +161,14 @@ fun WordNoteScreen(
                 wordCards = state.wordList,
                 onDismiss = { selectedWordIndex = null },
             )
+        }
+    } else {
+        // 오답노트일 때는 그때 풀었던 거 보여줌.
+        selectedWordIndex?.let { index ->
+            val word = state.wordList[index]
+            if (word is Word.IncorrectWord) {
+                navigateToQuiz(word.studyId)
+            }
         }
     }
 }
@@ -212,19 +236,12 @@ fun QuizListItem(
             )
         }
         Box(modifier = Modifier.width(4.dp))
-        if (wordList.isNotEmpty()) {
-            Text(
-                text = wordList[number - 1].word,
-                style = Typography.headlineMedium, // 자간 조절한 폰트
-            )
-        } else {
-            Text(
-                text = "",
-                style = Typography.headlineMedium, // 자간 조절한 폰트
-            )
-        }
+        Text(
+            text = if (wordList.isNotEmpty()) wordList[number - 1].word else "",
+            style = Typography.headlineMedium,
+        )
     }
-    Box(modifier = Modifier.height(4.dp))
+    Box(modifier = Modifier.height(7.dp))
     HorizontalDivider(thickness = 2.dp, color = Gray6)
 }
 
