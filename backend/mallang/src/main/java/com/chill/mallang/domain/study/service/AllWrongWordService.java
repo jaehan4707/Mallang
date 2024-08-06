@@ -22,8 +22,8 @@ public class AllWrongWordService {
     @Autowired
     StudyGameLogRepository studyGameLogRepository;
 
-    public Map<String, Object> getWrongWord(Long areaId){
-        List<StudyGameLog> studyGameLogs = studyGameLogRepository.getWrongStudyGameLogByUserId(areaId);
+    public Map<String, Object> getWrongWord(Long userId){
+        List<StudyGameLog> studyGameLogs = studyGameLogRepository.getWrongStudyGameLogByUserId(userId);
 
         ArrayList<WrongWordDto> wrongWords = new ArrayList<>();
         for (StudyGameLog studyGameLog : studyGameLogs) {

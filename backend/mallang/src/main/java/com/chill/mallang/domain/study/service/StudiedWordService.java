@@ -20,8 +20,8 @@ public class StudiedWordService {
     @Autowired
     StudyGameLogRepository studyGameLogRepository;
 
-    public Map<String, Object> getStudiedWord(Long areaId){
-        List<StudyGameLog> studyGameLogs = studyGameLogRepository.getStudyGameLogByUserId(areaId);
+    public Map<String, Object> getStudiedWord(Long userId){
+        List<StudyGameLog> studyGameLogs = studyGameLogRepository.getStudyGameLogByUserId(userId);
         logger.info(studyGameLogs.toString());
 
         ArrayList<WordCardDto> wordCards = new ArrayList<>();
