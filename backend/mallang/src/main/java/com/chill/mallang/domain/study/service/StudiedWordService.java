@@ -36,7 +36,7 @@ public class StudiedWordService {
         }
 
         return new HashMap<>(){{
-            put("body",wordCards);
+            put("data",wordCards);
         }};
     }
 }
