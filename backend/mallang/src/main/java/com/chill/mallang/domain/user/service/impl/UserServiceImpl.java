@@ -50,8 +50,10 @@ public class UserServiceImpl implements UserService {
     public Optional<FindByEmailDTO> findByEmail(String email) {
         logger.info("findByEmail" + userRepository.findByEmail(email).toString());
         return userRepository.findByEmail(email).map(user -> new FindByEmailDTO(
+                user.getId(),
+                user.getEmail(),
                 user.getNickname(),
-                user.getFaction().getName().name(), // FactionType을 문자열로 변환
+                user.getFaction().getId(), // Assuming faction is an object, and getId() returns its ID
                 user.getTry_count()
         ));
     }
