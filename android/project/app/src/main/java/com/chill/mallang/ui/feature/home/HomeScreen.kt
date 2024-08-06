@@ -171,10 +171,11 @@ fun HomeContent(
                 EditNickNameDialogScreen(
                     onDismiss = { onEditNickName ->
                         sendEvent(HomeUiEvent.CloseEditNickNameDialog)
-                        if (onEditNickName) {
+                        if (onEditNickName != uiState.userNickName) {
                             sendEvent(HomeUiEvent.Refresh)
                         }
                     },
+                    userNickName = uiState.userNickName
                 )
             }
         }
