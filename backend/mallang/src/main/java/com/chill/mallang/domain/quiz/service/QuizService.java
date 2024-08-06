@@ -68,7 +68,7 @@ public class QuizService {
                     .build();
 
             return new HashMap<String, Object>() {{
-                    put("Data", responseQuiz);
+                    put("data", responseQuiz);
             }};
 
         } else {
