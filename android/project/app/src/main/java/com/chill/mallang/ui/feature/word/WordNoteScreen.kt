@@ -73,6 +73,7 @@ fun WordNoteScreen(
     BackHandler(onBack = { setBackPressed(true) })
 
     TopbarHandler(
+        isVisible = true,
         title = if (isWordScreen) "단어장" else "오답노트",
         onBack = { nav ->
             setBackPressed(true)

@@ -88,6 +88,7 @@ fun StudyScreen(
     BackHandler(onBack = { setBackPressed(true) })
 
     TopbarHandler(
+        isVisible = true,
         title = "학습 퀴즈",
         onBack = { nav ->
             Log.d("nakyung", "QuizScreen: a")
