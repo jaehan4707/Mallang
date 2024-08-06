@@ -42,9 +42,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.feature.study.AnswerList
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Green1
@@ -56,25 +58,36 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun QuizResultScreen(
     modifier: Modifier = Modifier,
-    popUpBackStack: () -> Unit = {},
 ) {
     val studyResultViewModel: StudyResultViewModel = hiltViewModel()
     val studyResultState = studyResultViewModel.state
 
     var expandedItem by remember { mutableIntStateOf(-1) }
 
-    val isBackPressed = remember { mutableStateOf(false) }
+    // TopBar
+    val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
+    val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
+
     BackConfirmHandler(
-        isBackPressed = isBackPressed.value,
+        isBackPressed = isBackPressed,
         onConfirm = {
-            isBackPressed.value = false
-            popUpBackStack()
+            setBackPressed(false)
+            navController?.popBackStack()
         },
         onDismiss = {
-            isBackPressed.value = false
+            setBackPressed(false)
         },
     )
-    BackHandler(onBack = { isBackPressed.value = true })
+    BackHandler(onBack = { setBackPressed(true) })
+
+    TopbarHandler(
+        isVisible = true,
+        title = "풀이 결과",
+        onBack = { nav ->
+            setBackPressed(true)
+            setNavController(nav)
+        },
+    )
 
     Box(
         modifier =

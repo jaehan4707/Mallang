@@ -158,12 +158,6 @@ fun MallangNavHost(
 
             QuizResultScreen(
                 modifier = modifier,
-                popUpBackStack = {
-                    navController.popBackStack(
-                        DestinationMain.route,
-                        inclusive = false,
-                    )
-                },
             )
         }
     }
