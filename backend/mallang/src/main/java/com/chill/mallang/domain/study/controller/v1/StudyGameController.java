@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,9 +23,9 @@ public class StudyGameController {
     }
 
     @Operation(summary = "스터디 문제 요청", description = "스터디 게임 문제를 보여줍니다.")
-    @GetMapping("/game")
-    public ResponseEntity<?>StartStudyGame(HttpServletRequest request) {
-        Map<String, Object> response = gameService.StartGame(request);
+    @GetMapping("/game/{userId}")
+    public ResponseEntity<?>StartStudyGame(@PathVariable long userId) {
+        Map<String, Object> response = gameService.StartGame(userId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

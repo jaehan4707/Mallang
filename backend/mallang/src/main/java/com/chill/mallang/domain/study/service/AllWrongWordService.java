@@ -23,6 +23,7 @@ public class AllWrongWordService {
     StudyGameLogRepository studyGameLogRepository;
 
     public Map<String, Object> getWrongWord(Long userId){
+        logger.info(userId.toString());
         List<StudyGameLog> studyGameLogs = studyGameLogRepository.getWrongStudyGameLogByUserId(userId);
 
         ArrayList<WrongWordDto> wrongWords = new ArrayList<>();

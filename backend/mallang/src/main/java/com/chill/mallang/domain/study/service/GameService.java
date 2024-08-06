@@ -49,10 +49,8 @@ public class GameService {
         this.gameWordService = gameWordService;
     }
     //사용자 조회
-    private User getUserFromRequest(HttpServletRequest request) {
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String email = jwtUtil.extractEmail(token.substring(7));
-        return userRepository.findByEmail(email)
+    private User getUserFromRequest(Long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomUserErrorCode.USER_NOT_FOUND));
     }
     //wordmean에 대한 게임 유뮤 조회 -> 없으면 생성
@@ -117,12 +115,8 @@ public class GameService {
     }
 
 
-    public Map<String, Object> StartGame(HttpServletRequest request) {
-        if (!request.getMethod().equalsIgnoreCase("GET")) {
-            throw new RestApiException(CustomUserErrorCode.METHOD_NOT_ALLOWED);
-        }
-
-        User user = getUserFromRequest(request);
+    public Map<String, Object> StartGame(Long userId) {
+        User user = getUserFromRequest(userId);
         logger.info("StartGame User: " + user);
 
         WordMean selectedWordMean = gameWordService.getRandomUnusedWordMean(user.getId());

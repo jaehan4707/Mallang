@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
-@Getter
 @Entity
 @Getter
 @Setter
@@ -17,7 +15,6 @@ public class WordMean {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name= "word")
     @JsonBackReference
     private Word word;
 
