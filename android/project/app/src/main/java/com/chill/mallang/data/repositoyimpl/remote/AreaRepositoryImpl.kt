@@ -47,7 +47,7 @@ class AreaRepositoryImpl
                 val response = apiHandler { areaApi.getOccupationStatus() }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
+                        emit(ApiResponse.Success(response.body?.data))
                     }
 
                     is ApiResponse.Error -> {
@@ -68,7 +68,7 @@ class AreaRepositoryImpl
                 val response = apiHandler { areaApi.getTryCount(areaId) }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
+                        emit(ApiResponse.Success(response.body?.data))
                     }
 
                     is ApiResponse.Error -> {
@@ -92,7 +92,7 @@ class AreaRepositoryImpl
                 val response = apiHandler { areaApi.getAreaDetail(areaId, userTeam) }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
+                        emit(ApiResponse.Success(response.body?.data))
                     }
 
                     is ApiResponse.Error -> {
@@ -117,7 +117,7 @@ class AreaRepositoryImpl
 
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
+                        emit(ApiResponse.Success(response.body?.data))
                     }
                     is ApiResponse.Error -> {
                         emit(
