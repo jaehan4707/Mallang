@@ -127,7 +127,8 @@ fun HandleHomeUiEvent(
                     popUpBackStack()
                 }
 
-                HomeUiEvent.Logout -> {
+                is HomeUiEvent.Logout -> {
+                    onShowErrorSnackBar(homeUiEvent.message)
                     setShowSettingDialog(false)
                     popUpBackStack()
                 }

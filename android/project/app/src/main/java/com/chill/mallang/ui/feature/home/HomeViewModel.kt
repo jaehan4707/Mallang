@@ -77,7 +77,7 @@ class HomeViewModel
 
                         ApiResponse.Init -> {}
 
-                        is ApiResponse.Success -> _event.emit(HomeUiEvent.SignOut("회원가입에 성공했습니다"))
+                        is ApiResponse.Success -> _event.emit(HomeUiEvent.SignOut("회원탈퇴 성공"))
                     }
                 }
             }
@@ -96,7 +96,7 @@ class HomeViewModel
                             )
 
                         ApiResponse.Init -> {}
-                        is ApiResponse.Success -> _event.emit(HomeUiEvent.Logout)
+                        is ApiResponse.Success -> _event.emit(HomeUiEvent.Logout("로그아웃 성공"))
                     }
                 }
             }
