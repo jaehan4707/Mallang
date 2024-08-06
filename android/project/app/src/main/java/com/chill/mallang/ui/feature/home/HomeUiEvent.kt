@@ -21,11 +21,18 @@ sealed interface HomeUiEvent {
     data object Refresh : HomeUiEvent
 
     @Immutable
-    data class SignOut(val message: String) : HomeUiEvent
+    data class SignOut(
+        val message: String,
+    ) : HomeUiEvent
 
     @Immutable
-    data class Error(val errorCode: Int, val errorMessage: String) : HomeUiEvent
+    data class Error(
+        val errorCode: Int,
+        val errorMessage: String,
+    ) : HomeUiEvent
 
     @Immutable
-    data object Logout : HomeUiEvent
+    data class Logout(
+        val message: String,
+    ) : HomeUiEvent
 }

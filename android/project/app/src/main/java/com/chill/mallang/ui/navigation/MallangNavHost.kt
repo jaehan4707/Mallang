@@ -79,8 +79,9 @@ fun MallangNavHost(
                 modifier = Modifier,
                 navigateToGame = { navController.navigate(DestinationMap.route) },
                 navigateToWordNote = { navController.navigate(DestinationWordNote.route) },
-                popUpBackStack = { (context as Activity).finish() },
+                popUpBackStack = navController::popBackStack,
                 onShowErrorSnackBar = onShowErrorSnackBar,
+                exitApplication = { (context as Activity).finish() },
             )
         }
 

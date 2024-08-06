@@ -40,7 +40,8 @@ import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -90,6 +91,7 @@ fun LoginScreen(
         loginSuccess = { userEmail, userProfileImageUrl ->
             onLoginSuccess(userEmail, userProfileImageUrl)
         },
+        loginUiEvent = viewModel.uiEvent,
         showSnackBar = { errorMessage ->
             coroutineScope.launch {
                 snackBarHostState.showSnackbar(
@@ -169,17 +171,22 @@ fun GoogleLoginButton(
 @Composable
 fun HandleLoginEvent(
     loginUiState: LoginUiState,
+    loginUiEvent: SharedFlow<LoginUiEvent>,
     authLogin: () -> Unit,
     loginSuccess: (String, String) -> Unit,
     showSnackBar: (String) -> Unit,
 ) {
+    LaunchedEffect(loginUiEvent) {
+        loginUiEvent.collectLatest { event ->
+            when (event) {
+                LoginUiEvent.AuthLogin -> {
+                    authLogin()
+                }
+            }
+        }
+    }
     LaunchedEffect(loginUiState) {
         when (loginUiState) {
-            LoginUiState.AuthLogin -> {
-                delay(1L)
-                authLogin()
-            }
-
             is LoginUiState.Success -> {
                 loginSuccess(
                     loginUiState.userEmail ?: "",
