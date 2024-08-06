@@ -2,7 +2,6 @@ package com.chill.mallang.ui.feature.topbar
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
@@ -17,9 +16,14 @@ class TopbarViewModel
         private val savedStateHandle: SavedStateHandle,
         private val topbarRepository: TopbarRepository,
     ) : ViewModel() {
+        val isVisible = topbarRepository.isVisible
         val titleContent = topbarRepository.titleContent
-        val onBack by topbarRepository.onBack
-        val onHome by topbarRepository.onHome
+        val onBack = topbarRepository.onBack
+        val onHome = topbarRepository.onHome
+
+        fun updateVisibility(isVisible: Boolean) {
+            topbarRepository.updateVisibility(isVisible)
+        }
 
         fun updateTitle(title: String) {
             topbarRepository.updateTitle { Text(text = title, style = Typography.titleMedium) }

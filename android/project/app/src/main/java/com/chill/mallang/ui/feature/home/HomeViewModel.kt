@@ -16,87 +16,89 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel
-@Inject
-constructor(
-    private val userRepository: UserRepository,
-    private val dataStoreRepository: DataStoreRepository,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-    val uiState = _uiState.asStateFlow()
-    private val _event = MutableSharedFlow<HomeUiEvent>()
-    val event = _event.asSharedFlow()
+    @Inject
+    constructor(
+        private val userRepository: UserRepository,
+        private val dataStoreRepository: DataStoreRepository,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+        val uiState = _uiState.asStateFlow()
+        private val _event = MutableSharedFlow<HomeUiEvent>()
+        val event = _event.asSharedFlow()
 
-    init {
-        getUserInfo()
-    }
-
-    fun sendEvent(event: HomeUiEvent) {
-        viewModelScope.launch {
-            _event.emit(event)
+        init {
+            getUserInfo()
         }
-    }
 
+        fun sendEvent(event: HomeUiEvent) {
+            viewModelScope.launch {
+                _event.emit(event)
+            }
+        }
 
-    fun getUserInfo() {
-        viewModelScope.launch {
-            userRepository.getUserInfo().collectLatest { response ->
-                when (response) {
-                    is ApiResponse.Error -> {
-                        _event.emit(
-                            HomeUiEvent.Error(
-                                errorCode = response.errorCode,
-                                errorMessage = response.errorMessage,
+        fun getUserInfo() {
+            viewModelScope.launch {
+                userRepository.getUserInfo().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error -> {
+                            _event.emit(
+                                HomeUiEvent.Error(
+                                    errorCode = response.errorCode,
+                                    errorMessage = response.errorMessage,
+                                ),
                             )
-                        )
+                        }
+
+                        is ApiResponse.Success -> {
+                            _uiState.value =
+                                HomeUiState.LoadUserInfo(
+                                    userNickName = response.body?.nickName ?: "",
+                                    userFaction = response.body?.faction ?: "",
+                                )
+                        }
+
+                        ApiResponse.Init -> _uiState.value = HomeUiState.Loading
                     }
+                }
+            }
+        }
 
-                    is ApiResponse.Success -> {
-                        _uiState.value = HomeUiState.LoadUserInfo(
-                            userNickName = response.data?.nickName ?: "",
-                            userFaction = response.data?.faction ?: "",
-                        )
+        fun signOut() {
+            viewModelScope.launch {
+                userRepository.signOut().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error ->
+                            _event.emit(
+                                HomeUiEvent.Error(
+                                    errorMessage = response.errorMessage,
+                                    errorCode = response.errorCode,
+                                ),
+                            )
+
+                        ApiResponse.Init -> {}
+
+                        is ApiResponse.Success -> _event.emit(HomeUiEvent.SignOut("회원탈퇴 성공"))
                     }
+                }
+            }
+        }
 
-                    ApiResponse.Init -> _uiState.value = HomeUiState.Loading
+        fun logout() {
+            viewModelScope.launch {
+                dataStoreRepository.logout().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Error ->
+                            _event.emit(
+                                HomeUiEvent.Error(
+                                    errorCode = response.errorCode,
+                                    errorMessage = response.errorMessage,
+                                ),
+                            )
+
+                        ApiResponse.Init -> {}
+                        is ApiResponse.Success -> _event.emit(HomeUiEvent.Logout("로그아웃 성공"))
+                    }
                 }
             }
         }
     }
-
-    fun signOut() {
-        viewModelScope.launch {
-            userRepository.signOut().collectLatest { response ->
-                when (response) {
-                    is ApiResponse.Error -> _event.emit(
-                        HomeUiEvent.Error(
-                            errorMessage = response.errorMessage,
-                            errorCode = response.errorCode
-                        )
-                    )
-
-                    ApiResponse.Init -> {}
-
-                    is ApiResponse.Success -> _event.emit(HomeUiEvent.SignOut(response.data ?: ""))
-                }
-            }
-        }
-    }
-
-    fun logout() {
-        viewModelScope.launch {
-            dataStoreRepository.logout().collectLatest { response ->
-                when (response) {
-                    is ApiResponse.Error -> _event.emit(
-                        HomeUiEvent.Error(
-                            errorCode = response.errorCode,
-                            errorMessage = response.errorMessage
-                        )
-                    )
-
-                    ApiResponse.Init -> {}
-                    is ApiResponse.Success -> _event.emit(HomeUiEvent.Logout)
-                }
-            }
-        }
-    }
-}

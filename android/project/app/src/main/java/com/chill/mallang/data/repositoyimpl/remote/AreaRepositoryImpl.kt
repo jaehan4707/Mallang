@@ -22,7 +22,7 @@ class AreaRepositoryImpl
                     }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
+                        emit(ApiResponse.Success(response.body?.data))
                     }
 
                     is ApiResponse.Error -> {

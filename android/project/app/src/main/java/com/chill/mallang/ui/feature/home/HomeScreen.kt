@@ -58,6 +58,7 @@ fun HomeScreen(
     navigateToRank: () -> Unit = {},
     popUpBackStack: () -> Unit = {},
     onShowErrorSnackBar: (String) -> Unit = {},
+    exitApplication: () -> Unit = {},
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -75,6 +76,7 @@ fun HomeScreen(
         loadUserInfo = viewModel::getUserInfo,
         onShowErrorSnackBar = onShowErrorSnackBar,
         popUpBackStack = popUpBackStack,
+        exitApplication = exitApplication,
     )
 
     Box(
@@ -95,7 +97,7 @@ fun HomeScreen(
             onShowEditNickNameDialog = showEditNickNameDialog,
             onSignOut = viewModel::signOut,
             onLogOut = viewModel::logout,
-            popUpBackStack = popUpBackStack,
+            exitApplication = exitApplication,
         )
     }
 }
@@ -108,6 +110,7 @@ fun HandleHomeUiEvent(
     popUpBackStack: () -> Unit,
     loadUserInfo: () -> Unit,
     onShowErrorSnackBar: (String) -> Unit,
+    exitApplication: () -> Unit,
 ) {
     LaunchedEffect(Unit) {
         event.collectLatest { homeUiEvent ->
@@ -119,11 +122,16 @@ fun HandleHomeUiEvent(
                 HomeUiEvent.Refresh -> loadUserInfo()
                 is HomeUiEvent.Error -> onShowErrorSnackBar(homeUiEvent.errorMessage)
                 is HomeUiEvent.SignOut -> {
+                    setShowSettingDialog(false)
                     onShowErrorSnackBar(homeUiEvent.message)
                     popUpBackStack()
                 }
 
-                HomeUiEvent.Logout -> popUpBackStack()
+                is HomeUiEvent.Logout -> {
+                    onShowErrorSnackBar(homeUiEvent.message)
+                    setShowSettingDialog(false)
+                    popUpBackStack()
+                }
             }
         }
     }
@@ -142,7 +150,7 @@ fun HomeContent(
     onShowEditNickNameDialog: Boolean,
     onSignOut: () -> Unit,
     onLogOut: () -> Unit,
-    popUpBackStack: () -> Unit,
+    exitApplication: () -> Unit,
 ) {
     when (uiState) {
         is HomeUiState.Loading -> LoadingDialog()
@@ -154,7 +162,7 @@ fun HomeContent(
                 userFaction = uiState.userFaction,
                 navigateToGame = navigateToGame,
                 navigateToWordNote = navigateToWordNote,
-                popUpBackStack = popUpBackStack,
+                exitApplication = exitApplication,
                 navigateToQuest = navigateToQuest,
                 navigateToRank = navigateToRank,
                 onClickSetting = { sendEvent(HomeUiEvent.ShowSettingDialog) },
@@ -171,10 +179,11 @@ fun HomeContent(
                 EditNickNameDialogScreen(
                     onDismiss = { onEditNickName ->
                         sendEvent(HomeUiEvent.CloseEditNickNameDialog)
-                        if (onEditNickName) {
+                        if (onEditNickName != uiState.userNickName) {
                             sendEvent(HomeUiEvent.Refresh)
                         }
                     },
+                    userNickName = uiState.userNickName,
                 )
             }
         }
@@ -188,7 +197,7 @@ fun HomeScreenContent(
     userFaction: String = "",
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
-    popUpBackStack: () -> Unit = {},
+    exitApplication: () -> Unit = {},
     navigateToRank: () -> Unit = {},
     navigateToQuest: () -> Unit = {},
     onClickSetting: () -> Unit = {},
@@ -198,7 +207,7 @@ fun HomeScreenContent(
         isBackPressed = isBackPressed.value,
         onConfirm = {
             isBackPressed.value = false
-            popUpBackStack()
+            exitApplication()
         },
         onDismiss = {
             isBackPressed.value = false
