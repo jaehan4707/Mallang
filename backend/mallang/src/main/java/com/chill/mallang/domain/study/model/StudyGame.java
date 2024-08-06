@@ -1,9 +1,7 @@
 package com.chill.mallang.domain.study.model;
 
-import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

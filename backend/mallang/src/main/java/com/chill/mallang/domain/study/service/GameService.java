@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.study.service;
 
+import com.chill.mallang.domain.study.dto.StudyGameDTO;
 import com.chill.mallang.domain.study.dto.UserStudyLogRequestDTO;
 import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import com.chill.mallang.domain.study.errors.CustomStudyErrorCode;
@@ -25,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GameService {
@@ -96,14 +98,21 @@ public class GameService {
         return newStudyGame;
     }
 
-    private UserStudyLogRequestDTO createUserStudyLogRequestDTO(User user, StudyGame studyGame, WordMean wordMean) {
+    private StudyGameDTO createUserStudyLogRequestDTO(User user, StudyGame studyGame, WordMean wordMean) {
         WordMeanDTO wordMeanDTO = gameWordService.convertToDTO(wordMean);
-        System.out.println(wordMeanDTO);
-        return UserStudyLogRequestDTO.builder()
-                .userId(user.getId())
-                .studyGame(studyGame)
-                .wordMeanDTO(wordMeanDTO)
-                .result(false)
+        List<Map<String, String>> wordList = new ArrayList<>();
+        studyGame.getQuestion().getProblems().forEach(problem -> {
+            Map<String, String> wordMap = new HashMap<>();
+            wordMap.put(problem.getWord(), problem.getMean());
+            wordList.add(wordMap);
+        });
+        Map<String, String> answerMap = new HashMap<>();
+        answerMap.put(wordMean.getWord().getWord(), wordMean.getMean());
+        wordList.add(answerMap);
+        return StudyGameDTO.builder()
+                .studyId(studyGame.getId())
+                .quizScript(studyGame.getQuestionText())
+                .wordList(wordList)
                 .build();
     }
 
@@ -118,9 +127,9 @@ public class GameService {
 
         WordMean selectedWordMean = gameWordService.getRandomUnusedWordMean(user.getId());
         StudyGame studyGame = getOrCreateStudyGame(selectedWordMean);
-        UserStudyLogRequestDTO userStudyLogRequestDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);
+        StudyGameDTO studyGameDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);
         Map<String, Object> response = new HashMap<>();
-        response.put("data", userStudyLogRequestDTO);
+        response.put("data",studyGameDTO);
         return response;
     }
 }

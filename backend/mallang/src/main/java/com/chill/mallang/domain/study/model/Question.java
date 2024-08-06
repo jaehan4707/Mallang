@@ -19,7 +19,6 @@ public class Question {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "studyGame")
     @JsonBackReference
     private StudyGame studyGame;
 
