@@ -1,6 +1,7 @@
 package com.chill.mallang.domain.study.controller.v1;
 
 import com.chill.mallang.domain.study.service.AllWrongWordService;
+import com.chill.mallang.domain.study.service.OneWrongWordService;
 import com.chill.mallang.domain.study.service.StudiedWordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +26,9 @@ public class StudyController {
     @Autowired
     AllWrongWordService allWrongWordService;
 
+    @Autowired
+    OneWrongWordService oneWrongWordService;
+
     @Operation(summary = "풀었던 단어 목록 조회", description = "사용자가 학습했던 단어를 조회합니다.")
     @GetMapping("/studied-word/{userId}")
     public ResponseEntity<?> getStudiedWordInfo(@PathVariable Long userId) {
@@ -37,6 +41,13 @@ public class StudyController {
     public ResponseEntity<?> getAllWrongWordInfo(@PathVariable Long userId) {
         Map<String,Object> wrongWords = allWrongWordService.getWrongWord(userId);
         return new ResponseEntity<>(wrongWords, HttpStatus.OK);
+    }
+
+    @Operation(summary = "오답 문제 하나 조회", description = "특정 사용자가 틀린 특정 문제를 조회합니다.")
+    @GetMapping("/wrong-word/{userId}/{studyId}")
+    public ResponseEntity<?> getOneWrongWordInfo(@PathVariable Long userId, @PathVariable Long studyId) {
+        Map<String,Object> oneWrongWord = oneWrongWordService.getOneWrongWord(userId, studyId);
+        return new ResponseEntity<>(oneWrongWord,HttpStatus.OK);
     }
 
 }
