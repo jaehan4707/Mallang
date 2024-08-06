@@ -1,6 +1,6 @@
 package com.chill.mallang.domain.user.dto;
 
-import com.chill.mallang.domain.faction.model.FactionType;
+import com.chill.mallang.domain.faction.model.Faction;
 import lombok.Getter;
 import lombok.Setter;
 
