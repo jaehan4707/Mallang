@@ -13,7 +13,7 @@ public class Problem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "questionId")
+    @JoinColumn(name = "question")
     private Question question;
 
     private String word;

@@ -1,6 +1,8 @@
 package com.chill.mallang.domain.study.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +18,8 @@ public class Word {
 
     private String word;
 
-    @OneToMany(mappedBy = "word")
+    @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<WordMean> wordMean;
 
 }

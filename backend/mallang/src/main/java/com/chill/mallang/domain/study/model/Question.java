@@ -1,6 +1,7 @@
 package com.chill.mallang.domain.study.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,7 @@ public class Question {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "studyGame")
     private StudyGame studyGame;
 
     @OneToMany(mappedBy = "question")

@@ -1,6 +1,8 @@
 package com.chill.mallang.domain.study.model;
 
+import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +16,9 @@ public class StudyGame {
     private Long id;
 
     @ManyToOne
-    private WordMean wordmean;
+    @JoinColumn(name = "word")
+    private WordMean wordMean;
 
+//    @OneToOne(mappedBy = "studyGame", cascade = CascadeType.ALL)
     private String question;
 }
