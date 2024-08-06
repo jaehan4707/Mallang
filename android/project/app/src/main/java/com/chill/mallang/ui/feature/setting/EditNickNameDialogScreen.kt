@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -49,13 +50,14 @@ fun EditNickNameDialogScreen(
     val nicknameState = viewModel.nicknameState
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        if (userNickName == nicknameState.nickname) {
-            viewModel.resetUiState()
-        }
         nicknameState.updateNickname(userNickName)
     }
 
-
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetUiState()
+        }
+    }
 
     HandleEditNickNameUiEvent(
         uiState = uiState,
@@ -64,7 +66,7 @@ fun EditNickNameDialogScreen(
             if (userNickName != nicknameState.nickname) {
                 onDismiss(viewModel.nicknameState.nickname)
             }
-        }
+        },
     )
 
     EditNickNameDialogContent(
@@ -154,18 +156,18 @@ fun EditNickNameDialogContent(
                 Row {
                     LongBlackButton(
                         modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(40.dp),
+                            Modifier
+                                .weight(1f)
+                                .height(40.dp),
                         onClick = onChangeNickName,
                         text = stringResource(R.string.edit_nick_name_confirm),
                     )
                     Spacer(modifier = Modifier.weight(0.5f))
                     LongBlackButton(
                         modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(40.dp),
+                            Modifier
+                                .weight(1f)
+                                .height(40.dp),
                         onClick = onDismiss,
                         text = stringResource(R.string.edit_nick_name_dismiss),
                     )
