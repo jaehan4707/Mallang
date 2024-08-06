@@ -158,8 +158,8 @@ fun HomeContent(
         is HomeUiState.LoadUserInfo -> {
             HomeScreenContent(
                 modifier = modifier,
-                userNickName = uiState.userNickName,
-                userFaction = uiState.userFaction,
+                nickname = uiState.nickName,
+                factionId = uiState.factionId,
                 navigateToGame = navigateToGame,
                 navigateToWordNote = navigateToWordNote,
                 exitApplication = exitApplication,
@@ -179,11 +179,11 @@ fun HomeContent(
                 EditNickNameDialogScreen(
                     onDismiss = { onEditNickName ->
                         sendEvent(HomeUiEvent.CloseEditNickNameDialog)
-                        if (onEditNickName != uiState.userNickName) {
+                        if (onEditNickName != uiState.nickName) {
                             sendEvent(HomeUiEvent.Refresh)
                         }
                     },
-                    userNickName = uiState.userNickName,
+                    userNickName = uiState.nickName,
                 )
             }
         }
@@ -193,8 +193,8 @@ fun HomeContent(
 @Composable
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
-    userNickName: String = "",
-    userFaction: String = "",
+    nickname: String = "",
+    factionId: Int = 0,
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
     exitApplication: () -> Unit = {},
@@ -249,8 +249,8 @@ fun HomeScreenContent(
         )
         UserCharacter(
             modifier = modifier,
-            userNickName = userNickName,
-            userFaction = userFaction,
+            userNickName = nickname,
+            userFaction = factionId,
         )
         ModeButton(
             icon = R.drawable.ic_question,
@@ -329,7 +329,7 @@ internal fun UserItem(
 fun UserCharacter(
     modifier: Modifier = Modifier,
     userNickName: String,
-    userFaction: String,
+    userFaction: Int,
 ) {
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
@@ -405,6 +405,6 @@ fun ModeButton(
 @Composable
 fun HomePreview() {
     MallangTheme {
-        HomeScreenContent(userNickName = "짜이한")
+        HomeScreenContent(nickname = "짜이한")
     }
 }

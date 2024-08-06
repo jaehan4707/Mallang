@@ -52,8 +52,8 @@ class HomeViewModel
                         is ApiResponse.Success -> {
                             _uiState.value =
                                 HomeUiState.LoadUserInfo(
-                                    userNickName = response.body?.nickName ?: "",
-                                    userFaction = response.body?.faction ?: "",
+                                    nickName = response.body?.nickName ?: "",
+                                    factionId = response.body?.factionId ?: 0,
                                 )
                         }
 
