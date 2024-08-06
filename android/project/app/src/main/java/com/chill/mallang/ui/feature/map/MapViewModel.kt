@@ -56,7 +56,7 @@ class MapViewModel
                         is ApiResponse.Success -> {
                             _areaState.emit(
                                 AreasState.HasValue(
-                                    response.data ?: listOf(),
+                                    response.body ?: listOf(),
                                 ),
                             )
                         }

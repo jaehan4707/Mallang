@@ -4,8 +4,9 @@ import com.chill.mallang.data.api.UserApi
 import com.chill.mallang.data.model.apiHandler
 import com.chill.mallang.data.model.request.JoinRequest
 import com.chill.mallang.data.model.request.LoginRequest
+import com.chill.mallang.data.model.request.UpdateNickNameRequest
 import com.chill.mallang.data.model.response.ApiResponse
-import com.chill.mallang.data.model.response.UserInfo
+import com.chill.mallang.data.model.response.GetUserInfoResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.UserRepository
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +27,7 @@ class UserRepositoryImpl
                     }
                 when (response) {
                     is ApiResponse.Success -> {
-                        response.data?.data?.let {
+                        response.body?.data?.let {
                             emit(ApiResponse.Success(it.isRegister ?: true))
                         }
                     }
@@ -62,7 +63,7 @@ class UserRepositoryImpl
                     }
                 when (response) {
                     is ApiResponse.Success -> {
-                        response.data?.data?.let {
+                        response.body?.data?.let {
                             dataStoreRepository.saveAccessToken(it.token ?: "")
                             dataStoreRepository.saveUserEmail(email)
                             emit(ApiResponse.Success(it.isRegister ?: true))
@@ -108,7 +109,7 @@ class UserRepositoryImpl
                 }
             }
 
-        override suspend fun getUserInfo(): Flow<ApiResponse<UserInfo>> =
+        override suspend fun getUserInfo(): Flow<ApiResponse<GetUserInfoResponse>> =
             flow {
                 val response =
                     apiHandler {
@@ -116,7 +117,7 @@ class UserRepositoryImpl
                     }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
+                        emit(ApiResponse.Success(response.body?.data))
                     }
 
                     is ApiResponse.Error -> {
@@ -129,6 +130,74 @@ class UserRepositoryImpl
                     }
 
                     ApiResponse.Init -> {}
+                }
+            }
+
+        override suspend fun checkUserEmail(userEmail: String): Flow<ApiResponse<Unit>> =
+            flow {
+                val response =
+                    apiHandler {
+                        userApi.checkUserEmail(userEmail)
+                    }
+                when (response) {
+                    is ApiResponse.Success -> {
+                        emit(ApiResponse.Success(Unit))
+                    }
+
+                    is ApiResponse.Error -> {
+                        emit(
+                            ApiResponse.Error(
+                                errorCode = response.errorCode,
+                                errorMessage = response.errorMessage,
+                            ),
+                        )
+                    }
+
+                    ApiResponse.Init -> {}
+                }
+            }
+
+        override suspend fun updateNickName(userNickName: String): Flow<ApiResponse<String>> =
+            flow {
+                val response =
+                    apiHandler {
+                        userApi.updateNickName(UpdateNickNameRequest(userNickName))
+                    }
+                when (response) {
+                    is ApiResponse.Success -> {
+                        emit(ApiResponse.Success(userNickName))
+                    }
+
+                    is ApiResponse.Error -> {
+                        emit(
+                            ApiResponse.Error(
+                                errorCode = response.errorCode,
+                                errorMessage = response.errorMessage,
+                            ),
+                        )
+                    }
+
+                    ApiResponse.Init -> {}
+                }
+            }
+
+        override suspend fun signOut(): Flow<ApiResponse<Unit>> =
+            flow {
+                val response =
+                    apiHandler {
+                        userApi.signOut()
+                    }
+                when (response) {
+                    is ApiResponse.Error ->
+                        emit(
+                            ApiResponse.Error(
+                                errorCode = response.errorCode,
+                                errorMessage = response.errorMessage,
+                            ),
+                        )
+
+                    ApiResponse.Init -> {}
+                    is ApiResponse.Success -> emit(ApiResponse.Success(response.body))
                 }
             }
     }

@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.game.game01
+package com.chill.mallang.ui.feature.game.game01.SubView
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,40 +9,47 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.chill.mallang.R
+import com.chill.mallang.ui.component.LongBlackButtonWithTimer
+import com.chill.mallang.ui.feature.game.game01.Game01ViewModel
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
-fun Game01PlayScreen(modifier: Modifier = Modifier) {
+fun Game01PlayScreen(
+    round: Int = 0,
+    roundQuesetion: String = "",
+    userAnswer: String = "",
+    submitUserAnswer: () -> Unit = {},
+    onUserAnswerChanged: (String) -> Unit = {},
+    viewModel: Game01ViewModel = viewModel(),
+    modifier: Modifier = Modifier
+) {
     val scrollState = rememberScrollState()
 
     val view = LocalView.current
@@ -50,23 +57,67 @@ fun Game01PlayScreen(modifier: Modifier = Modifier) {
         insets
     }
 
+    val remainingTime by viewModel.remainingTime.collectAsStateWithLifecycle()
+
+    if(remainingTime == 0) {
+        submitUserAnswer()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.startTimer()
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .verticalScroll(scrollState),
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        QuestionBox(
-            systemMessage = "지문을 요약하세요.",
-            quizScript = "현대 사회에서 기술 발전은 일상생활에 큰 영향을 미치고 있다. 스마트폰과 같은 휴대용 기기의 보급으로 언제 어디서나 정보에 접근할 수 있게 되었으며, 이는 지식 탐구와 업무 효율성에 기여했다. 그러나 기술의 확산은 사생활 침해, 정보의 비대칭성, 디지털 격차와 같은 부정적인 측면도 있다. 디지털 격차는 정보 접근에 있어서 계층 간 불평등을 야기하며 사회 통합을 저해할 수 있다. 따라서 기술 발전의 영향을 다각도로 분석하고, 부정적인 영향을 최소화하는 정책이 필요하다."
-        )
-        AnswerBox()
-        ButtonBox()
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(id = R.string.remaing_time_format, String.format("%02d : %02d", remainingTime / 60, remainingTime % 60)),
+                color = Color.Black,
+                style = Typography.displayLarge,
+                fontSize = 40.sp,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.Center)
+            )
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            item{
+                QuestionBody(
+                    systemMessage = stringResource(id = R.string.question_message),
+                    quizScript = roundQuesetion
+                )
+            }
+            item{
+                AnswerBody(
+                    userAnswer = userAnswer,
+                    onUserAnswerChanged = onUserAnswerChanged,
+                )
+            }
+            item{
+                ButtonBody(
+                    remaingTime = remainingTime,
+                    timeLimit = viewModel.ROUND_TIME_LIMIT,
+                    submitUserAnswer = submitUserAnswer
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun QuestionBox(
+fun QuestionBody(
     systemMessage: String,
     quizScript: String
 ) {
@@ -85,13 +136,7 @@ fun QuestionBox(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Q.",
-                    style = Typography.titleSmall,
-                    fontSize = 20.sp
-                )
-                Box(modifier = Modifier.width(10.dp))
-                Text(
-                    text = systemMessage,
+                    text = stringResource(id = R.string.question_message_format, systemMessage),
                     style = Typography.titleSmall,
                     fontSize = 20.sp
                 )
@@ -105,7 +150,7 @@ fun QuestionBox(
             )
             Box(modifier = Modifier.height(15.dp))
             Text(
-                text = quizScript + quizScript,
+                text = quizScript,
                 style = Typography.titleSmall,
                 fontSize = 20.sp,
                 lineHeight = 30.sp
@@ -115,9 +160,10 @@ fun QuestionBox(
 }
 
 @Composable
-fun AnswerBox() {
-    var text by remember { mutableStateOf("") }
-
+fun AnswerBody(
+    userAnswer: String,
+    onUserAnswerChanged: (String) -> Unit,
+) {
     Box(
         modifier = Modifier
             .padding(12.dp)
@@ -125,7 +171,7 @@ fun AnswerBox() {
             .fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 30.dp, vertical = 20.dp),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -149,9 +195,9 @@ fun AnswerBox() {
             )
             Box(modifier = Modifier.height(15.dp))
             BasicTextField(
-                value = text,
-                onValueChange = { newText ->
-                    text = newText
+                value = userAnswer,
+                onValueChange = {
+                    onUserAnswerChanged(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -168,73 +214,22 @@ fun AnswerBox() {
 }
 
 @Composable
-fun ButtonBox(modifier: Modifier = Modifier) {
+fun ButtonBody(
+    remaingTime: Int,
+    timeLimit: Int,
+    submitUserAnswer: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center
     ) {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(horizontal = 50.dp),
-            onClick = {},
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(
-                Color.Black,
-                Color.White
-            )
-        ) {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Text(
-                    "제출하기",
-                    style = Typography.titleSmall,
-                    fontSize = 20.sp,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-                ProgressWithText(100, modifier = Modifier.align(Alignment.CenterEnd))
-            }
-        }
-    }
-}
-
-@Composable
-fun ProgressWithText(duration: Int, modifier: Modifier = Modifier) {
-    val remainingTime = remember { mutableStateOf(duration) }
-    val progress = remember { mutableStateOf(1f) }
-    val textSize = 18.sp
-
-    LaunchedEffect(Unit) {
-        while (remainingTime.value > 0) {
-            kotlinx.coroutines.delay(1000)
-            remainingTime.value -= 1
-            progress.value = remainingTime.value.toFloat() / duration.toFloat()
-        }
-    }
-
-    Box(
-        modifier = modifier
-            .size(100.dp)
-            .background(Color.Transparent),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            progress = progress.value,
-            modifier = Modifier.size(30.dp),
-            strokeWidth = 2.dp,
-            color = Color.White
-        )
-
-        Text(
-            text = "${remainingTime.value}",
-            fontSize = textSize,
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.Center),
-            style = Typography.titleSmall
+        LongBlackButtonWithTimer(
+            onClick = { submitUserAnswer() },
+            buttonText = stringResource(id = R.string.submit_message),
+            remainingTime = remaingTime,
+            timeLimit = timeLimit,
+            modifier = modifier.padding(horizontal = 20.dp)
         )
     }
 }

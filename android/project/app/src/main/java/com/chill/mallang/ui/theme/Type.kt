@@ -48,7 +48,7 @@ private val galmuri11Body2 = TextStyle(
 )
 
 private val galmuri11Body3 = TextStyle(
-    fontFamily = omuyPrettyFamily,
+    fontFamily = galmuri11Family,
     fontWeight = FontWeight.Medium,
     fontSize = 14.sp,
     letterSpacing = (-0.07).em
@@ -83,11 +83,12 @@ private val omyuPrettyBody1 = TextStyle(
     letterSpacing = (-0.07).em
 )
 
-private val omyuPrettyBody = TextStyle(
-    fontFamily = omuyPrettyFamily,
-    fontWeight = FontWeight.Medium,
-    fontSize = 18.sp
-)
+private val omyuPrettyBody =
+    TextStyle(
+        fontFamily = omuyPrettyFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 24.sp,
+    )
 
 private val omyuPrettyBody2 = TextStyle(
     fontFamily = omuyPrettyFamily,

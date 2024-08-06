@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.word
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,109 +32,150 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun WordNoteScreen(
     modifier: Modifier = Modifier,
-    popUpBackStack: () -> Unit = {},
-    navigateToQuiz: () -> Unit = {},
+    navigateToQuiz: (Int) -> Unit = {},
 ) {
-    // 더미 데이터
-    val wordList =
-        arrayListOf(
-            WordCard(
-                word = "괄목",
-                meaning = "눈을 비비고 볼 정도로 매우 놀라다.",
-                example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-            ),
-            WordCard(
-                word = "상대",
-                meaning = "서로 마주 대하다.",
-                example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-            ),
-            WordCard(
-                word = "과장",
-                meaning = "사실보다 지나치게 불려서 말하거나 행동하다.",
-                example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-            ),
-            WordCard(
-                word = "시기",
-                meaning = "때나 경우.",
-                example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-            ),
-        )
+    val wordViewModel: WordNoteViewModel = hiltViewModel()
+    val state = wordViewModel.state
 
+    var isWordScreen by remember { mutableStateOf(true) }
     var selectedWordIndex by remember { mutableStateOf<Int?>(null) }
 
-    val isBackPressed = remember { mutableStateOf(false) }
+    // TopBar
+    val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
+    val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
+
     BackConfirmHandler(
-        isBackPressed = isBackPressed.value,
+        isBackPressed = isBackPressed,
         onConfirm = {
-            isBackPressed.value = false
-            popUpBackStack()
+            setBackPressed(false)
+            navController?.popBackStack()
         },
         onDismiss = {
-            isBackPressed.value = false
+            setBackPressed(false)
         },
     )
-    BackHandler(onBack = { isBackPressed.value = true })
+    BackHandler(onBack = { setBackPressed(true) })
+
+    TopbarHandler(
+        title = if (isWordScreen) "단어장" else "오답노트",
+        onBack = { nav ->
+            setBackPressed(true)
+            setNavController(nav)
+        },
+    )
 
     Box(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(color = Color.White),
+                .background(color = White),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            WordList(wordList = wordList, onWordClick = { index ->
-                selectedWordIndex = index
-            })
-        }
-        Button(
-            onClick = { navigateToQuiz() },
-            modifier =
-                Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                    .widthIn(min = 180.dp) // 버튼의 최소 너비
-                    .heightIn(min = 80.dp),
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = Gray6,
-                ),
-            shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
-        ) {
-            Text(
-                text = "퀴즈 풀기      >",
-                style = Typography.headlineLarge,
+            Button(
+                modifier = Modifier.padding(12.dp),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        contentColor = White,
+                        containerColor = Gray6,
+                    ),
+                shape = RoundedCornerShape(10.dp),
+                onClick = {
+                    if (isWordScreen) {
+                        wordViewModel.loadIncorrectWords()
+                        isWordScreen = false
+                    } else {
+                        wordViewModel.loadWords()
+                        isWordScreen = true
+                    }
+                },
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_change),
+                        contentDescription = null,
+                    )
+                    Spacer(modifier = Modifier.width(7.dp))
+                    Text(
+                        text = if (isWordScreen) "오답노트로 변경" else "단어장으로 변경",
+                        style = Typography.displayMedium,
+                    )
+                }
+            }
+
+            WordList(
+                wordList = state.wordList,
+                onWordClick = { index ->
+                    selectedWordIndex = index
+                },
             )
+        }
+        if (isWordScreen) {
+            Button(
+                onClick = {
+                    navigateToQuiz(-1) // 일반적인 문제 풀이
+                },
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올
+                        .widthIn(min = 180.dp) // 버튼의 최소 너비
+                        .heightIn(min = 80.dp),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Gray6,
+                    ),
+                shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
+            ) {
+                Text(
+                    text = "퀴즈 풀기   >",
+                    style = Typography.headlineLarge,
+                )
+            }
         }
     }
 
-    Log.d("nakyung", selectedWordIndex.toString())
-
-    selectedWordIndex?.let { index ->
-        WordCardDialog(
-            index = index,
-            wordCards = wordList,
-            onDismiss = { selectedWordIndex = null },
-        )
+    if (isWordScreen) {
+        selectedWordIndex?.let { index ->
+            WordCardDialog(
+                index = index,
+                wordCards = state.wordList,
+                onDismiss = { selectedWordIndex = null },
+            )
+        }
+    } else {
+        // 오답노트일 때는 그때 풀었던 거 보여줌.
+        selectedWordIndex?.let { index ->
+            val word = state.wordList[index]
+            if (word is Word.IncorrectWord) {
+                navigateToQuiz(word.studyId)
+            }
+        }
     }
 }
 
 @Composable
 fun WordList(
-    wordList: List<WordCard>,
+    wordList: List<Word>,
     onWordClick: (Int) -> Unit,
 ) {
     val configuration = LocalConfiguration.current
@@ -152,7 +194,7 @@ fun WordList(
     }
 
     Box(
-        modifier = Modifier.padding(12.dp),
+        modifier = Modifier.padding(horizontal = 12.dp),
     ) {
         LazyColumn(
             modifier =
@@ -179,7 +221,7 @@ fun WordList(
 @Composable
 fun QuizListItem(
     number: Int,
-    wordList: List<WordCard>,
+    wordList: List<Word>,
     onClick: () -> Unit,
 ) {
     Box(modifier = Modifier.height(7.dp))
@@ -194,19 +236,12 @@ fun QuizListItem(
             )
         }
         Box(modifier = Modifier.width(4.dp))
-        if (wordList.isNotEmpty()) {
-            Text(
-                text = wordList[number - 1].word,
-                style = Typography.displayLarge, // 자간 조절한 폰트
-            )
-        } else {
-            Text(
-                text = "",
-                style = Typography.displayLarge, // 자간 조절한 폰트
-            )
-        }
+        Text(
+            text = if (wordList.isNotEmpty()) wordList[number - 1].word else "",
+            style = Typography.headlineMedium,
+        )
     }
-    Box(modifier = Modifier.height(4.dp))
+    Box(modifier = Modifier.height(7.dp))
     HorizontalDivider(thickness = 2.dp, color = Gray6)
 }
 

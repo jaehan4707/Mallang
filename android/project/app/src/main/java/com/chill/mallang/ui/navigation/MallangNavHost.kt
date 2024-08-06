@@ -5,8 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.chill.mallang.ui.feature.fort_detail.FortDetailScreen
 import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
@@ -87,9 +89,11 @@ fun MallangNavHost(
         ) {
             WordNoteScreen(
                 modifier = modifier,
-                popUpBackStack = { navController.popBackStack() },
+//                popUpBackStack = { navController.popBackStack() },
                 navigateToQuiz = {
-                    navController.navigate(DestinationQuiz.route) {
+                    navController.navigate(
+                        DestinationQuiz.createRoute(studyId = it),
+                    ) {
                         popUpTo(DestinationMain.route) {
                             inclusive = false
                         }
@@ -104,7 +108,7 @@ fun MallangNavHost(
             MapScreen(
                 onShowAreaDetail = { area ->
                     navController.navigate(DestinationAreaDetail.createRoute(area.areaId))
-                }
+                },
             )
         }
 
@@ -117,11 +121,12 @@ fun MallangNavHost(
         }
 
         composable(
-            route = DestinationQuiz.route,
-        ) {
+            route = DestinationQuiz.routeWithArgs,
+            arguments = listOf(navArgument("studyId") { type = NavType.IntType }),
+        ) { backStackEntry ->
             QuizScreen(
                 modifier = modifier,
-                popUpBackStack = { navController.popBackStack() },
+//                popUpBackStack = { navController.popBackStack() },
                 navigateToQuizResult = {
                     navController.navigate(
                         DestinationQuizResult.createRoute(
@@ -133,6 +138,7 @@ fun MallangNavHost(
                         }
                     }
                 },
+                studyId = backStackEntry.arguments?.getInt("studyId") ?: -1,
             )
         }
 

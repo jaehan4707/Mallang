@@ -19,22 +19,25 @@ import com.chill.mallang.ui.theme.Typography
 fun LongBlackButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    text: String) {
+    text: String,
+) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            contentColor = White,
-            containerColor = Gray6
-        ),
+        colors =
+            ButtonDefaults.buttonColors(
+                contentColor = White,
+                containerColor = Gray6,
+            ),
         shape = RoundedCornerShape(10.dp),
         border = BorderStroke(1.dp, Gray4),
-        modifier = modifier
-            .fillMaxWidth(0.8f)
-            .height(48.dp)
+        modifier =
+            modifier
+                .fillMaxWidth(0.8f)
+                .height(48.dp),
     ) {
         Text(
             text,
-            style = Typography.displayLarge
+            style = Typography.displayLarge,
         )
     }
 }

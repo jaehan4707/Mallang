@@ -14,7 +14,7 @@ import javax.inject.Inject
 class QuizResultViewModel
     @Inject
     constructor(
-        private val savedStandHandle: SavedStateHandle,
+        savedStandHandle: SavedStateHandle,
     ) : ViewModel() {
         var state by mutableStateOf(QuizResultState())
             private set
