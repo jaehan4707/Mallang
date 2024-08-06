@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
+import com.chill.mallang.data.model.entity.GameUserRecord
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
 
@@ -316,7 +317,7 @@ fun RecordBody(
 
 @Composable
 fun TeamTab(
-    recordList: List<UserRecord>,
+    recordList: List<GameUserRecord>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -333,7 +334,7 @@ fun TeamTab(
 
 @Composable
 fun RecordListItem(
-    userRecord: UserRecord,
+    userRecord: GameUserRecord,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -367,7 +368,7 @@ fun RecordListItem(
                 modifier = Modifier.weight(1f),
             )
             Text(
-                text = stringResource(R.string.user_record_score, userRecord.userScore),
+                text = stringResource(R.string.user_record_score, userRecord.userScore.toInt()),
                 fontSize = 22.sp,
                 style = Typography.displayLarge,
             )

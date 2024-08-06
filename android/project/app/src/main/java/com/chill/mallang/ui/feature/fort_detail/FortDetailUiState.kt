@@ -1,8 +1,9 @@
-package com.chill.mallang.ui.feature.fort_detail
+ package com.chill.mallang.ui.feature.fort_detail
 
 import androidx.compose.runtime.Stable
+import com.chill.mallang.data.model.entity.GameUserRecord
 
-@Stable
+ @Stable
 sealed interface OccupationState {
     data object Loading : OccupationState
 
@@ -22,9 +23,9 @@ sealed interface TeamLeadersState {
     data object Loading : TeamLeadersState
 
     data class Success(
-        val userRecord: UserRecord,
-        val myTeamRecords: List<UserRecord>,
-        val oppoTeamRecords: List<UserRecord>,
+        val userRecord: GameUserRecord,
+        val myTeamRecords: List<GameUserRecord>,
+        val oppoTeamRecords: List<GameUserRecord>,
     ) : TeamLeadersState
 
     data class Error(
@@ -42,12 +43,4 @@ data class UserInfo(
     val userId: Int,
     val userName: String,
     val userTier: Int,
-)
-
-data class UserRecord(
-    val userPlace: Int,
-    val userId: Int,
-    val userName: String,
-    val userScore: Int,
-    val userPlayTime: Int,
 )
