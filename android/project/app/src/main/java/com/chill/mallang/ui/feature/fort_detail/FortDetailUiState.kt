@@ -50,10 +50,9 @@ sealed interface ErrorMessage {
         val errorMessageId: Int,
     ) : ErrorMessage
 
-    fun getErrorMessage(context: Context): String {
-        return when (this) {
+    fun getErrorMessage(context: Context): String =
+        when (this) {
             is NetworkError -> errorMessage
             is RuntimeError -> context.getString(errorMessageId)
         }
-    }
 }

@@ -26,8 +26,10 @@ class FortDetailViewModel
         val teamRecordStateFlow = _teamRecordStateFlow.asStateFlow()
 
         fun invalidateData() {
-            _areaDetailStateFlow.value = AreaDetailState.Error(ErrorMessage.RuntimeError(R.string.invalid_entry))
-            _teamRecordStateFlow.value = TeamRecordState.Error(ErrorMessage.RuntimeError(R.string.invalid_entry))
+            _areaDetailStateFlow.value =
+                AreaDetailState.Error(ErrorMessage.RuntimeError(R.string.invalid_entry))
+            _teamRecordStateFlow.value =
+                TeamRecordState.Error(ErrorMessage.RuntimeError(R.string.invalid_entry))
         }
 
         fun loadOccupationState(
