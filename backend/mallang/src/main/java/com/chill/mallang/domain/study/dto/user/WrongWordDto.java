@@ -1,7 +1,5 @@
 package com.chill.mallang.domain.study.dto.user;
 
-// StudiedWordService의 wordCard를 위한 dto
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class WordCardDto {
+public class WrongWordDto {
+    private Long StudyId;
     private String word;
-    private String meaning;
-    private String example;
 }
