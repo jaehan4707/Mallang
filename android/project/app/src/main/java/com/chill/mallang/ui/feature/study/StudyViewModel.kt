@@ -11,10 +11,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class QuizViewModel
+class StudyViewModel
     @Inject
     constructor() : ViewModel() {
-        var state by mutableStateOf(QuizState())
+        var state by mutableStateOf(StudyState())
             private set
 
         var selectedAnswer by mutableIntStateOf(-1)
