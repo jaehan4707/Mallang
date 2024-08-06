@@ -34,7 +34,7 @@ public class AreaStatusService {
             }
         }
 
-        ArrayList<Map> teams = new ArrayList<>();
+        ArrayList<Map> areaStatusInfo = new ArrayList<>();
 
         // 실제 정보 들어가는 Map
         for (Faction faction : factions) {
@@ -47,13 +47,8 @@ public class AreaStatusService {
                 team.put("area",lang);
             }
             // 리스트에 넣기
-            teams.add(team);
+            areaStatusInfo.add(team);
         }
-
-        //teams Map에 넣기
-        Map<String,Object> areaStatusInfo = new HashMap<>(){{
-            put("teams",teams);
-        }};
 
         //data Map에 넣기
         return new HashMap<>(){{
