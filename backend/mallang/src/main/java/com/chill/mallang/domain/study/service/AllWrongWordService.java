@@ -29,7 +29,7 @@ public class AllWrongWordService {
         for (StudyGameLog studyGameLog : studyGameLogs) {
             WrongWordDto wrongWord = WrongWordDto.builder()
                     .StudyId(studyGameLog.getStudyGame().getId())
-                    .word(studyGameLog.getStudyGame().getQuestion())
+                    .word(studyGameLog.getStudyGame().getQuestionText())
                     .build();
 
             wrongWords.add(wrongWord);

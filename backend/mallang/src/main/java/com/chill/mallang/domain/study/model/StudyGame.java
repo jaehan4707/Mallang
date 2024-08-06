@@ -16,5 +16,5 @@ public class StudyGame {
     @ManyToOne
     private WordMean wordmean;
 
-    private String question;
+    private String questionText;
 }
