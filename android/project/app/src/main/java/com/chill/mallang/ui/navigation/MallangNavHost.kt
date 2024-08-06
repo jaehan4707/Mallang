@@ -15,8 +15,8 @@ import com.chill.mallang.ui.feature.map.MapScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.quiz.QuizScreen
 import com.chill.mallang.ui.feature.quiz_result.QuizResultScreen
-import com.chill.mallang.ui.feature.word.WordNoteScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
+import com.chill.mallang.ui.feature.word.WordNoteScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -77,8 +77,9 @@ fun MallangNavHost(
                 modifier = Modifier,
                 navigateToGame = { navController.navigate(DestinationMap.route) },
                 navigateToWordNote = { navController.navigate(DestinationWordNote.route) },
-                popUpBackStack = { (context as Activity).finish() },
+                popUpBackStack = navController::popBackStack,
                 onShowErrorSnackBar = onShowErrorSnackBar,
+                exitApplication = { (context as Activity).finish() },
             )
         }
 
@@ -104,13 +105,13 @@ fun MallangNavHost(
             MapScreen(
                 onShowAreaDetail = { area ->
                     navController.navigate(DestinationAreaDetail.createRoute(area.areaId))
-                }
+                },
             )
         }
 
         composable(
             route = DestinationAreaDetail.routeWithArgs,
-            arguments = DestinationAreaDetail.arguments
+            arguments = DestinationAreaDetail.arguments,
         ) { navBackStackEntry ->
             val areaId = navBackStackEntry.arguments?.getLong(DestinationAreaDetail.arg)
             FortDetailScreen(areaId = areaId)
