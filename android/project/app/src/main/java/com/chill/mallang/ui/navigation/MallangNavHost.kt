@@ -15,8 +15,8 @@ import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.map.MapScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
-import com.chill.mallang.ui.feature.quiz.QuizScreen
-import com.chill.mallang.ui.feature.quiz_result.QuizResultScreen
+import com.chill.mallang.ui.feature.study.QuizScreen
+import com.chill.mallang.ui.feature.study_result.QuizResultScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
 import com.chill.mallang.ui.feature.word.WordNoteScreen
 import java.net.URLEncoder

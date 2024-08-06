@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.quiz
+package com.chill.mallang.ui.feature.study
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -46,8 +46,8 @@ import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.CustomSnackBar
-import com.chill.mallang.ui.feature.quiz_result.AnswerResultListItem
-import com.chill.mallang.ui.feature.quiz_result.QuizResultState
+import com.chill.mallang.ui.feature.study_result.AnswerResultListItem
+import com.chill.mallang.ui.feature.study_result.QuizResultState
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6

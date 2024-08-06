@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.quiz
+package com.chill.mallang.ui.feature.study
 
 data class QuizState(
     val studyId: Int = -1,

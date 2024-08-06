@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.quiz
+package com.chill.mallang.ui.feature.study
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
