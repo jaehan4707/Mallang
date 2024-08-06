@@ -54,9 +54,9 @@ object GameUserRecordListSerializer : JsonTransformingSerializer<List<GameUserRe
                 val score = it.jsonArray[1].jsonPrimitive.float
                 JsonObject(
                     mapOf(
-                        "rank" to JsonPrimitive(0),
-                        "nickname" to JsonPrimitive(nickname),
-                        "score" to JsonPrimitive(score),
+                        "userPlace" to JsonPrimitive(0),
+                        "userName" to JsonPrimitive(nickname),
+                        "userScore" to JsonPrimitive(score),
                     ),
                 )
             }

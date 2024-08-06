@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GameUserRecord(
-    val rank: Int,
-    val nickname: String,
-    val score: Float,
+    val userPlace: Int,
+    val userName: String,
+    val userScore: Float,
 )
