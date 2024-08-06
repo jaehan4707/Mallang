@@ -61,23 +61,24 @@ class DataStoreRepositoryImpl
                 )
             }
 
-    override suspend fun logout(): Flow<ApiResponse<Unit>> = flow {
-        val emailDeletionResult = runCatching { deleteUserEmail() }
-        val tokenDeletionResult = runCatching { deleteAccessToken() }
-        if (emailDeletionResult.isSuccess && tokenDeletionResult.isSuccess) {
-            emit(ApiResponse.Success(Unit))
-        } else {
-            val errors = mutableListOf<String>()
-            emailDeletionResult.exceptionOrNull()?.message?.let { errors.add(it) }
-            tokenDeletionResult.exceptionOrNull()?.message?.let { errors.add(it) }
-            if (errors.isNotEmpty()) {
-                emit(ApiResponse.Error(errorCode = 500, errorMessage = errors.joinToString(", ")))
+        override suspend fun logout(): Flow<ApiResponse<Unit>> =
+            flow {
+                val emailDeletionResult = runCatching { deleteUserEmail() }
+                val tokenDeletionResult = runCatching { deleteAccessToken() }
+                if (emailDeletionResult.isSuccess && tokenDeletionResult.isSuccess) {
+                    emit(ApiResponse.Success(Unit))
+                } else {
+                    val errors = mutableListOf<String>()
+                    emailDeletionResult.exceptionOrNull()?.message?.let { errors.add(it) }
+                    tokenDeletionResult.exceptionOrNull()?.message?.let { errors.add(it) }
+                    if (errors.isNotEmpty()) {
+                        emit(ApiResponse.Error(errorCode = 500, errorMessage = errors.joinToString(", ")))
+                    }
+                }
             }
+
+        companion object {
+            val ACCESS_TOKEN_KEY = stringPreferencesKey("ACCESS_TOKEN_KEY")
+            val USER_EMAIL_KEY = stringPreferencesKey("USER_EMAIL_KEY")
         }
     }
-
-    companion object {
-        val ACCESS_TOKEN_KEY = stringPreferencesKey("ACCESS_TOKEN_KEY")
-        val USER_EMAIL_KEY = stringPreferencesKey("USER_EMAIL_KEY")
-    }
-}
