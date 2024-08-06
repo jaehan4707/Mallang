@@ -5,13 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetUserInfoResponse(
-    val data: UserInfo? = null,
-    val success: String? = null,
-    val status: Int? = null,
-)
-
-@Serializable
-data class UserInfo(
     @SerialName("nickname")
     val nickName: String? = null,
     @SerialName("faction")
