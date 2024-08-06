@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.study.dto;
 
+import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import com.chill.mallang.domain.study.model.StudyGame;
 import com.chill.mallang.domain.study.model.WordMean;
 import com.chill.mallang.domain.user.model.User;
@@ -18,7 +19,7 @@ public class UserStudyLogRequestDTO {
     @ManyToOne
     private StudyGame studyGame;
 
-    private long wordMeanId;
+    private WordMeanDTO wordMeanDTO;
 
     private boolean result;
 }

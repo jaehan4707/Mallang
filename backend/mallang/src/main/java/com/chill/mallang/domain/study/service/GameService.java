@@ -1,7 +1,10 @@
 package com.chill.mallang.domain.study.service;
 
 import com.chill.mallang.domain.study.dto.UserStudyLogRequestDTO;
+import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import com.chill.mallang.domain.study.errors.CustomStudyErrorCode;
+import com.chill.mallang.domain.study.model.Problem;
+import com.chill.mallang.domain.study.model.Question;
 import com.chill.mallang.domain.study.model.StudyGame;
 import com.chill.mallang.domain.study.model.WordMean;
 import com.chill.mallang.domain.study.repository.StudyGameLogRepository;
@@ -50,17 +53,34 @@ public class GameService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RestApiException(CustomUserErrorCode.USER_NOT_FOUND));
     }
-
+    //wordmean에 대한 게임 유뮤 조회 -> 없으면 생성
     @Transactional
     public StudyGame createStudyGameWithWordMean(Long wordMeanId) {
         WordMean wordMean = wordMeanRepository.findById(wordMeanId)
                 .orElseThrow(() ->  new RestApiException(CustomStudyErrorCode.WORDMEAN_IS_NOT_FOUND));
 
         StudyGame studyGame = new StudyGame();
-        String question = "What is the meaning of this word?";
+        String questionText = "What is the meaning of this word?";
         studyGame.setWordMean(wordMean);
+        studyGame.setQuestionText(questionText);
+        Question question = new Question();
+        question.setStudyGame(studyGame);
         studyGame.setQuestion(question);
+        Problem problem1 = new Problem();
+        problem1.setWord("ExampleWord1");
+        problem1.setMean("ExampleMean1");
+        Problem problem2 = new Problem();
+        problem2.setWord("ExampleWord2");
+        problem2.setMean("ExampleMean2");
+        Problem problem3 = new Problem();
+        problem3.setWord("ExampleWord3");
+        problem3.setMean("ExampleMean3");
 
+        question.addProblem(problem1);
+        question.addProblem(problem2);
+        question.addProblem(problem3);
+
+        studyGame.setQuestion(question);
         return studyGameRepository.save(studyGame);
     }
 
@@ -77,10 +97,12 @@ public class GameService {
     }
 
     private UserStudyLogRequestDTO createUserStudyLogRequestDTO(User user, StudyGame studyGame, WordMean wordMean) {
+        WordMeanDTO wordMeanDTO = gameWordService.convertToDTO(wordMean);
+        System.out.println(wordMeanDTO);
         return UserStudyLogRequestDTO.builder()
                 .userId(user.getId())
                 .studyGame(studyGame)
-                .wordMeanId(wordMean.getId())
+                .wordMeanDTO(wordMeanDTO)
                 .result(false)
                 .build();
     }

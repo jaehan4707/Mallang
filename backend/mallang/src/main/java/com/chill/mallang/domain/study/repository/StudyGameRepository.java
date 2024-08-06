@@ -6,8 +6,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public interface StudyGameRepository extends JpaRepository<StudyGame, Long> {
     @Query("SELECT s FROM StudyGame s WHERE s.wordMean.id = :wordMeanId")
