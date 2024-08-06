@@ -133,7 +133,8 @@ public class QuizService {
         for(Long quizID : idx){
             answerRepository.setAnswerTrue(userID, quizID);
             logger.info(quizID + "번 Answer 최종 제출 완료");
-            Float nowScore =answerRepository.findTop1AnswerScore(quizID);
+            // Float nowScore =answerRepository.findTop1AnswerScore(quizID);
+            Float nowScore =answerRepository.findTop1ByQuizIdOrderByUpdatedAtDesc(quizID);
             sum += nowScore;
             responseScore.add(nowScore);
             roundNum++;
