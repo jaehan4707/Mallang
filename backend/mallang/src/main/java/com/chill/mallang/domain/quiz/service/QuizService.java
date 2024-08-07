@@ -150,9 +150,10 @@ public class QuizService {
 
         if (teamScoreList.size() > 0) {
             team.put("My Team Total Score", teamScoreList.get(0));
+            team.put("Oppo Team Total Score", 0.0 );
         }
         if (teamScoreList.size() > 1) {
-            team.put("Oppo Team Total Score", teamScoreList.get(1));
+            team.put("Oppo Team Total Score", teamScoreList.get(1) );
         }
         team.put("My Team Rank", totalScoreRepository.findTop3(areaID, factionID));
 
