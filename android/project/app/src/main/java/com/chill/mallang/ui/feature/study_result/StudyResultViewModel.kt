@@ -29,7 +29,7 @@ class StudyResultViewModel
                 state =
                     state.copy(
                         quizTitle = "빈칸을 채워 주세요",
-                        quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할만한 성장을 이루었다.",
+                        quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 __할만한 성장을 이루었다.",
                         wordList =
                             arrayListOf(
                                 "괄목" to "눈을 비비고 볼 정도로 매우 놀라다.",
@@ -37,7 +37,7 @@ class StudyResultViewModel
                                 "과장" to "사실보다 지나치게 불려서 말하거나 표현하다.",
                                 "시기" to "때나 경우.",
                             ),
-                        result = true,
+                        result = false,
                         systemAnswer = 1,
                     )
             }

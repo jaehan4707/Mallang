@@ -47,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.feature.study.QuizBox
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
@@ -114,11 +115,18 @@ fun QuizResultScreen(
                 fontSize = 40.sp,
                 color = titleColor,
             )
-            QuizBoxWithUnderline(
-                systemMessage = studyResultState.quizTitle,
-                quizScript = studyResultState.quizScript,
-                underline = studyResultState.wordList[studyResultState.systemAnswer - 1].first,
-            )
+            if (!studyResultState.result) { // 오답일 때는 기존처럼 __ 빈칸 뚫린 거로
+                QuizBox(
+                    quizTitle = studyResultState.quizTitle,
+                    quizScript = studyResultState.quizScript,
+                )
+            } else { // 정답일 때는 빈칸 없이
+                QuizBoxWithUnderline(
+                    systemMessage = studyResultState.quizTitle,
+                    quizScript = studyResultState.quizScript,
+                    underline = studyResultState.wordList[studyResultState.systemAnswer - 1].first,
+                )
+            }
             ResultAnswerList(
                 state = studyResultState,
                 userAnswer = userAnswer,
@@ -335,21 +343,17 @@ fun QuizBoxWithUnderline(
             Text(
                 text =
                     buildAnnotatedString {
-                        val startIndex = quizScript.indexOf(underline)
-                        if (startIndex != -1) {
-                            append(quizScript.substring(0, startIndex))
-                            withStyle(
-                                style =
-                                    SpanStyle(
-                                        textDecoration = TextDecoration.Underline,
-                                    ),
-                            ) {
-                                append(underline)
-                            }
-                            append(quizScript.substring(startIndex + underline.length))
-                        } else {
-                            append(quizScript)
+                        val parts = quizScript.split("__")
+                        append(parts[0])
+                        withStyle(
+                            style =
+                                SpanStyle(
+                                    textDecoration = TextDecoration.Underline,
+                                ),
+                        ) {
+                            append(underline)
                         }
+                        append(parts[1])
                     },
                 style = Typography.headlineSmall,
             )
@@ -361,6 +365,6 @@ fun QuizBoxWithUnderline(
 @Composable
 fun ResultPreview() {
     MallangTheme {
-//        QuizResultScreen()
+        QuizResultScreen(userAnswer = 2)
     }
 }
