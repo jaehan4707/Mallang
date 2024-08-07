@@ -22,6 +22,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -59,6 +60,12 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         viewModel.initCredentialManager(context)
         viewModel.initCredentialRequest()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetUi()
+        }
     }
 
     // Credential Manager 방식

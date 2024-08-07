@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,18 +20,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
+import com.chill.mallang.data.model.entity.Faction
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.component.PercentageBar
 import com.chill.mallang.ui.feature.nickname.TextWithIcon
@@ -43,28 +42,60 @@ import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Red01
 import com.chill.mallang.ui.theme.SkyBlue
 import com.chill.mallang.ui.theme.Typography
-import kotlinx.coroutines.launch
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlin.math.roundToInt
 
 @Composable
-fun SelectScreen(navigateToMain: () -> Unit = {}) {
-    val viewModel: SelectViewModel = hiltViewModel()
-    var selectedTeam by remember { mutableStateOf<String?>(null) }
-    var showConfirmButton by remember { mutableStateOf(false) }
-    val snackBarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+fun SelectScreen(
+    navigateToMain: () -> Unit = {},
+    viewModel: SelectViewModel = hiltViewModel(),
+    onShowErrorSnackBar: (message: String) -> Unit = {},
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     HandleSignUpEvent(
         signUpUiState = uiState,
         onSuccess = navigateToMain,
+        event = viewModel.event,
         showSnackBar = { errorMessage ->
-            coroutineScope.launch {
-                snackBarHostState.showSnackbar(
-                    message = errorMessage,
-                    duration = SnackbarDuration.Short,
-                )
-            }
+            onShowErrorSnackBar(errorMessage)
+        },
+        onSignUp = {
+            viewModel.join(it)
         },
     )
+}
+
+@Composable
+fun HandleSignUpEvent(
+    signUpUiState: SignUpUiState,
+    event: SharedFlow<SignUiEvent>,
+    showSnackBar: (message: String) -> Unit,
+    onSuccess: () -> Unit,
+    onSignUp: (team: String?) -> Unit,
+) {
+    LaunchedEffect(event) {
+        event.collectLatest { signUiEvent ->
+            when (signUiEvent) {
+                is SignUiEvent.Error -> showSnackBar(signUiEvent.message)
+                SignUiEvent.SignUpSuccess -> onSuccess()
+            }
+        }
+    }
+    SelectContent(
+        factionsStatus = signUpUiState.factionsStatus,
+        onSignUp = onSignUp,
+    )
+}
+
+@Composable
+fun SelectContent(
+    factionsStatus: PersistentList<Faction> = persistentListOf(),
+    onSignUp: (String?) -> Unit = {},
+) {
+    var selectedTeam by remember { mutableStateOf<String?>(null) }
     Surface(
         color = BackGround,
     ) {
@@ -79,16 +110,21 @@ fun SelectScreen(navigateToMain: () -> Unit = {}) {
                 modifier = Modifier.height(120.dp),
             )
             Spacer(modifier = Modifier.weight(0.2f))
-            TextWithIcon(text = "당신의 진영을 선택해 주세요", icon = R.drawable.ic_team)
-            Spacer(modifier = Modifier.height(30.dp))
-            PercentageBar(
-                leftPercentage = 30,
-                rightPercentage = 70,
-                leftLabel = "말",
-                rightLabel = "랑",
-                leftColor = Red01,
-                rightColor = SkyBlue,
+            TextWithIcon(
+                text = stringResource(R.string.select_faction_message),
+                icon = R.drawable.ic_team,
             )
+            Spacer(modifier = Modifier.height(30.dp))
+            if (factionsStatus.isNotEmpty()) {
+                PercentageBar(
+                    leftPercentage = factionsStatus.first().ratio.roundToInt(),
+                    rightPercentage = factionsStatus.last().ratio.roundToInt(),
+                    leftLabel = factionsStatus.first().name,
+                    rightLabel = factionsStatus.last().name,
+                    leftColor = Red01,
+                    rightColor = SkyBlue,
+                )
+            }
             Spacer(modifier = Modifier.height(35.dp))
             Row(
                 modifier =
@@ -98,27 +134,28 @@ fun SelectScreen(navigateToMain: () -> Unit = {}) {
             ) {
                 TeamButton(
                     onClick = {
-                        selectedTeam = "말"
-                        showConfirmButton = true
+                        selectedTeam = it
                     },
-                    text = "말",
+                    text = stringResource(R.string.team_mal),
                     color = Red01,
-                    isSelected = selectedTeam == "말",
+                    isSelected = selectedTeam == stringResource(R.string.team_mal),
                 )
                 Spacer(modifier = Modifier.width(25.dp))
                 TeamButton(
                     onClick = {
-                        selectedTeam = "랑"
-                        showConfirmButton = true
+                        selectedTeam = it
                     },
-                    text = "랑",
+                    text = stringResource(R.string.team_rang),
                     color = SkyBlue,
-                    isSelected = selectedTeam == "랑",
+                    isSelected = selectedTeam == stringResource(R.string.team_rang),
                 )
             }
-            if (showConfirmButton) {
+            if (selectedTeam != null) {
                 Spacer(modifier = Modifier.height(50.dp))
-                LongBlackButton(onClick = { viewModel.join(selectedTeam) }, text = "결정하기")
+                LongBlackButton(
+                    onClick = { onSignUp(selectedTeam) },
+                    text = stringResource(id = R.string.button_decide_message),
+                )
             }
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -129,13 +166,13 @@ fun SelectScreen(navigateToMain: () -> Unit = {}) {
 @Composable
 fun TeamButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    onClick: (String) -> Unit,
     text: String,
     color: Color,
     isSelected: Boolean,
 ) {
     Button(
-        onClick = onClick,
+        onClick = { onClick(text) },
         colors =
             ButtonDefaults.buttonColors(
                 contentColor = White,
@@ -162,21 +199,6 @@ fun TeamButton(
             text,
             style = Typography.displayLarge,
         )
-    }
-}
-
-@Composable
-fun HandleSignUpEvent(
-    signUpUiState: SignUpUiState,
-    showSnackBar: (String) -> Unit,
-    onSuccess: () -> Unit,
-) {
-    LaunchedEffect(signUpUiState) {
-        when (signUpUiState) {
-            is SignUpUiState.Loading -> {}
-            SignUpUiState.Success -> onSuccess()
-            is SignUpUiState.Error -> showSnackBar(signUpUiState.errorMessage)
-        }
     }
 }
 

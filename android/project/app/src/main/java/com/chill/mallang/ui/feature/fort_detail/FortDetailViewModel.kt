@@ -1,7 +1,11 @@
 package com.chill.mallang.ui.feature.fort_detail
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chill.mallang.R
+import com.chill.mallang.data.repository.remote.AreaRepository
+import com.chill.mallang.ui.util.transformToUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -9,48 +13,54 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FortDetailViewModel @Inject constructor(
-) : ViewModel() {
-    private val _occupationState = MutableStateFlow<OccupationState>(OccupationState.Loading)
-    val occupationState = _occupationState.asStateFlow()
+class FortDetailViewModel
+    @Inject
+    constructor(
+        private val savedStateHandle: SavedStateHandle,
+        private val areaRepository: AreaRepository,
+    ) : ViewModel() {
+        private val _areaDetailStateFlow = MutableStateFlow<AreaDetailState>(AreaDetailState.Loading)
+        val areaDetailStateFlow = _areaDetailStateFlow.asStateFlow()
 
-    private val _teamLeadersState = MutableStateFlow<TeamLeadersState>(TeamLeadersState.Loading)
-    val teamLeadersState = _teamLeadersState.asStateFlow()
+        private val _teamRecordStateFlow = MutableStateFlow<TeamRecordState>(TeamRecordState.Loading)
+        val teamRecordStateFlow = _teamRecordStateFlow.asStateFlow()
 
-    fun loadOccupationState() {
-        viewModelScope.launch {
-            // TODO : load from api
-            _occupationState.emit(testOccupationState)
+        fun invalidateData() {
+            _areaDetailStateFlow.value =
+                AreaDetailState.Error(ErrorMessage.RuntimeError(R.string.invalid_entry))
+            _teamRecordStateFlow.value =
+                TeamRecordState.Error(ErrorMessage.RuntimeError(R.string.invalid_entry))
+        }
+
+        fun loadOccupationState(
+            areaId: Int,
+            userTeam: Int,
+        ) {
+            viewModelScope.launch {
+                areaRepository
+                    .getAreaDetail(areaId, userTeam)
+                    .transformToUiState(
+                        onSuccess = { AreaDetailState.Success(it) },
+                        onError = { AreaDetailState.Error(ErrorMessage.NetworkError(it)) },
+                    ).collect {
+                        _areaDetailStateFlow.value = it
+                    }
+            }
+        }
+
+        fun loadTeamLeadersState(
+            areaId: Int,
+            userId: Int,
+        ) {
+            viewModelScope.launch {
+                areaRepository
+                    .getAreaRecords(areaId, userId)
+                    .transformToUiState(
+                        onSuccess = { TeamRecordState.Success(it) },
+                        onError = { TeamRecordState.Error(ErrorMessage.NetworkError(it)) },
+                    ).collect {
+                        _teamRecordStateFlow.value = it
+                    }
+            }
         }
     }
-
-    fun loadTeamLeadersState() {
-        viewModelScope.launch {
-            // TODO : load from api
-            _teamLeadersState.emit(testLeadersState)
-        }
-    }
-
-    companion object {
-        val testOccupationState: OccupationState =
-            OccupationState.Success(
-                areaName = "구미 캠퍼스",
-                myTeamInfo = TeamInfo(1, 3990, UserInfo(1, "말대표", 1)),
-                oppoTeamInfo = TeamInfo(2, 2990, UserInfo(2, "랑대표", 1)),
-            )
-        val testLeadersState: TeamLeadersState =
-            TeamLeadersState.Success(
-                userRecord = UserRecord(1, 1, "말대표", 100, 300),
-                myTeamRecords =
-                    listOf(
-                        UserRecord(1, 1, "말대표", 100, 300),
-                        UserRecord(2, 3, "말부하", 97, 300),
-                    ),
-                oppoTeamRecords =
-                    listOf(
-                        UserRecord(1, 4, "랑대표", 100, 300),
-                        UserRecord(2, 5, "랑부하", 97, 300),
-                    ),
-            )
-    }
-}

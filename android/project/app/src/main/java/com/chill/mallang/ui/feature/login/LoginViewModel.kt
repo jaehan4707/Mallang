@@ -290,6 +290,10 @@ class LoginViewModel
             }
         }
 
+        fun resetUi() {
+            _loginUiState.value = LoginUiState.Loading
+        }
+
         companion object {
             const val RC_SIGN_IN = 9001
         }
