@@ -3,6 +3,7 @@ package com.chill.mallang.domain.quiz.service;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizResult;
 import com.chill.mallang.domain.quiz.dto.response.ResponseQuiz;
+import com.chill.mallang.domain.quiz.dto.response.TeamRankResponse;
 import com.chill.mallang.domain.quiz.error.QuizErrorCode;
 import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.quiz.model.Quiz;
@@ -55,7 +56,7 @@ public class QuizService {
                     .build();
 
             return new HashMap<String, Object>() {{
-                    put("data", responseQuiz);
+                put("data", responseQuiz);
             }};
 
         } else {
@@ -63,7 +64,7 @@ public class QuizService {
         }
     }
 
-    public void submitAnswer(RequestQuizAnswer requestQuizAnswer){
+    public void submitAnswer(RequestQuizAnswer requestQuizAnswer) {
         logger.info(String.valueOf(requestQuizAnswer));
 
         String question = quizRepository.findById(requestQuizAnswer.getQuizId()).get().getQuestion();
@@ -76,7 +77,7 @@ public class QuizService {
         logger.info("Success Save Answer");
     }
 
-    public void saveAnswer(RequestQuizAnswer requestQuizAnswer, float score){
+    public void saveAnswer(RequestQuizAnswer requestQuizAnswer, float score) {
 
         Answer answer = Answer.builder()
                 .user(userRepository.findById(requestQuizAnswer.getUserId()).orElseThrow(() -> new RestApiException(QuizErrorCode.USER_NOT_FOUND)))
@@ -87,20 +88,20 @@ public class QuizService {
                 .check_fin(0) // 기본값 설정
                 .build();
 
-        logger.info("Add answer data : " , answer.toString());
+        logger.info("Add answer data : ", answer.toString());
         answerRepository.save(answer);
     }
 
     @Transactional
-    public Map<String, Object> getAreaQuiz(Long areaID){
+    public Map<String, Object> getAreaQuiz(Long areaID) {
         requireNonNull(areaID, QuizErrorCode.AREA_ID_NULL);
         Map<String, Object> response = new HashMap<>();
-        response.put("data",quizRepository.getQuizByArea(areaID));
+        response.put("data", quizRepository.getQuizByArea(areaID));
         return response;
     }
 
     @Transactional
-    public Map<String, Object> quizResult(RequestQuizResult requestQuizResult){
+    public Map<String, Object> quizResult(RequestQuizResult requestQuizResult) {
         Long userID = requestQuizResult.getUserID();
         Long areaID = requestQuizResult.getAreaID();
         Long factionID = requestQuizResult.getFactionID();
@@ -114,10 +115,10 @@ public class QuizService {
 
         // User Score 확인
         float sum = 0;
-        for(Long quizID : requestQuizResult.getQuizID()){
+        for (Long quizID : requestQuizResult.getQuizID()) {
             answerRepository.setAnswerTrue(userID, quizID);
             logger.info(quizID + "번 Answer 최종 제출 완료");
-            Float nowScore =answerRepository.findTop1AnswerScore(quizID);
+            Float nowScore = answerRepository.findTop1AnswerScore(quizID);
             sum += nowScore;
             logger.info(String.valueOf(nowScore));
             responseScore.add(nowScore);
@@ -134,21 +135,30 @@ public class QuizService {
         team.put("My Team Total Score", teamScoreList.get(0));
 
         if (teamScoreList.size() == 1) {
-            team.put("Oppo Team Total Score", 0.0 );
-        }else{
-            team.put("Oppo Team Total Score", teamScoreList.get(1) );
+            team.put("Oppo Team Total Score", 0.0);
+        } else {
+            team.put("Oppo Team Total Score", teamScoreList.get(1));
         }
-
-        team.put("My Team Rank", totalScoreRepository.findTop3(areaID, factionID));
+        team.put("My Team Rank", teamRankTop3(areaID, factionID));
 
         Map<String, Object> data = new HashMap<>();
-
         data.put("User", user);
         data.put("Team", team);
+
         response.put("data", data);
         return response;
     }
 
+    public List<Map<String, Object>> teamRankTop3(Long areaID, Long factionID){
+        List<Map<String, Object>> teamRankList = new ArrayList<>();
+        List<TeamRankResponse> top3Ranks = totalScoreRepository.findTop3Results(areaID, factionID);
 
-
+        for (TeamRankResponse rankResponse : top3Ranks) {
+            Map<String, Object> rankMap = new HashMap<>();
+            rankMap.put("name", rankResponse.getNickName());
+            rankMap.put("score", rankResponse.getTotalScore());
+            teamRankList.add(rankMap);
+        }
+        return teamRankList;
+    }
 }

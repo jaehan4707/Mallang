@@ -56,11 +56,6 @@ public class GameService {
                 .orElseThrow(() ->  new RestApiException(CustomStudyErrorCode.WORDMEAN_IS_NOT_FOUND));
 
         StudyGame studyGame = createGameService.initializeStudyGame(wordMean);
-        Question question = createGameService.initializeQuestion(studyGame);
-
-        createGameService.addProblemsToQuestion(question, wordMean);
-
-        studyGame.setQuestion(question);
         return studyGameRepository.save(studyGame);
     }
 
