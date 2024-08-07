@@ -34,9 +34,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.GameUserRecord
 import com.chill.mallang.ui.component.LongBlackButton
-import com.chill.mallang.ui.feature.fort_detail.RecordListItem
 import com.chill.mallang.ui.feature.game.game01.Game01FinalResultUiState
 import com.chill.mallang.ui.feature.game.game01.Game01ViewModel
+import com.chill.mallang.ui.feature.game.game01.Layout.GameRecordListItem
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
@@ -217,7 +217,7 @@ fun LeaderBoardBody(
                     .fillMaxWidth(),
         ) {
             itemsIndexed(leaderList) { index, userRecord ->
-                RecordListItem(userRecord.copy(userPlace = index))
+                GameRecordListItem(userRecord.copy(userPlace = index))
             }
         }
     }
