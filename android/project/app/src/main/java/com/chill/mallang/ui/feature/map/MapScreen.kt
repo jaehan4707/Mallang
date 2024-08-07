@@ -59,6 +59,10 @@ fun MapScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.loadStatus()
+    }
+
     LaunchedEffect(hasPermission) {
         if (hasPermission) {
             // Get area info
@@ -76,6 +80,7 @@ fun MapScreen(
         onSelectArea = viewModel::setToSelected,
         onLocate = viewModel::findClosestArea,
         onShowAreaDetail = onShowAreaDetail,
+        onCameraMove = viewModel::resetSelected,
     )
 }
 
@@ -89,6 +94,7 @@ fun MapScreenContent(
     onSelectArea: (Area) -> Unit = {},
     onLocate: () -> Unit = {},
     onShowAreaDetail: (Area) -> Unit = {},
+    onCameraMove: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         MapView(
@@ -97,6 +103,7 @@ fun MapScreenContent(
             selectedArea = selectedArea,
             areasState = areasState,
             onSelectArea = onSelectArea,
+            onCameraMove = onCameraMove,
         )
         MapScaffold(
             areaSelected = selectedArea,

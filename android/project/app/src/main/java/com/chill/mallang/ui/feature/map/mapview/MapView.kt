@@ -23,6 +23,7 @@ import com.chill.mallang.ui.feature.map.LocationState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.SphericalUtil
+import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
@@ -35,6 +36,7 @@ fun MapView(
     selectedArea: Area?,
     areasState: AreasState,
     onSelectArea: (Area) -> Unit = {},
+    onCameraMove: () -> Unit = {},
 ) {
     val cameraPositionState = rememberCameraPositionState()
     val uiSettings =
@@ -51,6 +53,14 @@ fun MapView(
         remember {
             mutableStateOf(listOf<CustomMarkerState>())
         }
+
+    LaunchedEffect(cameraPositionState.position) {
+        if (cameraPositionState.isMoving && // 카메라가 이동 중일 때
+            cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE // 터치로 이동한 경우
+        ) {
+            onCameraMove()
+        }
+    }
 
     // 현재 위치가 바뀌면 카메라를 현 위치로 이동
     LaunchedEffect(currentLocation) {
