@@ -23,7 +23,7 @@ public class CreateGameService {
     }
 
     public void addProblemsToQuestion(Question question, WordMean wordMean) {
-        question.addProblem(createProblem("ExampleWord1", "EEE", "ExampleMean1", 0));
+        question.addProblem(createProblem("ExampleWord1", "EEE", "ExampleMean1", 4));
         question.addProblem(createProblem("ExampleWord2", "22222", "ExampleMean2", 1));
         question.addProblem(createProblem("ExampleWord3", "333333333", "ExampleMean3", 2));
         question.addProblem(createProblem(wordMean.getWord().getWord(), "4444", wordMean.getMean(), 3));

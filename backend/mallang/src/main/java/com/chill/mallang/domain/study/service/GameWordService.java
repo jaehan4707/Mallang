@@ -5,17 +5,13 @@ import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import com.chill.mallang.domain.study.errors.CustomStudyErrorCode;
 import com.chill.mallang.domain.study.model.WordMean;
 import com.chill.mallang.domain.study.repository.WordMeanRepository;
-import com.chill.mallang.domain.user.service.UserSettingService;
 import com.chill.mallang.errors.exception.RestApiException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class GameWordService {

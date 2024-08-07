@@ -11,7 +11,7 @@ import java.util.Map;
 @Setter
 @Builder
 public class UserStudyLogResponseDTO {
-
+    private String quizTitle;
     private String quizScript;
 
     private List<Map<String, String>> wordList;
