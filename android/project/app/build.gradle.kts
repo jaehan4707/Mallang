@@ -130,4 +130,7 @@ dependencies {
 
     //lottie animation
     implementation(libs.lottie)
+
+    // immutable dependency
+    implementation(libs.jetbrains.kotlinx.collections.immutable)
 }

@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.nickname
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,11 +56,12 @@ import kotlinx.coroutines.launch
 fun NicknameScreen(
     modifier: Modifier = Modifier,
     onSuccess: (String) -> Unit = {},
+    viewModel: NicknameViewModel = hiltViewModel(),
+    popUpBackStack: () -> Unit = {},
 ) {
-    val nicknameViewModel: NicknameViewModel = hiltViewModel()
-    val nicknameState = nicknameViewModel.nicknameState
+    val nicknameState = viewModel.nicknameState
     val focusManager = LocalFocusManager.current
-    val nickNameUiState by nicknameViewModel.uiState.collectAsStateWithLifecycle()
+    val nickNameUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // SnackBarHostState 생성
     val snackBarHostState = remember { SnackbarHostState() }
@@ -140,13 +143,13 @@ fun NickNameContent(
             modifier = Modifier.height(120.dp),
         )
         Spacer(modifier = Modifier.weight(0.2f))
-        TextWithIcon(text = "사용할 닉네임을 입력해 주세요", icon = R.drawable.ic_mage)
+        TextWithIcon(text = stringResource(R.string.login_info_message), icon = R.drawable.ic_mage)
         Spacer(modifier = Modifier.height(30.dp))
         Column(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CustomTextField(
@@ -166,7 +169,7 @@ fun NickNameContent(
             onClick = {
                 checkNickName()
             },
-            text = "결정하기",
+            text = stringResource(R.string.button_decide_message),
         )
         Spacer(modifier = Modifier.weight(1f))
     }
@@ -177,7 +180,7 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
     focusManager: FocusManager,
-    placeholder: String = "닉네임",
+    placeholder: String = stringResource(R.string.nickname_place_holder),
     nickName: String = "",
     errorMessage: String = "",
     onClearPressed: () -> Unit = {},
@@ -202,9 +205,9 @@ fun CustomTextField(
                 }
             },
             modifier =
-                modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
+            modifier
+                .fillMaxWidth()
+                .height(48.dp),
             shape = RoundedCornerShape(10.dp),
             singleLine = true,
             keyboardActions =
@@ -240,9 +243,9 @@ fun CustomTextField(
         Text(
             text = errorMessage,
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, start = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, start = 4.dp),
             color = Sub1,
             style = Typography.displayMedium,
         )
