@@ -30,6 +30,7 @@ public class GameService {
     private final StudyGameLogRepository studyGameLogRepository;
     private final GameWordService gameWordService;
     private final StudyGameRepository studyGameRepository;
+    private final CreateGameService createGameService;
 
     @Autowired
     private UserRepository userRepository;
@@ -37,11 +38,12 @@ public class GameService {
     @Autowired
     private WordMeanRepository wordMeanRepository;
 
-    public GameService(JWTUtil jwtUtil, StudyGameRepository studyGameRepository, StudyGameLogRepository studyGameLogRepository, GameWordService gameWordService) {
+    public GameService(JWTUtil jwtUtil, StudyGameRepository studyGameRepository, StudyGameLogRepository studyGameLogRepository, GameWordService gameWordService, CreateGameService createGameService) {
         this.jwtUtil = jwtUtil;
         this.studyGameLogRepository = studyGameLogRepository;
         this.studyGameRepository = studyGameRepository;
         this.gameWordService = gameWordService;
+        this.createGameService = createGameService;
     }
     //사용자 조회
     private User getUserFromRequest(Long userId) {
@@ -55,37 +57,11 @@ public class GameService {
         WordMean wordMean = wordMeanRepository.findById(wordMeanId)
                 .orElseThrow(() ->  new RestApiException(CustomStudyErrorCode.WORDMEAN_IS_NOT_FOUND));
 
-        StudyGame studyGame = new StudyGame();
-        String questionText = "What is the meaning of this word?";
-        studyGame.setWordMean(wordMean);
-        studyGame.setQuestionText(questionText);
-        Question question = new Question();
-        question.setStudyGame(studyGame);
-        studyGame.setQuestion(question);
-        Problem problem1 = new Problem();
-        problem1.setBasic_type("ExampleWord1");
-        problem1.setObtion("EEE");
-        problem1.setMean("ExampleMean1");
-        problem1.setIdx(0);
-        Problem problem2 = new Problem();
-        problem2.setBasic_type("ExampleWord2");
-        problem2.setObtion("22222");
-        problem2.setMean("ExampleMean2");
-        problem2.setIdx(1);
-        Problem problem3 = new Problem();
-        problem3.setBasic_type("ExampleWord3");
-        problem3.setObtion("333333333");
-        problem3.setMean("ExampleMean3");
-        problem3.setIdx(2);
-        Problem problem4 = new Problem();
-        problem4.setBasic_type(wordMean.getWord().getWord());
-        problem4.setObtion("4444");
-        problem4.setMean(wordMean.getMean());
-        problem4.setIdx(3);
-        question.addProblem(problem1);
-        question.addProblem(problem2);
-        question.addProblem(problem3);
-        question.addProblem(problem4);
+        StudyGame studyGame = createGameService.initializeStudyGame(wordMean);
+        Question question = createGameService.initializeQuestion(studyGame);
+
+        createGameService.addProblemsToQuestion(question, wordMean);
+
         studyGame.setQuestion(question);
         return studyGameRepository.save(studyGame);
     }
@@ -95,11 +71,9 @@ public class GameService {
         StudyGame existingStudyGame = studyGameRepository.findByWordMeanId(wordMean.getId());
         logger.info("existingStudyGame"+existingStudyGame);
         if (existingStudyGame != null) {
-            logger.info("Existing study game: {}", existingStudyGame);
             return existingStudyGame;
         }
         StudyGame newStudyGame = createStudyGameWithWordMean(wordMean.getId());
-        logger.info("Created new study game: {}", newStudyGame);
         return newStudyGame;
     }
 
@@ -140,7 +114,6 @@ public class GameService {
         }
         StudyGame studyGame = studyGameRepository.findById(studyId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND));
-        logger.info("submitGame StudyGame: " + studyGame.getId());
         WordMean wordMean = studyGame.getWordMean();
         Map<String, Object> response = new HashMap<>();
         Boolean isAnswer = false;
@@ -200,7 +173,6 @@ public class GameService {
                     wordList.add(wordMap);
                 });
         // 특정 조건을 만족하는 Problem 객체의 idx 값을 찾기
-        System.out.printf("111erer"+studyGame.getWordMean().getWord().getWord());
         Optional<Problem> answerOpt = studyGame.getQuestion().getProblems().stream()
                 .filter(problem -> problem.getBasic_type().equals(studyGame.getWordMean().getWord().getWord()))
                 .findFirst();
