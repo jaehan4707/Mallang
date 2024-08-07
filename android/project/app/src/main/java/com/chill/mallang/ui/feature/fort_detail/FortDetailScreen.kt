@@ -17,6 +17,7 @@ import com.chill.mallang.data.model.entity.UserRecord
 import com.chill.mallang.ui.feature.fort_detail.layout.DetailBody
 import com.chill.mallang.ui.feature.fort_detail.layout.GameStartBody
 import com.chill.mallang.ui.feature.fort_detail.layout.TeamRecordBody
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 
 @Composable
@@ -38,6 +39,8 @@ fun FortDetailScreen(
             viewModel.loadTeamLeadersState(areaId, userId)
         }
     }
+
+    TopbarHandler(isVisible = true)
 
     AreaDetailContent(
         modifier = modifier,
