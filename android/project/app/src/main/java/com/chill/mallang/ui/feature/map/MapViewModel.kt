@@ -74,7 +74,7 @@ class MapViewModel
                     when (response) {
                         is ApiResponse.Success -> {
                             _statusState.emit(
-                                response.data ?: TeamList(listOf()),
+                                response.body ?: TeamList(listOf()),
                             )
                         }
 
@@ -90,8 +90,8 @@ class MapViewModel
                 areaRepository.getTryCount(areaId).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
-                            if (response.data != null) {
-                                _tryCountState.emit(TryCountState.HasValue(response.data.count))
+                            if (response.body != null) {
+                                _tryCountState.emit(TryCountState.HasValue(response.body.count))
                             } else {
                                 _tryCountState.emit(TryCountState.Error())
                             }

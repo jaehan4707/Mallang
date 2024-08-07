@@ -10,7 +10,7 @@ fun <T, UIState> Flow<ApiResponse<T>>.transformToUiState(
 ): Flow<UIState> =
     transform { response ->
         when (response) {
-            is ApiResponse.Success -> response.data?.let { emit(onSuccess(it)) }
+            is ApiResponse.Success -> response.body?.let { emit(onSuccess(it)) }
             is ApiResponse.Error -> emit(onError(response.errorMessage))
             else -> {
                 emit(onError("Unknown error"))
