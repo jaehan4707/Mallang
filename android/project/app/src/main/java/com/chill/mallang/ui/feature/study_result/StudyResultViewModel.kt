@@ -37,8 +37,8 @@ class StudyResultViewModel
                                 "과장" to "사실보다 지나치게 불려서 말하거나 표현하다.",
                                 "시기" to "때나 경우.",
                             ),
-                        userAnswer = 2,
-                        systemAnswer = 1, // 임시 정답
+                        result = true,
+                        systemAnswer = 1,
                     )
             }
         }
