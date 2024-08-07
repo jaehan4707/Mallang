@@ -45,8 +45,6 @@ import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.CustomSnackBar
-import com.chill.mallang.ui.feature.study_result.AnswerResultListItem
-import com.chill.mallang.ui.feature.study_result.StudyResultState
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
@@ -126,7 +124,7 @@ fun StudyScreen(
                 AnswerList(
                     viewModel = studyViewModel,
                     state = studyState,
-                    fraction = 0.13f,
+                    fraction = 0.15f,
                     onAnswerSelected = { selectedIndex ->
                         studyViewModel.selectAnswer(selectedIndex)
                     },
@@ -144,7 +142,7 @@ fun StudyScreen(
                         }
                     } else {
                         studyViewModel.submitQuiz() // 퀴즈 제출 및 채점
-                        navigateToQuizResult(1)
+                        navigateToQuizResult(studyViewModel.selectedAnswer)
                     }
                 },
                 modifier =
@@ -217,19 +215,12 @@ fun QuizBox(
 
 @Composable
 fun AnswerList(
-    state: Any,
-    viewModel: StudyViewModel? = null,
-    expandedItem: Int = -1,
+    state: StudyState,
+    viewModel: StudyViewModel,
     fraction: Float,
     onAnswerSelected: (Int) -> Unit = { },
 ) {
-    var size: Int = -1
-
-    if (state is StudyState) {
-        size = state.wordList.size
-    } else if (state is StudyResultState) {
-        size = state.wordList.size
-    }
+    val size = state.wordList.size
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -239,27 +230,15 @@ fun AnswerList(
                 .fillMaxSize(),
     ) {
         items(size) { index ->
-            if (state is StudyState && viewModel != null) {
-                AnswerListItem(
-                    modifier = Modifier.fillParentMaxHeight(fraction),
-                    index = index,
-                    viewModel = viewModel,
-                    state = state,
-                    onItemClick = { selectedIndex ->
-                        onAnswerSelected(selectedIndex)
-                    },
-                )
-            } else if (state is StudyResultState) {
-                AnswerResultListItem(
-                    modifier = Modifier.fillParentMaxHeight(fraction),
-                    index = index,
-                    state = state,
-                    expandedItem = expandedItem,
-                    onItemClick = { selectedIndex ->
-                        onAnswerSelected(selectedIndex)
-                    },
-                )
-            }
+            AnswerListItem(
+                modifier = Modifier.fillParentMaxHeight(fraction),
+                index = index,
+                viewModel = viewModel,
+                state = state,
+                onItemClick = { selectedIndex ->
+                    onAnswerSelected(selectedIndex)
+                },
+            )
         }
     }
 }

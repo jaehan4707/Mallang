@@ -147,18 +147,18 @@ object DestinationQuizResult : ScreenDestinationsWithArgument {
         get() = "quiz_result"
 
     override val routeWithArgs: String
-        get() = "${this.route}/{studyId}"
+        get() = "${this.route}/{userAnswer}"
 
     override val arguments: List<NamedNavArgument>
         get() =
             listOf(
-                navArgument(name = "studyId") { type = NavType.IntType },
+                navArgument(name = "userAnswer") { type = NavType.IntType },
             )
 
     override val route: String
         get() = "quiz_result"
 
-    fun createRoute(studyId: Int) = "${this.route}/$studyId"
+    fun createRoute(userAnswer: Int) = "${this.route}/$userAnswer"
 }
 
 object DestinationGameLobby : ScreenDestinations {
