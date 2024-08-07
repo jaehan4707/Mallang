@@ -1,14 +1,7 @@
 package com.chill.mallang.ui.feature.map.mapview
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.chill.mallang.data.model.entity.Area
+import com.chill.mallang.ui.component.LoadingBox
 import com.chill.mallang.ui.feature.map.AreasState
 import com.chill.mallang.ui.feature.map.CustomMarkerState
 import com.chill.mallang.ui.feature.map.LocationState
@@ -131,21 +125,7 @@ fun MapView(
             }
         }
         if (!isMapLoaded) {
-            AnimatedVisibility(
-                modifier =
-                    Modifier
-                        .matchParentSize(),
-                visible = !isMapLoaded,
-                enter = EnterTransition.None,
-                exit = fadeOut(),
-            ) {
-                CircularProgressIndicator(
-                    modifier =
-                        Modifier
-                            .background(MaterialTheme.colorScheme.primary)
-                            .wrapContentSize(),
-                )
-            }
+            LoadingBox()
         }
     }
 }
