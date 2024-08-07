@@ -4,10 +4,7 @@ import com.chill.mallang.domain.study.dto.StudyGameDTO;
 import com.chill.mallang.domain.study.dto.UserStudyLogRequestDTO;
 import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import com.chill.mallang.domain.study.errors.CustomStudyErrorCode;
-import com.chill.mallang.domain.study.model.Problem;
-import com.chill.mallang.domain.study.model.Question;
-import com.chill.mallang.domain.study.model.StudyGame;
-import com.chill.mallang.domain.study.model.WordMean;
+import com.chill.mallang.domain.study.model.*;
 import com.chill.mallang.domain.study.repository.StudyGameLogRepository;
 import com.chill.mallang.domain.study.repository.StudyGameRepository;
 import com.chill.mallang.domain.study.repository.WordMeanRepository;
@@ -16,6 +13,7 @@ import com.chill.mallang.domain.user.jwt.JWTUtil;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.user.service.UserSettingService;
+import com.chill.mallang.errors.errorcode.CustomErrorCode;
 import com.chill.mallang.errors.exception.RestApiException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -73,11 +71,13 @@ public class GameService {
         Problem problem3 = new Problem();
         problem3.setWord("ExampleWord3");
         problem3.setMean("ExampleMean3");
-
+        Problem problem4 = new Problem();
+        problem4.setWord(wordMean.getWord().getWord());
+        problem4.setMean(wordMean.getMean());
         question.addProblem(problem1);
         question.addProblem(problem2);
         question.addProblem(problem3);
-
+        question.addProblem(problem4);
         studyGame.setQuestion(question);
         return studyGameRepository.save(studyGame);
     }
@@ -103,9 +103,6 @@ public class GameService {
             wordMap.put(problem.getWord(), problem.getMean());
             wordList.add(wordMap);
         });
-        Map<String, String> answerMap = new HashMap<>();
-        answerMap.put(wordMean.getWord().getWord(), wordMean.getMean());
-        wordList.add(answerMap);
         return StudyGameDTO.builder()
                 .studyId(studyGame.getId())
                 .quizScript(studyGame.getQuestionText())
@@ -114,7 +111,7 @@ public class GameService {
     }
 
 
-    public Map<String, Object> StartGame(Long userId) {
+    public Map<String, Object> startGame(Long userId) {
         User user = getUserFromRequest(userId);
         logger.info("StartGame User: " + user);
         WordMean selectedWordMean = gameWordService.getRandomUnusedWordMean(user.getId());
@@ -122,6 +119,51 @@ public class GameService {
         StudyGameDTO studyGameDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);
         Map<String, Object> response = new HashMap<>();
         response.put("data",studyGameDTO);
+        return response;
+    }
+    @Transactional
+    public Map<String, Object> submitGame(Long userId, Long studyId, Long answer) {
+        User user = getUserFromRequest(userId);
+        logger.info("submitGame User: " + user);
+        if (studyId == null) {
+            throw new RestApiException(CustomStudyErrorCode.STUDYID_IS_NULL);
+        }
+        StudyGame studyGame = studyGameRepository.findById(studyId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND));
+        logger.info("submitGame StudyGame: " + studyGame.getId());
+        logger.info("submitGame StudyGame: " + studyGame.getQuestionText());
+        WordMean wordMean = studyGame.getWordMean();
+        Map<String, Object> response = new HashMap<>();
+        Boolean isAnswer = false;
+        List<Problem> problems = studyGame.getQuestion().getProblems();
+        if (answer >= 0 && answer < problems.size()) {
+            String correctWord = studyGame.getWordMean().getWord().getWord();
+            String selectedAnswerWord = problems.get(answer.intValue()).getWord();
+            if (correctWord.equals(selectedAnswerWord)) {
+                isAnswer = true;
+            }
+        } else {
+            logger.info("Invalid answer index: " + answer);
+        }
+        response.put("data", isAnswer);
+        // 중복 데이터 확인 및 업데이트 로직
+        Optional<StudyGameLog> existingLogOpt = studyGameLogRepository.findByStudyGameAndUserForUpdate(userId, studyId);
+        logger.info("existingLogOpt: "+existingLogOpt);
+        if (existingLogOpt.isPresent()) {
+            StudyGameLog existingLog = existingLogOpt.get();
+            existingLog.setResult(isAnswer);
+            studyGameLogRepository.save(existingLog);  // 기존 레코드를 업데이트
+            logger.info("Updated existing StudyGameLog: " + existingLog);
+        } else {
+            // StudyGameLog 기록 저장
+            StudyGameLog newLog = new StudyGameLog();
+            newLog.setUser(user);
+            newLog.setStudyGame(studyGame);
+            newLog.setWordMean(studyGame.getWordMean());
+            newLog.setResult(isAnswer);
+            studyGameLogRepository.save(newLog);  // 새로운 레코드를 저장
+            logger.info("Created new StudyGameLog: " + newLog);
+        }
         return response;
     }
 }

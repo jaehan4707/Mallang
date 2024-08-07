@@ -20,7 +20,7 @@ public class StudyGameLog {
     @ManyToOne
     private StudyGame studyGame;
 
-    @OneToOne
+    @ManyToOne
     private WordMean wordMean;
 
     private boolean result;

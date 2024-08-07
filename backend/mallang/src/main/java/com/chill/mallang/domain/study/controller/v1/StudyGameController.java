@@ -9,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -31,7 +28,15 @@ public class StudyGameController {
     @GetMapping("/game/{userId}")
     public ResponseEntity<?> startStudyGame(@PathVariable Long userId) {
         logger.info(userId.toString());
-        Map<String, Object> response = gameService.StartGame(userId);
+        Map<String, Object> response = gameService.startGame(userId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Operation(summary = "스터디 문제 제출", description = "스터디 게임 문제를 보여줍니다.")
+    @PostMapping("/game/{userId}/{studyId}/{answer}")
+    public ResponseEntity<?> submitAnswerStudyGame(@PathVariable Long userId,@PathVariable Long studyId,@PathVariable Long answer) {
+        Map<String, Object> response = gameService.submitGame(userId, studyId, answer);
+        logger.info(userId.toString(),studyId.toString(),answer.toString());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
