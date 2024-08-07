@@ -15,7 +15,7 @@ public class RequestQuizAnswer {
     private Long userId;
     @NotNull
     private String userAnswer;
-
+    @NotNull
     private int answerTime;
     private LocalDateTime created_at = now();
 

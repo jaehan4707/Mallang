@@ -76,7 +76,7 @@ public class QuizService {
         logger.info("Success Save Answer");
     }
 
-    public Answer saveAnswer(RequestQuizAnswer requestQuizAnswer, float score){
+    public void saveAnswer(RequestQuizAnswer requestQuizAnswer, float score){
 
         Answer answer = Answer.builder()
                 .user(userRepository.findById(requestQuizAnswer.getUserId()).orElseThrow(() -> new RestApiException(QuizErrorCode.USER_NOT_FOUND)))
@@ -88,7 +88,7 @@ public class QuizService {
                 .build();
 
         logger.info("Add answer data : " , answer.toString());
-        return answerRepository.save(answer);
+        answerRepository.save(answer);
     }
 
     @Transactional
@@ -101,35 +101,35 @@ public class QuizService {
 
     @Transactional
     public Map<String, Object> quizResult(RequestQuizResult requestQuizResult){
-        Long userID = requireNonNull(requestQuizResult.getUserID(), QuizErrorCode.USER_ID_NULL);
-        Long areaID = requireNonNull(requestQuizResult.getAreaID(), QuizErrorCode.AREA_ID_NULL);
-        Long factionID = requireNonNull(requestQuizResult.getFactionID(), QuizErrorCode.FACTION_ID_NULL);
+        Long userID = requestQuizResult.getUserID();
+        Long areaID = requestQuizResult.getAreaID();
+        Long factionID = requestQuizResult.getFactionID();
 
         Map<String, Object> user = new HashMap<>();
         Map<String, Object> team = new HashMap<>();
-
+        Map<String, Object> response = new HashMap<>();
         // 최종 제출 세팅
-        Long[] idx = requestQuizResult.getQuizID();
+
         List<Float> responseScore = new ArrayList<>();
 
         // User Score 확인
         float sum = 0;
-        int roundNum = 0;
-        for(Long quizID : idx){
+        for(Long quizID : requestQuizResult.getQuizID()){
             answerRepository.setAnswerTrue(userID, quizID);
             logger.info(quizID + "번 Answer 최종 제출 완료");
             Float nowScore =answerRepository.findTop1AnswerScore(quizID);
             sum += nowScore;
+            logger.info(String.valueOf(nowScore));
             responseScore.add(nowScore);
-            roundNum++;
+            logger.info("값 저장 성공");
         }
+
         user.put("Score", responseScore);
         user.put("Total Score", sum);
         logger.info("라운드 최종 점수 저장 시작");
 
         coreService.storeTotalScore(userID, areaID, sum, factionID);
 
-        Map<String, Object> response = new HashMap<>();
         List<Float> teamScoreList = totalScoreRepository.findTotalScoreByAreaID(areaID);
         team.put("My Team Total Score", teamScoreList.get(0));
 

@@ -26,24 +26,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
             "DESC LIMIT 1", nativeQuery = true)
     Float findTop1AnswerScore(@Param("quizID") Long quizID);
 
-    @Query("SELECT a " +
-            "FROM Answer a " +
-            "WHERE YEAR(a.created_at) = :year AND MONTH(a.created_at) = :month AND DAY(a.created_at) = :day " +
-            "AND a.check_fin = 1 " +
-            "AND a.id IN :quizIDs " +
-            "AND a.user.id = :userID "+
-            "ORDER BY a.created_at ASC")
-    List<Object[]> getResultUser(@Param("year") int year,
-                                 @Param("month") int month,
-                                 @Param("day") int day,
-                                 @Param("quizIDs") Long[] quizIDs,
-                                 @Param("userID") Long userID);
-
-
-    //오늘 날짜와 created_at의 날짜 데이터가 같을 것
-    //check_Fin = 1
-    //한 유저당 하나의 answer만 조회하되, score가 높은 데이터를 조회함. score가 같다면 answer_time이 적게 든 데이터.
-
     @Modifying
     @Query(value = "SELECT a1.* " +
             "FROM answer a1 " +
