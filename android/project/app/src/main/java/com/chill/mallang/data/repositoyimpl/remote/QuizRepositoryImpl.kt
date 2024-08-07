@@ -25,7 +25,7 @@ class QuizRepositoryImpl
                     }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
+                        emit(ApiResponse.Success(response.body?.data))
                     }
 
                     is ApiResponse.Error -> {
@@ -49,7 +49,7 @@ class QuizRepositoryImpl
                     }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
+                        emit(ApiResponse.Success(response.body?.data))
                     }
 
                     is ApiResponse.Error -> {
@@ -73,7 +73,7 @@ class QuizRepositoryImpl
                     }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data))
+                        emit(ApiResponse.Success(response.body))
                     }
 
                     is ApiResponse.Error -> {
@@ -97,7 +97,7 @@ class QuizRepositoryImpl
                     }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.data?.data))
+                        emit(ApiResponse.Success(response.body?.data))
                     }
 
                     is ApiResponse.Error -> {

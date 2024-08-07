@@ -115,7 +115,7 @@ class Game01ViewModel
                 quizRepository.getQuizIds(testAreaId).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
-                            _questionIdList.addAll(response.data ?: listOf())
+                                _questionIdList.addAll(response.body ?: listOf())
                             updateGame01State(Game01State.ROUND_LOAD)
                             startGame()
                         }
@@ -131,10 +131,10 @@ class Game01ViewModel
                 quizRepository.getQuiz(questionIdList[gameRound - 1]).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
-                            response.data?.let { _questionDataSetList.add(it) }
+                            response.body?.let { _questionDataSetList.add(it) }
                             _QuizUiState.emit(
                                 Game01QUizUiState.Success(
-                                    QuizDataSet = response.data!!,
+                                    QuizDataSet = response.body!!,
                                 ),
                             )
                             updateGame01State(Game01State.ROUND_READY)
@@ -202,7 +202,7 @@ class Game01ViewModel
                                 Log.d(TAG, "완료")
                                 _resultUiState.emit(
                                     Game01FinalResultUiState.Success(
-                                        finalResult = response.data!!,
+                                        finalResult = response.body!!,
                                     ),
                                 )
                                 if (gameRound == ROUND_COUNT) {
