@@ -147,14 +147,14 @@ public class QuizService {
 
         Map<String, Object> response = new HashMap<>();
         List<Float> teamScoreList = totalScoreRepository.findTotalScoreByAreaID(areaID);
+        team.put("My Team Total Score", teamScoreList.get(0));
 
-        if (teamScoreList.size() > 0) {
-            team.put("My Team Total Score", teamScoreList.get(0));
+        if (teamScoreList.size() == 1) {
             team.put("Oppo Team Total Score", 0.0 );
-        }
-        if (teamScoreList.size() > 1) {
+        }else{
             team.put("Oppo Team Total Score", teamScoreList.get(1) );
         }
+
         team.put("My Team Rank", totalScoreRepository.findTop3(areaID, factionID));
 
         Map<String, Object> data = new HashMap<>();
