@@ -5,5 +5,5 @@ data class StudyState(
     val quizTitle: String = "",
     val quizScript: String = "",
     val wordList: List<String> = emptyList(),
-    val isResultScreen: Boolean = false
+    val isResultScreen: Boolean = false,
 )
