@@ -61,16 +61,28 @@ class WordNoteViewModel
 
         fun loadIncorrectWords() {
             viewModelScope.launch {
-                state =
-                    state.copy(
-                        wordList =
-                            arrayListOf(
-                                Word.IncorrectWord(
-                                    studyId = 1,
-                                    word = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 __할 만한 성장을 이루었다.",
-                                ),
-                            ),
-                    )
+                dataStoreRepository.getUserId().collect { userId ->
+                    if (userId != null) {
+                        studyRepository.getIncorrectList(userId).collectLatest { response ->
+                            when (response) {
+                                is ApiResponse.Success -> {
+                                    Log.d("nakyung", "response: ${response.body}")
+                                    state =
+                                        state.copy(
+                                            wordList = response.body ?: emptyList(),
+                                        )
+                                }
+
+                                is ApiResponse.Error -> {
+                                    // api 통신 실패
+                                    Log.d("nakyung", response.errorMessage)
+                                }
+
+                                ApiResponse.Init -> {}
+                            }
+                        }
+                    }
+                }
             }
         }
     }
