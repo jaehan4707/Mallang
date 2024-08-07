@@ -3,6 +3,7 @@ package com.chill.mallang.domain.quiz.service;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizResult;
 import com.chill.mallang.domain.quiz.dto.response.ResponseQuiz;
+import com.chill.mallang.domain.quiz.dto.response.TeamRankResponse;
 import com.chill.mallang.domain.quiz.error.QuizErrorCode;
 import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.quiz.model.Quiz;
@@ -138,13 +139,20 @@ public class QuizService {
         }else{
             team.put("Oppo Team Total Score", teamScoreList.get(1) );
         }
-
-        team.put("My Team Rank", totalScoreRepository.findTop3(areaID, factionID));
+        Map<String, Object> teamRankMap = new LinkedHashMap<>();
+        List<TeamRankResponse> top3Ranks = totalScoreRepository.findTop3Results(areaID, factionID);
+        for (int i = 0; i < top3Ranks.size(); i++) {
+            Map<String, Object> rankMap = new HashMap<>();
+            rankMap.put("name", top3Ranks.get(i).getNickName());
+            rankMap.put("score", top3Ranks.get(i).getTotalScore());
+            teamRankMap.put("Rank" + (i + 1), rankMap);
+        }
+        team.put("My Team Rank", teamRankMap);
 
         Map<String, Object> data = new HashMap<>();
-
         data.put("User", user);
         data.put("Team", team);
+
         response.put("data", data);
         return response;
     }
