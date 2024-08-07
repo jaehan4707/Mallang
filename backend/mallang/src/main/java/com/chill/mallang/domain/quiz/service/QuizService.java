@@ -10,50 +10,37 @@ import com.chill.mallang.domain.quiz.repository.AnswerRepository;
 import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.chill.mallang.domain.quiz.repository.TotalScoreRepository;
 import com.chill.mallang.domain.quiz.service.core.CoreService;
+import com.chill.mallang.domain.quiz.service.core.OpenAIService;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.errors.exception.RestApiException;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.chill.mallang.util.ValidationUtils.requireNonNull;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class QuizService {
     private final Logger logger = LoggerFactory.getLogger(QuizService.class);
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private GPTService gptService;
-    @Autowired
-    private CoreService coreService;
-
+    private final CoreService coreService;
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
     private final TotalScoreRepository totalScoreRepository;
-
-    public QuizService( QuizRepository quizRepository, UserRepository userRepository,
-                        AnswerRepository answerRepository, TotalScoreRepository totalScoreRepository,
-                        EntityManager entityManager ) {
-        this.quizRepository = quizRepository;
-        this.userRepository = userRepository;
-        this.answerRepository = answerRepository;
-        this.totalScoreRepository = totalScoreRepository;
-        this.entityManager = entityManager;
-    }
-
+    private final OpenAIService openAIService;
 
     public Map<String, Object> getById(Long quizID) {
         Optional<Quiz> quiz = quizRepository.findById(quizID);
@@ -82,10 +69,8 @@ public class QuizService {
         String question = quizRepository.findById(requestQuizAnswer.getQuizId()).get().getQuestion();
         String answer = requestQuizAnswer.getUserAnswer();
 
-        System.out.println(answer);
-
-        float score = gptService.getScore(question, answer);
-
+        float score = Float.parseFloat(openAIService.getScoreUseAI(question, answer));
+        logger.info("새로운 GPT의 점수 : " + String.valueOf(openAIService.getScoreUseAI(question, answer)));
         saveAnswer(requestQuizAnswer, score);
 
         logger.info("Success Save Answer");
@@ -134,7 +119,6 @@ public class QuizService {
             answerRepository.setAnswerTrue(userID, quizID);
             logger.info(quizID + "번 Answer 최종 제출 완료");
             Float nowScore =answerRepository.findTop1AnswerScore(quizID);
-            //Float nowScore =answerRepository.findTotalScoreByAreaID(quizID);
             sum += nowScore;
             responseScore.add(nowScore);
             roundNum++;
