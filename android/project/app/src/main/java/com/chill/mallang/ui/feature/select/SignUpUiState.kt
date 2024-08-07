@@ -1,22 +1,11 @@
 package com.chill.mallang.ui.feature.select
 
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.chill.mallang.data.model.entity.Faction
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 @Stable
-sealed interface SignUpUiState {
-    @Immutable
-    data class Loading(
-        val userEmail: String? = "",
-        val userNickName: String? = "",
-        val userProfileImageUrl: String? = "",
-    ) : SignUpUiState
-
-    @Immutable
-    data object Success : SignUpUiState
-
-    @Immutable
-    data class Error(
-        val errorMessage: String = "",
-    ) : SignUpUiState
-}
+data class SignUpUiState(
+    val factionsStatus: PersistentList<Faction> = persistentListOf(),
+)

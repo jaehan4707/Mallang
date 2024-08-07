@@ -41,6 +41,7 @@ import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.feature.setting.EditNickNameDialogScreen
 import com.chill.mallang.ui.feature.setting.SettingDialog
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
@@ -62,12 +63,17 @@ fun HomeScreen(
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val (showSettingDialog, setShowSettingDialog) = rememberSaveable {
-        mutableStateOf(false)
-    }
-    val (showEditNickNameDialog, setShowEditNickNameDialog) = rememberSaveable {
-        mutableStateOf(false)
-    }
+    val (showSettingDialog, setShowSettingDialog) =
+        rememberSaveable {
+            mutableStateOf(false)
+        }
+    val (showEditNickNameDialog, setShowEditNickNameDialog) =
+        rememberSaveable {
+            mutableStateOf(false)
+        }
+
+    // TopBar
+    TopbarHandler()
 
     HandleHomeUiEvent(
         event = viewModel.event,
@@ -81,9 +87,9 @@ fun HomeScreen(
 
     Box(
         modifier =
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 15.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 15.dp),
     ) {
         HomeContent(
             modifier = modifier,
@@ -158,8 +164,8 @@ fun HomeContent(
         is HomeUiState.LoadUserInfo -> {
             HomeScreenContent(
                 modifier = modifier,
-                userNickName = uiState.userNickName,
-                userFaction = uiState.userFaction,
+                nickname = uiState.nickName,
+                factionId = uiState.factionId,
                 navigateToGame = navigateToGame,
                 navigateToWordNote = navigateToWordNote,
                 exitApplication = exitApplication,
@@ -179,11 +185,11 @@ fun HomeContent(
                 EditNickNameDialogScreen(
                     onDismiss = { onEditNickName ->
                         sendEvent(HomeUiEvent.CloseEditNickNameDialog)
-                        if (onEditNickName != uiState.userNickName) {
+                        if (onEditNickName != uiState.nickName) {
                             sendEvent(HomeUiEvent.Refresh)
                         }
                     },
-                    userNickName = uiState.userNickName,
+                    userNickName = uiState.nickName,
                 )
             }
         }
@@ -193,8 +199,8 @@ fun HomeContent(
 @Composable
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
-    userNickName: String = "",
-    userFaction: String = "",
+    nickname: String = "",
+    factionId: Int = 0,
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
     exitApplication: () -> Unit = {},
@@ -249,8 +255,8 @@ fun HomeScreenContent(
         )
         UserCharacter(
             modifier = modifier,
-            userNickName = userNickName,
-            userFaction = userFaction,
+            userNickName = nickname,
+            userFaction = factionId,
         )
         ModeButton(
             icon = R.drawable.ic_question,
@@ -278,9 +284,9 @@ fun ImageButton(
 ) {
     Column(
         modifier =
-        modifier.noRippleClickable {
-            onClick()
-        },
+            modifier.noRippleClickable {
+                onClick()
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
@@ -303,10 +309,10 @@ internal fun UserItem(
 ) {
     Row(
         modifier =
-        Modifier
-            .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
-            .padding(5.dp)
-            .height(IntrinsicSize.Min),
+            Modifier
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
+                .padding(5.dp)
+                .height(IntrinsicSize.Min),
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -329,14 +335,14 @@ internal fun UserItem(
 fun UserCharacter(
     modifier: Modifier = Modifier,
     userNickName: String,
-    userFaction: String,
+    userFaction: Int,
 ) {
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max),
+                Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
@@ -359,9 +365,9 @@ fun UserCharacter(
             )
             Text(
                 modifier =
-                Modifier
-                    .padding(top = 10.dp)
-                    .align(Alignment.Center),
+                    Modifier
+                        .padding(top = 10.dp)
+                        .align(Alignment.Center),
                 text = stringResource(id = R.string.character_message),
                 style = Typography.bodyLarge,
                 color = Sub1,
@@ -380,12 +386,12 @@ fun ModeButton(
 ) {
     Column(
         modifier =
-        modifier
-            .width(75.dp)
-            .height(75.dp)
-            .noRippleClickable { onClick() }
-            .background(color = Gray2, shape = CircleShape)
-            .border(width = 2.dp, color = Color.Black, shape = CircleShape),
+            modifier
+                .width(75.dp)
+                .height(75.dp)
+                .noRippleClickable { onClick() }
+                .background(color = Gray2, shape = CircleShape)
+                .border(width = 2.dp, color = Color.Black, shape = CircleShape),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -405,6 +411,6 @@ fun ModeButton(
 @Composable
 fun HomePreview() {
     MallangTheme {
-        HomeScreenContent(userNickName = "짜이한")
+        HomeScreenContent(nickname = "짜이한")
     }
 }

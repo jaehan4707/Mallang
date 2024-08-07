@@ -1,6 +1,6 @@
-package com.chill.mallang.ui.feature.quiz
+package com.chill.mallang.ui.feature.study
 
-data class QuizState(
+data class StudyState(
     val studyId: Int = -1,
     val quizTitle: String = "",
     val quizScript: String = "",

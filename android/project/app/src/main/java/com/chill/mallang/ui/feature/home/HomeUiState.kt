@@ -10,7 +10,7 @@ sealed interface HomeUiState {
 
     @Immutable
     data class LoadUserInfo(
-        val userNickName: String = "",
-        val userFaction: String = "",
+        val nickName: String = "",
+        val factionId: Int = 0,
     ) : HomeUiState
 }
