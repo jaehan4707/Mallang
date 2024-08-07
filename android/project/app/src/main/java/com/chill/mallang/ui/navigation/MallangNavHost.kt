@@ -90,7 +90,6 @@ fun MallangNavHost(
         ) {
             WordNoteScreen(
                 modifier = modifier,
-//                popUpBackStack = { navController.popBackStack() },
                 navigateToQuiz = {
                     navController.navigate(
                         DestinationQuiz.createRoute(studyId = it),
@@ -123,14 +122,17 @@ fun MallangNavHost(
 
         composable(
             route = DestinationQuiz.routeWithArgs,
-            arguments = listOf(navArgument("studyId") { type = NavType.IntType }),
+            arguments =
+                listOf(
+                    navArgument("studyId") { type = NavType.IntType },
+                ),
         ) { backStackEntry ->
             StudyScreen(
                 modifier = modifier,
                 navigateToQuizResult = {
                     navController.navigate(
                         DestinationQuizResult.createRoute(
-                            studyId = it,
+                            userAnswer = it,
                         ),
                     ) {
                         popUpTo(DestinationMain.route) {
@@ -154,10 +156,11 @@ fun MallangNavHost(
             route = DestinationQuizResult.routeWithArgs,
             arguments = DestinationQuizResult.arguments,
         ) { navBackStackEntry ->
-            val studyId = navBackStackEntry.arguments?.getInt("studyId")
+            val userAnswer = navBackStackEntry.arguments?.getInt("userAnswer")
 
             QuizResultScreen(
                 modifier = modifier,
+                userAnswer = userAnswer ?: -1,
             )
         }
     }
