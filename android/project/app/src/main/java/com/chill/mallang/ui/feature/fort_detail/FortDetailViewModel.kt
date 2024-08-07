@@ -2,6 +2,7 @@ package com.chill.mallang.ui.feature.fort_detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chill.mallang.data.model.entity.GameUserRecord
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,16 +41,16 @@ class FortDetailViewModel @Inject constructor(
             )
         val testLeadersState: TeamLeadersState =
             TeamLeadersState.Success(
-                userRecord = UserRecord(1, 1, "말대표", 100, 300),
+                userRecord = GameUserRecord(1, "말대표", 100.0F),
                 myTeamRecords =
                     listOf(
-                        UserRecord(1, 1, "말대표", 100, 300),
-                        UserRecord(2, 3, "말부하", 97, 300),
+                        GameUserRecord(1,"말대표", 100.0F),
+                        GameUserRecord(2, "말부하", 97.0F),
                     ),
                 oppoTeamRecords =
                     listOf(
-                        UserRecord(1, 4, "랑대표", 100, 300),
-                        UserRecord(2, 5, "랑부하", 97, 300),
+                        GameUserRecord(1, "랑대표", 100.0F),
+                        GameUserRecord(2, "랑부하", 97.0F),
                     ),
             )
     }

@@ -1,6 +1,7 @@
 package com.chill.mallang.core.di
 
 import com.chill.mallang.data.api.AreaApi
+import com.chill.mallang.data.api.QuizApi
 import com.chill.mallang.data.api.FactionApi
 import com.chill.mallang.data.api.UserApi
 import dagger.Module
@@ -21,6 +22,10 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideAreaApi(retrofit: Retrofit): AreaApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideQuizApi(retrofit: Retrofit): QuizApi = retrofit.create()
 
     @Provides
     @Singleton
