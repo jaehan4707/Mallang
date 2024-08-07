@@ -19,6 +19,7 @@ import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.ui.feature.map.layout.MapScaffold
 import com.chill.mallang.ui.feature.map.mapview.MapView
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.util.MultiplePermissionsHandler
 import com.google.android.gms.location.LocationServices
@@ -64,6 +65,8 @@ fun MapScreen(
             viewModel.loadAreas()
         }
     }
+
+    TopbarHandler(isVisible = true)
 
     MapScreenContent(
         currentLocation = currentLocation,
