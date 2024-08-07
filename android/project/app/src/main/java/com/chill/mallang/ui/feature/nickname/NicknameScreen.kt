@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.nickname
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,7 +96,7 @@ fun NicknameScreen(
                 checkNickName = {
                     // 정규식에 맞는 경우에만 checkNickName() 실행
                     if (nicknameState.errorMessage == "") {
-                        nicknameViewModel.checkNickName()
+                        viewModel.checkNickName()
                     } else {
                         scope.launch {
                             snackBarHostState.showSnackbar(
