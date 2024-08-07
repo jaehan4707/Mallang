@@ -8,6 +8,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -45,11 +47,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
-import com.chill.mallang.ui.feature.study.AnswerList
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Green1
+import com.chill.mallang.ui.theme.Green2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Sub2
@@ -58,6 +60,7 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun QuizResultScreen(
     modifier: Modifier = Modifier,
+    userAnswer: Int,
 ) {
     val studyResultViewModel: StudyResultViewModel = hiltViewModel()
     val studyResultState = studyResultViewModel.state
@@ -101,7 +104,7 @@ fun QuizResultScreen(
                     .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            val title = if (studyResultState.userAnswer == studyResultState.systemAnswer) "정답!" else "오답!"
+            val title = if (studyResultState.result) "정답!" else "오답!"
             val titleColor = if (title == "정답!") Green1 else Sub1
 
             Text(
@@ -116,8 +119,9 @@ fun QuizResultScreen(
                 quizScript = studyResultState.quizScript,
                 underline = studyResultState.wordList[studyResultState.systemAnswer - 1].first,
             )
-            AnswerList(
+            ResultAnswerList(
                 state = studyResultState,
+                userAnswer = userAnswer,
                 fraction = 0.15f,
                 expandedItem = expandedItem,
                 onAnswerSelected = { selectedIndex ->
@@ -129,19 +133,53 @@ fun QuizResultScreen(
 }
 
 @Composable
+fun ResultAnswerList(
+    state: StudyResultState,
+    userAnswer: Int,
+    expandedItem: Int = -1,
+    fraction: Float,
+    onAnswerSelected: (Int) -> Unit = { },
+) {
+    val size = state.wordList.size
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(15.dp),
+        modifier =
+            Modifier
+                .padding(12.dp)
+                .fillMaxSize(),
+    ) {
+        items(size) { index ->
+            AnswerResultListItem(
+                modifier = Modifier.fillParentMaxHeight(fraction),
+                index = index,
+                state = state,
+                userAnswer = userAnswer,
+                expandedItem = expandedItem,
+                onItemClick = { selectedIndex ->
+                    onAnswerSelected(selectedIndex)
+                },
+            )
+        }
+    }
+}
+
+@Composable
 fun AnswerResultListItem(
     modifier: Modifier = Modifier,
     index: Int,
+    userAnswer: Int,
     state: StudyResultState,
     expandedItem: Int,
     onItemClick: (Int) -> Unit,
 ) {
-    val isUserAnswer = state.userAnswer == index + 1
+    val isUserAnswer = userAnswer == index + 1
     val isSystemAnswer = state.systemAnswer == index + 1
 
     // 배경색
     val backgroundColor =
         when {
+            isUserAnswer && isSystemAnswer -> Green2
             isUserAnswer && !isSystemAnswer -> Sub2
             else -> Color.White
         }
@@ -149,6 +187,7 @@ fun AnswerResultListItem(
     // 번호, 테두리 색상
     val borderColor =
         when {
+            isUserAnswer && isSystemAnswer -> Green1
             isUserAnswer && !isSystemAnswer -> Sub1
             else -> Gray6
         }
@@ -322,6 +361,6 @@ fun QuizBoxWithUnderline(
 @Composable
 fun ResultPreview() {
     MallangTheme {
-        QuizResultScreen()
+//        QuizResultScreen()
     }
 }
