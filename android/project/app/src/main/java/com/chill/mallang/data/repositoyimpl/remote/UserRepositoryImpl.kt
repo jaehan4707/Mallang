@@ -2,11 +2,11 @@ package com.chill.mallang.data.repositoyimpl.remote
 
 import com.chill.mallang.data.api.UserApi
 import com.chill.mallang.data.model.apiHandler
+import com.chill.mallang.data.model.entity.User
 import com.chill.mallang.data.model.request.JoinRequest
 import com.chill.mallang.data.model.request.LoginRequest
 import com.chill.mallang.data.model.request.UpdateNickNameRequest
 import com.chill.mallang.data.model.response.ApiResponse
-import com.chill.mallang.data.model.response.GetUserInfoResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.UserRepository
 import kotlinx.coroutines.flow.Flow
@@ -109,7 +109,7 @@ class UserRepositoryImpl
                 }
             }
 
-        override suspend fun getUserInfo(): Flow<ApiResponse<GetUserInfoResponse>> =
+        override suspend fun getUserInfo(): Flow<ApiResponse<User>> =
             flow {
                 val response =
                     apiHandler {
@@ -117,7 +117,18 @@ class UserRepositoryImpl
                     }
                 when (response) {
                     is ApiResponse.Success -> {
-                        emit(ApiResponse.Success(response.body?.data))
+                        val user =
+                            response.body?.data?.let {
+                                User(
+                                    id = it.userId ?: 0,
+                                    email = it.email ?: "",
+                                    factionId = it.faction ?: 0,
+                                    tryCount = it.tryCount ?: 0,
+                                    nickName = it.nickName ?: "",
+                                )
+                            } ?: User()
+                        dataStoreRepository.saveUser(user)
+                        emit(ApiResponse.Success(user))
                     }
 
                     is ApiResponse.Error -> {

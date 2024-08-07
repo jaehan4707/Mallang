@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
-import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
 
@@ -29,7 +28,7 @@ fun LongBlackButton(
                 containerColor = Gray6,
             ),
         shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(1.dp, Gray4),
+        border = BorderStroke(1.dp, Gray6),
         modifier =
             modifier
                 .fillMaxWidth(0.8f)

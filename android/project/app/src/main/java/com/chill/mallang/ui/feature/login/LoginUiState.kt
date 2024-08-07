@@ -9,9 +9,6 @@ sealed interface LoginUiState {
     data object Loading : LoginUiState
 
     @Immutable
-    data object AuthLogin : LoginUiState
-
-    @Immutable
     data class Success(
         val userEmail: String? = "",
         val userProfileImageUrl: String? = "",

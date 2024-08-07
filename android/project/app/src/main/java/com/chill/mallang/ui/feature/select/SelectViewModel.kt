@@ -5,9 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.data.model.request.JoinRequest
 import com.chill.mallang.data.model.response.ApiResponse
+import com.chill.mallang.data.repository.remote.AreaRepository
+import com.chill.mallang.data.repository.remote.FactionRepository
 import com.chill.mallang.data.repository.remote.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
@@ -20,52 +25,67 @@ class SelectViewModel
     constructor(
         private val savedStateHandle: SavedStateHandle,
         private val userRepository: UserRepository,
+        private val factionRepository: FactionRepository,
+        private val areaRepository: AreaRepository,
     ) : ViewModel() {
-        private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Loading())
+        private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState())
         val uiState = _uiState.asStateFlow()
+        private val _event = MutableSharedFlow<SignUiEvent>()
+        val event = _event.asSharedFlow()
 
         init {
-            val state = uiState.value
-            if (state is SignUpUiState.Loading) {
-                with(savedStateHandle) {
-                    _uiState.update {
-                        state.copy(
-                            userEmail = get<String>("userEmail"),
-                            userProfileImageUrl = get<String>("userProfileImageUrl"),
-                            userNickName = get<String>("userNickName"),
-                        )
+            getAreaStatus()
+        }
+
+        private fun getAreaStatus() {
+            viewModelScope.launch {
+                factionRepository.getFactionRatios().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            _uiState.update { state ->
+                                state.copy(
+                                    factionsStatus =
+                                        response.body ?: persistentListOf(),
+                                )
+                            }
+                        }
+
+                        is ApiResponse.Error -> {
+                            _event.emit(SignUiEvent.Error(response.errorMessage))
+                        }
+
+                        ApiResponse.Init -> {}
                     }
                 }
             }
         }
 
         fun join(team: String?) {
-            val state = uiState.value
+            val userEmail = savedStateHandle.get<String>("userEmail") ?: ""
+            val userProfileImageUrl = savedStateHandle.get<String>("userProfileImageUrl") ?: ""
+            val userNickName = savedStateHandle.get<String>("userNickName") ?: ""
             viewModelScope.launch {
-                if (state is SignUpUiState.Loading) {
-                    userRepository
-                        .join(
-                            JoinRequest(
-                                userEmail = state.userEmail ?: "",
-                                userProfileImageUrl = state.userProfileImageUrl ?: "",
-                                userNickName = state.userNickName ?: "",
-                                team = team ?: "",
-                            ),
-                        ).collectLatest { response ->
-                            when (response) {
-                                is ApiResponse.Success -> {
-                                    _uiState.value = SignUpUiState.Success
-                                }
-
-                                is ApiResponse.Error -> {
-                                    _uiState.value =
-                                        SignUpUiState.Error(errorMessage = response.errorMessage)
-                                }
-
-                                is ApiResponse.Init -> {}
+                userRepository
+                    .join(
+                        JoinRequest(
+                            userEmail = userEmail,
+                            userProfileImageUrl = userProfileImageUrl,
+                            userNickName = userNickName,
+                            team = team ?: "",
+                        ),
+                    ).collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Success -> {
+                                _event.emit(SignUiEvent.SignUpSuccess)
                             }
+
+                            is ApiResponse.Error -> {
+                                _event.emit(SignUiEvent.Error(response.errorMessage))
+                            }
+
+                            is ApiResponse.Init -> {}
                         }
-                }
+                    }
             }
         }
     }

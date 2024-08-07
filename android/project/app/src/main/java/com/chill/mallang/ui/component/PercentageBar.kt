@@ -33,46 +33,48 @@ fun PercentageBar(
     leftLabel: String,
     rightLabel: String,
     leftColor: Color,
-    rightColor: Color
+    rightColor: Color,
 ) {
     Column(
-        modifier = modifier
-            .padding(horizontal = 30.dp)
+        modifier =
+            modifier
+                .padding(horizontal = 30.dp),
     ) {
         Canvas(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(15.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(15.dp),
         ) {
-
-            val path = Path().apply {
-                addRoundRect( // 모서리가 둥근 사각형을 path에 추가
-                    RoundRect(
-                        Rect(
-                            offset = Offset(0f, 0f),
-                            size = Size(size.width, 30f)
+            val path =
+                Path().apply {
+                    addRoundRect(
+                        // 모서리가 둥근 사각형을 path에 추가
+                        RoundRect(
+                            Rect(
+                                offset = Offset(0f, 0f),
+                                size = Size(size.width, 30f),
+                            ),
+                            CornerRadius(15.dp.toPx(), 15.dp.toPx()),
                         ),
-                        CornerRadius(15.dp.toPx(), 15.dp.toPx())
                     )
-                )
-            }
+                }
 
-            clipPath(path) { // path 안쪽에 그리기
+            clipPath(path) {
                 val barWidth = size.width
-
-                val leftWidth = barWidth * (leftPercentage / 100f)
-                val rightWidth = barWidth * (rightPercentage / 100f)
+                val dividerRatio = leftPercentage.toFloat() / (leftPercentage + rightPercentage)
+                val leftWidth = barWidth * dividerRatio
 
                 drawRect(
                     color = Red01,
                     topLeft = Offset(0f, 0f),
-                    size = Size(leftWidth, 30f)
+                    size = Size(leftWidth, 30f),
                 )
 
                 drawRect(
                     color = SkyBlue,
                     topLeft = Offset(leftWidth, 0f),
-                    size = Size(rightWidth, 30f)
+                    size = Size(barWidth - leftWidth, 30f),
                 )
             }
         }
@@ -81,17 +83,17 @@ fun PercentageBar(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = "$leftLabel $leftPercentage%",
                 style = Typography.displaySmall,
-                color = leftColor
+                color = leftColor,
             )
             Text(
                 text = "$rightLabel $rightPercentage%",
                 style = Typography.displaySmall,
-                color = rightColor
+                color = rightColor,
             )
         }
     }

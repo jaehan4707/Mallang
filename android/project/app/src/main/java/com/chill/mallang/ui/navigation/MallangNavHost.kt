@@ -15,9 +15,9 @@ import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.map.MapScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
-import com.chill.mallang.ui.feature.quiz.QuizScreen
-import com.chill.mallang.ui.feature.quiz_result.QuizResultScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
+import com.chill.mallang.ui.feature.study.StudyScreen
+import com.chill.mallang.ui.feature.study_result.QuizResultScreen
 import com.chill.mallang.ui.feature.word.WordNoteScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -41,8 +41,18 @@ fun MallangNavHost(
             LoginScreen(onLoginSuccess = { userEmail, userProfileImageUrl ->
                 navController.navigate(
                     DestinationNickName.createRoute(userEmail, userProfileImageUrl),
-                )
-            }, onAuthLoginSuccess = { navController.navigate(DestinationMain.route) })
+                ) {
+                    popUpTo(DestinationLogin.route) {
+                        inclusive = false
+                    }
+                }
+            }, onAuthLoginSuccess = {
+                navController.navigate(DestinationMain.route) {
+                    popUpTo(DestinationLogin.route) {
+                        inclusive = false
+                    }
+                }
+            })
         }
         composable(
             route = DestinationNickName.routeWithArgs,
@@ -54,22 +64,36 @@ fun MallangNavHost(
                     navBackStackEntry.arguments?.getString("userProfileImageUrl") ?: "",
                     StandardCharsets.UTF_8.toString(),
                 )
-            NicknameScreen(modifier = modifier, onSuccess = { nickName ->
-                navController.navigate(
-                    DestinationSelect.createRoute(
-                        userEmail = userEmail,
-                        userProfileImageUrl = userProfileImageUrl,
-                        userNickName = nickName,
-                    ),
-                )
-            })
+            NicknameScreen(
+                modifier = modifier,
+                onSuccess = { nickName ->
+                    navController.navigate(
+                        DestinationSelect.createRoute(
+                            userEmail = userEmail,
+                            userProfileImageUrl = userProfileImageUrl,
+                            userNickName = nickName,
+                        ),
+                    ) {
+                        popUpTo(DestinationLogin.route) {
+                            inclusive = false
+                        }
+                    }
+                },
+                popUpBackStack = navController::popBackStack,
+            )
         }
 
         composable(
             route = DestinationSelect.routeWithArgs,
             arguments = DestinationSelect.arguments,
         ) {
-            SelectScreen(navigateToMain = { navController.navigate(DestinationMain.route) })
+            SelectScreen(navigateToMain = {
+                navController.navigate(DestinationMain.route) {
+                    popUpTo(DestinationLogin.route) {
+                        inclusive = false
+                    }
+                }
+            })
         }
 
         composable(
@@ -79,8 +103,9 @@ fun MallangNavHost(
                 modifier = Modifier,
                 navigateToGame = { navController.navigate(DestinationMap.route) },
                 navigateToWordNote = { navController.navigate(DestinationWordNote.route) },
-                popUpBackStack = { (context as Activity).finish() },
+                popUpBackStack = navController::popBackStack,
                 onShowErrorSnackBar = onShowErrorSnackBar,
+                exitApplication = { (context as Activity).finish() },
             )
         }
 
@@ -124,9 +149,8 @@ fun MallangNavHost(
             route = DestinationQuiz.routeWithArgs,
             arguments = listOf(navArgument("studyId") { type = NavType.IntType }),
         ) { backStackEntry ->
-            QuizScreen(
+            StudyScreen(
                 modifier = modifier,
-//                popUpBackStack = { navController.popBackStack() },
                 navigateToQuizResult = {
                     navController.navigate(
                         DestinationQuizResult.createRoute(
@@ -158,12 +182,6 @@ fun MallangNavHost(
 
             QuizResultScreen(
                 modifier = modifier,
-                popUpBackStack = {
-                    navController.popBackStack(
-                        DestinationMain.route,
-                        inclusive = false,
-                    )
-                },
             )
         }
     }
