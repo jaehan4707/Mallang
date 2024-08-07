@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.study
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -91,7 +90,6 @@ fun StudyScreen(
         isVisible = true,
         title = "학습 퀴즈",
         onBack = { nav ->
-            Log.d("nakyung", "QuizScreen: a")
             setBackPressed(true)
             setNavController(nav)
         },

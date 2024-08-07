@@ -17,59 +17,59 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NicknameViewModel
-@Inject
-constructor(
-    private val userRepository: UserRepository,
-) : ViewModel() {
-    val nicknameState = NicknameState()
-    private val _uiState = MutableStateFlow<NickNameUiState>(NickNameUiState.Init)
-    val uiState = _uiState.asStateFlow()
+    @Inject
+    constructor(
+        private val userRepository: UserRepository,
+    ) : ViewModel() {
+        val nicknameState = NicknameState()
+        private val _uiState = MutableStateFlow<NickNameUiState>(NickNameUiState.Init)
+        val uiState = _uiState.asStateFlow()
 
-    fun checkNickName() {
-        viewModelScope.launch {
-            userRepository
-                .checkNickName(nickName = nicknameState.nickname)
-                .collectLatest { response ->
+        fun checkNickName() {
+            viewModelScope.launch {
+                userRepository
+                    .checkNickName(nickName = nicknameState.nickname)
+                    .collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Success -> {
+                                _uiState.value =
+                                    NickNameUiState.Success(nickName = nicknameState.nickname)
+                            }
+
+                            is ApiResponse.Error -> {
+                                nicknameState.updateErrorMessage(ErrorMessage.DUPLICATED_NICKNAME)
+                                _uiState.value =
+                                    NickNameUiState.Error(errorMessage = nicknameState.errorMessage)
+                            }
+
+                            ApiResponse.Init -> {}
+                        }
+                    }
+            }
+        }
+
+        fun updateNickName() {
+            viewModelScope.launch {
+                userRepository.updateNickName(nicknameState.nickname).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
-                            _uiState.value =
-                                NickNameUiState.Success(nickName = nicknameState.nickname)
+                            _uiState.value = NickNameUiState.UpdateNickName(nicknameState.nickname)
                         }
 
                         is ApiResponse.Error -> {
-                            nicknameState.updateErrorMessage(ErrorMessage.DUPLICATED_NICKNAME)
-                            _uiState.value =
-                                NickNameUiState.Error(errorMessage = nicknameState.errorMessage)
+                            _uiState.value = NickNameUiState.Error(errorMessage = response.errorMessage)
                         }
 
                         ApiResponse.Init -> {}
                     }
                 }
-        }
-    }
-
-    fun updateNickName() {
-        viewModelScope.launch {
-            userRepository.updateNickName(nicknameState.nickname).collectLatest { response ->
-                when (response) {
-                    is ApiResponse.Success -> {
-                        _uiState.value = NickNameUiState.UpdateNickName(nicknameState.nickname)
-                    }
-
-                    is ApiResponse.Error -> {
-                        _uiState.value = NickNameUiState.Error(errorMessage = response.errorMessage)
-                    }
-
-                    ApiResponse.Init -> {}
-                }
             }
         }
-    }
 
-    fun resetUiState() {
-        _uiState.value = NickNameUiState.Init
+        fun resetUiState() {
+            _uiState.value = NickNameUiState.Init
+        }
     }
-}
 
 class NicknameState {
     private val nicknameRegex = "^[가-힣a-zA-Z]{2,10}$".toRegex() // 정규식

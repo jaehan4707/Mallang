@@ -17,11 +17,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -35,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.CustomSnackBar
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray3
@@ -43,6 +50,7 @@ import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
 import com.chill.mallang.ui.util.addFocusCleaner
+import kotlinx.coroutines.launch
 
 @Composable
 fun NicknameScreen(
@@ -55,20 +63,52 @@ fun NicknameScreen(
     val focusManager = LocalFocusManager.current
     val nickNameUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // SnackBarHostState 생성
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     HandleNickNameUiEvent(uiState = nickNameUiState, onSuccess = onSuccess)
-    BackHandler(onBack = popUpBackStack)
-    Surface(
-        color = BackGround,
-        modifier =
-        modifier
-            .fillMaxSize()
-            .addFocusCleaner(focusManager),
-    ) {
-        NickNameContent(
-            focusManager = focusManager,
-            uiState = nicknameState,
-            checkNickName = viewModel::checkNickName,
-        )
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackBarHostState,
+                snackbar = { snackBarData ->
+                    CustomSnackBar(
+                        snackBarData = snackBarData,
+                        backgroundColor = Gray6,
+                        textColor = White,
+                    )
+                },
+            )
+        },
+    ) { innerPadding ->
+        Surface(
+            color = BackGround,
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .addFocusCleaner(focusManager),
+        ) {
+            NickNameContent(
+                focusManager = focusManager,
+                uiState = nicknameState,
+                checkNickName = {
+                    // 정규식에 맞는 경우에만 checkNickName() 실행
+                    if (nicknameState.errorMessage == "") {
+                        nicknameViewModel.checkNickName()
+                    } else {
+                        scope.launch {
+                            snackBarHostState.showSnackbar(
+                                message = nicknameState.errorMessage,
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+                    }
+                },
+            )
+        }
     }
 }
 
