@@ -17,16 +17,13 @@ import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.user.service.UserSettingService;
 import com.chill.mallang.errors.exception.RestApiException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class GameService {
@@ -50,6 +47,7 @@ public class GameService {
     }
     //사용자 조회
     private User getUserFromRequest(Long userId) {
+        logger.info("userId"+userId);
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CustomUserErrorCode.USER_NOT_FOUND));
     }
@@ -87,6 +85,7 @@ public class GameService {
     // 단어 뜻 관련 게임 조회 및 없으면 생성 후 return
     private StudyGame getOrCreateStudyGame(WordMean wordMean) {
         StudyGame existingStudyGame = studyGameRepository.findByWordMeanId(wordMean.getId());
+        logger.info("existingStudyGame"+existingStudyGame);
         if (existingStudyGame != null) {
             logger.info("Existing study game: {}", existingStudyGame);
             return existingStudyGame;
@@ -118,7 +117,6 @@ public class GameService {
     public Map<String, Object> StartGame(Long userId) {
         User user = getUserFromRequest(userId);
         logger.info("StartGame User: " + user);
-
         WordMean selectedWordMean = gameWordService.getRandomUnusedWordMean(user.getId());
         StudyGame studyGame = getOrCreateStudyGame(selectedWordMean);
         StudyGameDTO studyGameDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);

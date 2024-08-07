@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StudyGameRepository extends JpaRepository<StudyGame, Long> {
-    @Query("SELECT s FROM StudyGame s WHERE s.wordMean.id = :wordMeanId")
+    @Query(value = "SELECT * FROM study_game WHERE word_mean_id = :wordMeanId", nativeQuery = true )
     StudyGame findByWordMeanId(@Param("wordMeanId") Long wordMeanId);
 }
