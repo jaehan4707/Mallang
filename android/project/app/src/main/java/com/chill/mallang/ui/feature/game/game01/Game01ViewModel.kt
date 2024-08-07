@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.game.game01
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -24,8 +23,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-
-private const val TAG = "kokang"
 
 @HiltViewModel
 class Game01ViewModel
@@ -185,7 +182,6 @@ class Game01ViewModel
         }
 
         fun fetchFinalResult() {
-            Log.d(TAG, "실행")
             viewModelScope.launch {
                 quizRepository
                     .getResults(
@@ -199,7 +195,6 @@ class Game01ViewModel
                     ).collectLatest { response ->
                         when (response) {
                             is ApiResponse.Success -> {
-                                Log.d(TAG, "완료")
                                 _resultUiState.emit(
                                     Game01FinalResultUiState.Success(
                                         finalResult = response.body!!,
@@ -212,9 +207,7 @@ class Game01ViewModel
                                     updateGame01State(Game01State.ROUND_READY)
                                 }
                             }
-                            is ApiResponse.Error -> {
-                                Log.d(TAG, "${response.errorMessage}")
-                            }
+                            is ApiResponse.Error -> {}
                             is ApiResponse.Init -> {}
                         }
                     }
