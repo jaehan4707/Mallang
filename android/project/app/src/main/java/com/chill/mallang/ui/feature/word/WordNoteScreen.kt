@@ -1,6 +1,16 @@
 package com.chill.mallang.ui.feature.word
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -123,12 +133,21 @@ fun WordNoteScreen(
                 }
             }
 
-            WordList(
-                wordList = state.wordList,
-                onWordClick = { index ->
-                    selectedWordIndex = index
+            AnimatedContent(
+                targetState = isWordScreen,
+                transitionSpec = {
+                    pageFlipTransition(targetState, initialState)
                 },
-            )
+                modifier = Modifier.fillMaxSize(),
+                label = "",
+            ) { targetIsWordScreen ->
+                WordList(
+                    wordList = if (targetIsWordScreen) state.wordList else state.wordList,
+                    onWordClick = { index ->
+                        selectedWordIndex = index
+                    },
+                )
+            }
         }
         if (isWordScreen) {
             Button(
@@ -245,6 +264,29 @@ fun QuizListItem(
     Box(modifier = Modifier.height(7.dp))
     HorizontalDivider(thickness = 2.dp, color = Gray6)
 }
+
+// 페이지 넘기는 효과를 위한 함수
+fun pageFlipTransition(
+    targetState: Boolean,
+    initialState: Boolean,
+): ContentTransform =
+    (
+        slideInHorizontally(
+            initialOffsetX = { fullWidth -> if (targetState) -fullWidth else fullWidth },
+            animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+        ) +
+            fadeIn(
+                animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+            )
+    ).togetherWith(
+        slideOutHorizontally(
+            targetOffsetX = { fullWidth -> if (targetState) fullWidth else -fullWidth },
+            animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+        ) +
+            fadeOut(
+                animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+            ),
+    )
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
