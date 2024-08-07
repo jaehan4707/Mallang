@@ -44,7 +44,7 @@ fun OccupationStatusBar(
     )
 ) {
     val textMeasurer = rememberTextMeasurer()
-    val dividerRatio = leftCount.toFloat() / (leftCount+rightCount)
+    val dividerRatio = if(leftCount+rightCount == 0) 0.5f else leftCount.toFloat() / (leftCount+rightCount)
 
     Canvas(
         modifier = modifier
@@ -103,6 +103,6 @@ fun OccupationStatusBar(
 @Composable
 fun OccupationStatusBarPreview(){
     MallangTheme {
-        OccupationStatusBar(leftCount = 7, rightCount = 3)
+        OccupationStatusBar(leftCount = 0, rightCount = 0)
     }
 }
