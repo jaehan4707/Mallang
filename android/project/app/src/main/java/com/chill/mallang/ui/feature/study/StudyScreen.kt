@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.quiz
+package com.chill.mallang.ui.feature.study
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -46,8 +46,8 @@ import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.CustomSnackBar
-import com.chill.mallang.ui.feature.quiz_result.AnswerResultListItem
-import com.chill.mallang.ui.feature.quiz_result.QuizResultState
+import com.chill.mallang.ui.feature.study_result.AnswerResultListItem
+import com.chill.mallang.ui.feature.study_result.StudyResultState
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
@@ -57,17 +57,15 @@ import com.chill.mallang.ui.theme.Typography
 import kotlinx.coroutines.launch
 
 @Composable
-fun QuizScreen(
+fun StudyScreen(
     modifier: Modifier = Modifier,
     navigateToQuizResult: (Int) -> Unit = {},
     studyId: Int = -1,
 ) {
-    val quizViewModel: QuizViewModel = hiltViewModel()
-    val quizState = quizViewModel.state
+    val studyViewModel: StudyViewModel = hiltViewModel()
+    val studyState = studyViewModel.state
 
-    Log.d("nakyung", studyId.toString())
-
-    quizViewModel.loadQuizData(studyId)
+    studyViewModel.loadQuizData(studyId)
 
     // SnackBarHostState 생성
     val snackBarHostState = remember { SnackbarHostState() }
@@ -90,6 +88,7 @@ fun QuizScreen(
     BackHandler(onBack = { setBackPressed(true) })
 
     TopbarHandler(
+        isVisible = true,
         title = "학습 퀴즈",
         onBack = { nav ->
             Log.d("nakyung", "QuizScreen: a")
@@ -114,30 +113,30 @@ fun QuizScreen(
     ) { innerPadding ->
         Box(
             modifier =
-            modifier
-                .fillMaxSize()
-                .background(color = Color.White)
-                .padding(innerPadding),
+                modifier
+                    .fillMaxSize()
+                    .background(color = Color.White)
+                    .padding(innerPadding),
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Box(modifier = Modifier.height(15.dp))
                 QuizBox(
-                    quizTitle = quizState.quizTitle,
-                    quizScript = quizState.quizScript,
+                    quizTitle = studyState.quizTitle,
+                    quizScript = studyState.quizScript,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 AnswerList(
-                    viewModel = quizViewModel,
-                    state = quizState,
+                    viewModel = studyViewModel,
+                    state = studyState,
                     fraction = 0.13f,
                     onAnswerSelected = { selectedIndex ->
-                        quizViewModel.selectAnswer(selectedIndex)
+                        studyViewModel.selectAnswer(selectedIndex)
                     },
                 )
             }
             Button(
                 onClick = {
-                    if (quizViewModel.selectedAnswer == -1) {
+                    if (studyViewModel.selectedAnswer == -1) {
                         // 스낵바 띄우기
                         scope.launch {
                             snackBarHostState.showSnackbar(
@@ -146,16 +145,16 @@ fun QuizScreen(
                             )
                         }
                     } else {
-                        quizViewModel.submitQuiz() // 퀴즈 제출 및 채점
+                        studyViewModel.submitQuiz() // 퀴즈 제출 및 채점
                         navigateToQuizResult(1)
                     }
                 },
                 modifier =
-                Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                    .widthIn(min = 180.dp) // 버튼의 최소 너비
-                    .heightIn(min = 80.dp),
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올
+                        .widthIn(min = 180.dp) // 버튼의 최소 너비
+                        .heightIn(min = 80.dp),
                 colors =
                     ButtonDefaults.buttonColors(
                         containerColor = Gray6,
@@ -178,10 +177,10 @@ fun QuizBox(
 ) {
     Box(
         modifier =
-        Modifier
-            .padding(12.dp)
-            .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
-            .fillMaxWidth(),
+            Modifier
+                .padding(12.dp)
+                .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
+                .fillMaxWidth(),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 30.dp, vertical = 20.dp),
@@ -204,10 +203,10 @@ fun QuizBox(
             Box(modifier = Modifier.height(15.dp))
             Spacer(
                 modifier =
-                Modifier
-                    .height(2.dp)
-                    .fillMaxWidth()
-                    .background(Gray3),
+                    Modifier
+                        .height(2.dp)
+                        .fillMaxWidth()
+                        .background(Gray3),
             )
             Box(modifier = Modifier.height(15.dp))
             Text(
@@ -221,16 +220,16 @@ fun QuizBox(
 @Composable
 fun AnswerList(
     state: Any,
-    viewModel: QuizViewModel? = null,
+    viewModel: StudyViewModel? = null,
     expandedItem: Int = -1,
     fraction: Float,
     onAnswerSelected: (Int) -> Unit = { },
 ) {
     var size: Int = -1
 
-    if (state is QuizState) {
+    if (state is StudyState) {
         size = state.wordList.size
-    } else if (state is QuizResultState) {
+    } else if (state is StudyResultState) {
         size = state.wordList.size
     }
 
@@ -242,7 +241,7 @@ fun AnswerList(
                 .fillMaxSize(),
     ) {
         items(size) { index ->
-            if (state is QuizState && viewModel != null) {
+            if (state is StudyState && viewModel != null) {
                 AnswerListItem(
                     modifier = Modifier.fillParentMaxHeight(fraction),
                     index = index,
@@ -252,7 +251,7 @@ fun AnswerList(
                         onAnswerSelected(selectedIndex)
                     },
                 )
-            } else if (state is QuizResultState) {
+            } else if (state is StudyResultState) {
                 AnswerResultListItem(
                     modifier = Modifier.fillParentMaxHeight(fraction),
                     index = index,
@@ -271,8 +270,8 @@ fun AnswerList(
 fun AnswerListItem(
     modifier: Modifier = Modifier,
     index: Int,
-    viewModel: QuizViewModel,
-    state: QuizState,
+    viewModel: StudyViewModel,
+    state: StudyState,
     onItemClick: (Int) -> Unit,
 ) {
     Column {
@@ -332,6 +331,6 @@ fun AnswerListItem(
 @Composable
 fun QuizPreview() {
     MallangTheme {
-        QuizScreen()
+        StudyScreen()
     }
 }

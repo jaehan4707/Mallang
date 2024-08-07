@@ -1,6 +1,5 @@
-package com.chill.mallang.ui.feature.quiz_result
+package com.chill.mallang.ui.feature.study_result
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
@@ -45,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
-import com.chill.mallang.ui.feature.quiz.AnswerList
+import com.chill.mallang.ui.feature.study.AnswerList
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Green1
@@ -59,8 +58,8 @@ fun QuizResultScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
 ) {
-    val quizResultViewModel: QuizResultViewModel = hiltViewModel()
-    val state = quizResultViewModel.state
+    val studyResultViewModel: StudyResultViewModel = hiltViewModel()
+    val studyResultState = studyResultViewModel.state
 
     var expandedItem by remember { mutableIntStateOf(-1) }
 
@@ -89,7 +88,7 @@ fun QuizResultScreen(
                     .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            val title = if (state.userAnswer == state.systemAnswer) "정답!" else "오답!"
+            val title = if (studyResultState.userAnswer == studyResultState.systemAnswer) "정답!" else "오답!"
             val titleColor = if (title == "정답!") Green1 else Sub1
 
             Text(
@@ -100,12 +99,12 @@ fun QuizResultScreen(
                 color = titleColor,
             )
             QuizBoxWithUnderline(
-                systemMessage = state.quizTitle,
-                quizScript = state.quizScript,
-                underline = state.wordList[state.systemAnswer - 1].first,
+                systemMessage = studyResultState.quizTitle,
+                quizScript = studyResultState.quizScript,
+                underline = studyResultState.wordList[studyResultState.systemAnswer - 1].first,
             )
             AnswerList(
-                state = state,
+                state = studyResultState,
                 fraction = 0.15f,
                 expandedItem = expandedItem,
                 onAnswerSelected = { selectedIndex ->
@@ -120,7 +119,7 @@ fun QuizResultScreen(
 fun AnswerResultListItem(
     modifier: Modifier = Modifier,
     index: Int,
-    state: QuizResultState,
+    state: StudyResultState,
     expandedItem: Int,
     onItemClick: (Int) -> Unit,
 ) {
@@ -247,7 +246,6 @@ fun QuizBoxWithUnderline(
     quizScript: String,
     underline: String,
 ) {
-    Log.d("nakyung", underline)
     Box(
         modifier =
             Modifier

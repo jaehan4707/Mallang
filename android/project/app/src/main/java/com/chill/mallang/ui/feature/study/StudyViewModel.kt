@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.quiz
+package com.chill.mallang.ui.feature.study
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -11,10 +11,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class QuizViewModel
+class StudyViewModel
     @Inject
     constructor() : ViewModel() {
-        var state by mutableStateOf(QuizState())
+        var state by mutableStateOf(StudyState())
             private set
 
         var selectedAnswer by mutableIntStateOf(-1)
