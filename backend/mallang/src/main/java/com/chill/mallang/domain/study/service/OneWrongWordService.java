@@ -39,7 +39,6 @@ public class OneWrongWordService {
             throw new RestApiException(CustomStudyErrorCode.NOT_WRONG_WORD);
         }
         List<String> wordList = problemRepository.findWordListByQuestionId(questionId);
-        wordList.add(studyGameLog.get().getStudyGame().getWordMean().getWord().getWord());
 
         logger.info("wordList : " + wordList.toString());
 

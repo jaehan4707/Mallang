@@ -13,6 +13,7 @@ import java.util.Map;
 @Builder
 public class StudyGameDTO {
     private long studyId;
+    private String quizTitle;
     private String quizScript;
     private List<Map<String, String>> wordList;
 }

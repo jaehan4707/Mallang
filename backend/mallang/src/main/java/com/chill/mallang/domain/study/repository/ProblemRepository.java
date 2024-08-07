@@ -10,6 +10,6 @@ import java.util.List;
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
     // 오답 단어 3개 찾아서 리스트에 넣기
-    @Query(value = "SELECT word From problem WHERE question = :questionId",nativeQuery = true)
+    @Query(value = "SELECT obtion From problem WHERE question = :questionId",nativeQuery = true)
     List<String> findWordListByQuestionId(@Param("questionId") Long questionId);
 }

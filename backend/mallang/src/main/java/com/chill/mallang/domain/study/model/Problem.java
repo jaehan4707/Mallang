@@ -18,6 +18,8 @@ public class Problem {
     @JsonBackReference
     private Question question;
 
-    private String word;
+    private String basic_type;
+    private String obtion;
     private String mean;
+    private int idx;
 }

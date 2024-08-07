@@ -7,14 +7,15 @@ import com.chill.mallang.domain.study.model.WordMean;
 import com.chill.mallang.domain.study.repository.WordMeanRepository;
 import com.chill.mallang.errors.exception.RestApiException;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 
 @Service
 public class GameWordService {
+    private static final Logger logger = LoggerFactory.getLogger(GameWordService.class);
     private final WordMeanRepository wordMeanRepository;
 
     @Autowired
@@ -23,11 +24,13 @@ public class GameWordService {
     }
 
     public WordMean getRandomUnusedWordMean(Long userId) {
-        List<WordMean> unusedWordMeans = wordMeanRepository.findUnusedWordMeansByUserId(userId);
-        if (unusedWordMeans.isEmpty()) {
-            throw new RestApiException(CustomStudyErrorCode.WORD_IS_SOLD_OUT);
+        Optional<WordMean> unusedWordMean = wordMeanRepository.findUnusedWordMeansByUserId(userId);
+        logger.info(unusedWordMean.toString());
+        if (unusedWordMean.isPresent()) {
+            WordMean wordMean = unusedWordMean.get();
+            return wordMean;
         }
-        return unusedWordMeans.get(new Random().nextInt(unusedWordMeans.size()));
+        throw new RestApiException(CustomStudyErrorCode.WORD_IS_SOLD_OUT);
     }
 
     @Transactional
