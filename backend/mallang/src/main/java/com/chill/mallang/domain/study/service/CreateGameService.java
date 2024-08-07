@@ -23,10 +23,10 @@ public class CreateGameService {
     }
 
     public void addProblemsToQuestion(Question question, WordMean wordMean) {
-        question.addProblem(createProblem("ExampleWord1", "EEE", "ExampleMean1", 4));
-        question.addProblem(createProblem("ExampleWord2", "22222", "ExampleMean2", 1));
-        question.addProblem(createProblem("ExampleWord3", "333333333", "ExampleMean3", 2));
-        question.addProblem(createProblem(wordMean.getWord().getWord(), "4444", wordMean.getMean(), 3));
+        question.addProblem(createProblem("ExampleWord1", "활용1", "ExampleMean1", 1));
+        question.addProblem(createProblem("ExampleWord2", "활용2", "ExampleMean2", 2));
+        question.addProblem(createProblem("ExampleWord3", "활용3", "ExampleMean3", 3));
+        question.addProblem(createProblem(wordMean.getWord().getWord(), "활용4", wordMean.getMean(), 4));
     }
 
     public Problem createProblem(String basicType, String obtion, String mean, int idx) {

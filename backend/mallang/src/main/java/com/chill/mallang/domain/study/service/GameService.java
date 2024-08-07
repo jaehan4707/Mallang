@@ -99,7 +99,7 @@ public class GameService {
         WordMean selectedWordMean = gameWordService.getRandomUnusedWordMean(user.getId());
         StudyGame studyGame = getOrCreateStudyGame(selectedWordMean);
         StudyGameDTO studyGameDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);
-        studyGameDTO.setQuizTitle("정답을 맞혀 주세요");
+        studyGameDTO.setQuizTitle("빈칸을 채워 주세요");
         Map<String, Object> response = new HashMap<>();
         response.put("data",studyGameDTO);
         return response;
@@ -185,7 +185,7 @@ public class GameService {
         if (existingLogOpt.isPresent() && answerOpt.isPresent()) {
             StudyGameLog existingLog = existingLogOpt.get();
             UserStudyLogResponseDTO dto = UserStudyLogResponseDTO.builder()
-                    .quizTitle("정답을 맞혀 주세요")
+                    .quizTitle("빈칸을 채워 주세요")
                     .quizScript(studyGame.getQuestionText())
                     .result(existingLog.isResult())
                     .wordList(wordList)
