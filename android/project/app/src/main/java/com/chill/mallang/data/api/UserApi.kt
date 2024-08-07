@@ -7,7 +7,6 @@ import com.chill.mallang.data.model.request.UpdateNickNameRequest
 import com.chill.mallang.data.model.response.GetUserInfoResponse
 import com.chill.mallang.data.model.response.JoinResponse
 import com.chill.mallang.data.model.response.LoginResponse
-import com.chill.mallang.data.model.response.SignOutResponse
 import com.chill.mallang.data.model.response.UpdateNickNameResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -21,12 +20,12 @@ interface UserApi {
     @POST("user/join")
     suspend fun join(
         @Body joinRequest: JoinRequest,
-    ): Response<JoinResponse>
+    ): Response<ResponseBody<JoinResponse>>
 
     @POST("user/login")
     suspend fun login(
         @Body loginRequest: LoginRequest,
-    ): Response<LoginResponse>
+    ): Response<ResponseBody<LoginResponse>>
 
     @GET("user/exists/nickname/{nickname}")
     suspend fun checkNickName(
@@ -34,7 +33,7 @@ interface UserApi {
     ): Response<Unit>
 
     @GET("user/info")
-    suspend fun getUserInfo(): Response<GetUserInfoResponse>
+    suspend fun getUserInfo(): Response<ResponseBody<GetUserInfoResponse>>
 
     @GET("user/exists/email/{email}")
     suspend fun checkUserEmail(
@@ -44,8 +43,8 @@ interface UserApi {
     @PATCH("user/nickname")
     suspend fun updateNickName(
         @Body updateNickNameRequest: UpdateNickNameRequest,
-    ): Response<UpdateNickNameResponse>
+    ): Response<ResponseBody<UpdateNickNameResponse>>
 
     @DELETE("user")
-    suspend fun signOut(): Response<SignOutResponse>
+    suspend fun signOut(): Response<Unit>
 }

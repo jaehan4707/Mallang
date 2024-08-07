@@ -3,7 +3,6 @@ package com.chill.mallang.ui.feature.nickname
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.data.model.response.ApiResponse
@@ -20,7 +19,6 @@ import javax.inject.Inject
 class NicknameViewModel
 @Inject
 constructor(
-    private val savedStateHandle: SavedStateHandle,
     private val userRepository: UserRepository,
 ) : ViewModel() {
     val nicknameState = NicknameState()
@@ -50,12 +48,12 @@ constructor(
         }
     }
 
-    fun updateNickName(nickName: String) {
+    fun updateNickName() {
         viewModelScope.launch {
-            userRepository.updateNickName(nickName).collectLatest { response ->
+            userRepository.updateNickName(nicknameState.nickname).collectLatest { response ->
                 when (response) {
                     is ApiResponse.Success -> {
-                        _uiState.value = NickNameUiState.UpdateNickName(nickName)
+                        _uiState.value = NickNameUiState.UpdateNickName(nicknameState.nickname)
                     }
 
                     is ApiResponse.Error -> {
@@ -70,7 +68,6 @@ constructor(
 
     fun resetUiState() {
         _uiState.value = NickNameUiState.Init
-        nicknameState.clearNickname()
     }
 }
 

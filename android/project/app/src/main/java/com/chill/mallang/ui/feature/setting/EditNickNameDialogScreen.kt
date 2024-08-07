@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +33,7 @@ import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.feature.nickname.CustomTextField
-import com.chill.mallang.ui.feature.nickname.HandleNickNameUiEvent
+import com.chill.mallang.ui.feature.nickname.NickNameUiState
 import com.chill.mallang.ui.feature.nickname.NicknameState
 import com.chill.mallang.ui.feature.nickname.NicknameViewModel
 import com.chill.mallang.ui.theme.Gray6
@@ -42,38 +43,67 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun EditNickNameDialogScreen(
     modifier: Modifier = Modifier,
-    onDismiss: (Boolean) -> Unit = {},
+    onDismiss: (String) -> Unit = {},
+    userNickName: String = "",
 ) {
     val viewModel: NicknameViewModel = hiltViewModel()
     val nicknameState = viewModel.nicknameState
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HandleNickNameUiEvent(uiState = uiState, onSuccess = {
-        viewModel.updateNickName(it)
-    }, onEditSuccess = onDismiss)
+    LaunchedEffect(Unit) {
+        nicknameState.updateNickname(userNickName)
+    }
 
     DisposableEffect(Unit) {
         onDispose {
             viewModel.resetUiState()
         }
     }
+
+    HandleEditNickNameUiEvent(
+        uiState = uiState,
+        onUpdateNickName = viewModel::updateNickName,
+        onDismiss = {
+            if (userNickName != nicknameState.nickname) {
+                onDismiss(viewModel.nicknameState.nickname)
+            }
+        },
+    )
+
     EditNickNameDialogContent(
         modifier = modifier,
-        onDismiss = onDismiss,
+        onDismiss = { onDismiss(nicknameState.nickname) },
         nicknameState = nicknameState,
         onChangeNickName = viewModel::checkNickName,
     )
 }
 
 @Composable
+fun HandleEditNickNameUiEvent(
+    uiState: NickNameUiState,
+    onUpdateNickName: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is NickNameUiState.Success -> onUpdateNickName()
+
+            is NickNameUiState.UpdateNickName -> onDismiss()
+
+            else -> {}
+        }
+    }
+}
+
+@Composable
 fun EditNickNameDialogContent(
     modifier: Modifier = Modifier,
     nicknameState: NicknameState = NicknameState(),
-    onDismiss: (Boolean) -> Unit = {},
+    onDismiss: () -> Unit = {},
     onChangeNickName: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
-    BackHandler(onBack = { onDismiss(false) })
-    Dialog(onDismissRequest = { onDismiss(false) }) {
+    BackHandler(onBack = onDismiss)
+    Dialog(onDismissRequest = onDismiss) {
         Surface(
             modifier =
                 Modifier
@@ -104,7 +134,7 @@ fun EditNickNameDialogContent(
                         ImageButton(
                             icon = R.drawable.ic_close,
                             label = "",
-                            onClick = { onDismiss(false) },
+                            onClick = onDismiss,
                         )
                     }
                 }
@@ -126,19 +156,19 @@ fun EditNickNameDialogContent(
                 Row {
                     LongBlackButton(
                         modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(40.dp),
+                            Modifier
+                                .weight(1f)
+                                .height(40.dp),
                         onClick = onChangeNickName,
                         text = stringResource(R.string.edit_nick_name_confirm),
                     )
                     Spacer(modifier = Modifier.weight(0.5f))
                     LongBlackButton(
                         modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(40.dp),
-                        onClick = { onDismiss(false) },
+                            Modifier
+                                .weight(1f)
+                                .height(40.dp),
+                        onClick = onDismiss,
                         text = stringResource(R.string.edit_nick_name_dismiss),
                     )
                 }

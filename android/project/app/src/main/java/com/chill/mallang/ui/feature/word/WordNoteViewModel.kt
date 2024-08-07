@@ -59,8 +59,8 @@ class WordNoteViewModel
                         wordList =
                             arrayListOf(
                                 Word.IncorrectWord(
-                                    quizId = 1,
-                                    word = "괄목",
+                                    studyId = 1,
+                                    word = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 __할 만한 성장을 이루었다.",
                                     finish = false,
                                 ),
                             ),

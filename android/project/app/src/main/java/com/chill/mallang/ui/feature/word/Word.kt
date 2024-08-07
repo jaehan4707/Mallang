@@ -4,9 +4,9 @@ sealed class Word(
     open val word: String = "",
 ) {
     data class IncorrectWord(
-        val quizId: Int,
+        val studyId: Int,
         val finish: Boolean,
-        override val word: String,
+        override val word: String, // 문제 title
     ) : Word(word = word)
 
     data class WordCard(
