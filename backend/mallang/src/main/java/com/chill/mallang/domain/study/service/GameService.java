@@ -1,7 +1,7 @@
 package com.chill.mallang.domain.study.service;
 
 import com.chill.mallang.domain.study.dto.StudyGameDTO;
-import com.chill.mallang.domain.study.dto.UserStudyLogRequestDTO;
+import com.chill.mallang.domain.study.dto.UserStudyLogResponseDTO;
 import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import com.chill.mallang.domain.study.errors.CustomStudyErrorCode;
 import com.chill.mallang.domain.study.model.*;
@@ -63,17 +63,25 @@ public class GameService {
         question.setStudyGame(studyGame);
         studyGame.setQuestion(question);
         Problem problem1 = new Problem();
-        problem1.setWord("ExampleWord1");
+        problem1.setBasic_type("ExampleWord1");
+        problem1.setObtion("EEE");
         problem1.setMean("ExampleMean1");
+        problem1.setIdx(0);
         Problem problem2 = new Problem();
-        problem2.setWord("ExampleWord2");
+        problem2.setBasic_type("ExampleWord2");
+        problem2.setObtion("22222");
         problem2.setMean("ExampleMean2");
+        problem2.setIdx(1);
         Problem problem3 = new Problem();
-        problem3.setWord("ExampleWord3");
+        problem3.setBasic_type("ExampleWord3");
+        problem3.setObtion("333333333");
         problem3.setMean("ExampleMean3");
+        problem3.setIdx(2);
         Problem problem4 = new Problem();
-        problem4.setWord(wordMean.getWord().getWord());
+        problem4.setBasic_type(wordMean.getWord().getWord());
+        problem4.setObtion("4444");
         problem4.setMean(wordMean.getMean());
+        problem4.setIdx(3);
         question.addProblem(problem1);
         question.addProblem(problem2);
         question.addProblem(problem3);
@@ -98,9 +106,11 @@ public class GameService {
     private StudyGameDTO createUserStudyLogRequestDTO(User user, StudyGame studyGame, WordMean wordMean) {
         WordMeanDTO wordMeanDTO = gameWordService.convertToDTO(wordMean);
         List<Map<String, String>> wordList = new ArrayList<>();
-        studyGame.getQuestion().getProblems().forEach(problem -> {
+        studyGame.getQuestion().getProblems().stream()
+                .sorted(Comparator.comparingInt(Problem::getIdx))
+                .forEach(problem -> {
             Map<String, String> wordMap = new HashMap<>();
-            wordMap.put(problem.getWord(), problem.getMean());
+            wordMap.put(problem.getObtion(), problem.getMean());
             wordList.add(wordMap);
         });
         return StudyGameDTO.builder()
@@ -131,14 +141,13 @@ public class GameService {
         StudyGame studyGame = studyGameRepository.findById(studyId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND));
         logger.info("submitGame StudyGame: " + studyGame.getId());
-        logger.info("submitGame StudyGame: " + studyGame.getQuestionText());
         WordMean wordMean = studyGame.getWordMean();
         Map<String, Object> response = new HashMap<>();
         Boolean isAnswer = false;
         List<Problem> problems = studyGame.getQuestion().getProblems();
         if (answer >= 0 && answer < problems.size()) {
             String correctWord = studyGame.getWordMean().getWord().getWord();
-            String selectedAnswerWord = problems.get(answer.intValue()).getWord();
+            String selectedAnswerWord = problems.get(answer.intValue()).getBasic_type();
             if (correctWord.equals(selectedAnswerWord)) {
                 isAnswer = true;
             }
@@ -163,6 +172,54 @@ public class GameService {
             newLog.setResult(isAnswer);
             studyGameLogRepository.save(newLog);  // 새로운 레코드를 저장
             logger.info("Created new StudyGameLog: " + newLog);
+        }
+        return response;
+    }
+
+    public Optional<Problem> findProblemByWord(StudyGame studyGame, String word) {
+        return studyGame.getQuestion().getProblems().stream()
+                .filter(problem -> word.equals(problem.getBasic_type()))
+                .findFirst();
+    }
+
+    public Map<String, Object> showResultGame(Long userId, Long studyId) {
+        User user = getUserFromRequest(userId);
+        logger.info("showResultGame User: " + user);
+        if (studyId == null) {
+            throw new RestApiException(CustomStudyErrorCode.STUDYID_IS_NULL);
+        }
+        StudyGame studyGame = studyGameRepository.findById(studyId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND));
+        logger.info("showResultGame StudyGame: " + studyGame);
+        List<Map<String, String>> wordList = new ArrayList<>();
+        studyGame.getQuestion().getProblems().stream()
+                .sorted(Comparator.comparingInt(Problem::getIdx))
+                .forEach(problem -> {
+                    Map<String, String> wordMap = new HashMap<>();
+                    wordMap.put(problem.getObtion(), problem.getMean());
+                    wordList.add(wordMap);
+                });
+        // 특정 조건을 만족하는 Problem 객체의 idx 값을 찾기
+        System.out.printf("111erer"+studyGame.getWordMean().getWord().getWord());
+        Optional<Problem> answerOpt = studyGame.getQuestion().getProblems().stream()
+                .filter(problem -> problem.getBasic_type().equals(studyGame.getWordMean().getWord().getWord()))
+                .findFirst();
+        Problem answer = answerOpt.orElse(null);
+        Map<String, Object> response = new HashMap<>();
+        // 유저 게임 기록 확인
+        Optional<StudyGameLog> existingLogOpt = studyGameLogRepository.findByStudyGameAndUserForUpdate(userId, studyId);
+        logger.info("showResultGame log: "+existingLogOpt);
+        if (existingLogOpt.isPresent() && answerOpt.isPresent()) {
+            StudyGameLog existingLog = existingLogOpt.get();
+            UserStudyLogResponseDTO dto = UserStudyLogResponseDTO.builder()
+                    .quizScript(studyGame.getQuestionText())
+                    .result(existingLog.isResult())
+                    .wordList(wordList)
+                    .systemAnswer(answer.getIdx())
+                    .build();
+            response.put("data", dto);
+        } else {
+            throw new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND);
         }
         return response;
     }

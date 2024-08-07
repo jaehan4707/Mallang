@@ -1,16 +1,22 @@
 package com.chill.mallang.domain.study.dto;
 
-import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
-import com.chill.mallang.domain.study.model.StudyGame;
-import jakarta.persistence.ManyToOne;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.List;
+import java.util.Map;
+
+@Getter
+@Setter
+@Builder
 public class UserStudyLogResponseDTO {
-    private long userId;
 
-    @ManyToOne
-    private StudyGame studyGame;
+    private String quizScript;
 
-    private WordMeanDTO wordMeanDTO;
+    private List<Map<String, String>> wordList;
 
     private boolean result;
+
+    private long systemAnswer;
 }

@@ -40,4 +40,11 @@ public class StudyGameController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "스터디 문제 최종요청", description = "스터디 게임 보기의 단어 뜻을 제공합니다.")
+    @GetMapping("/game/{userId}/{studyId}")
+    public ResponseEntity<?> showResultStudyGame(@PathVariable Long userId,@PathVariable Long studyId) {
+        Map<String, Object> response = gameService.showResultGame(userId, studyId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
