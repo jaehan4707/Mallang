@@ -3,9 +3,9 @@ package com.chill.mallang.domain.quiz.controller.v1;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
 import com.chill.mallang.domain.quiz.dto.request.RequestQuizResult;
 import com.chill.mallang.domain.quiz.service.QuizService;
-import com.chill.mallang.domain.quiz.service.core.OpenAIService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +26,14 @@ public class QuizController {
 
     @Operation(summary = "퀴즈 정답 제출", description = "특정 퀴즈에 대한 정답을 제출합니다.")
     @PostMapping("/submit")
-    public ResponseEntity<?> postQuizAnswer(@RequestBody RequestQuizAnswer requestQuizAnswer) {
+    public ResponseEntity<?> postQuizAnswer(@RequestBody @Valid RequestQuizAnswer requestQuizAnswer) {
         quizService.submitAnswer(requestQuizAnswer);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary ="전체 결과 확인", description = "라운드 최종 결과를 확인합니다.")
     @PostMapping("/result")
-    public ResponseEntity<?> getQuizResult(@RequestBody RequestQuizResult requestQuizResult) {
+    public ResponseEntity<?> getQuizResult(@RequestBody @Valid RequestQuizResult requestQuizResult) {
         return new ResponseEntity<>(quizService.quizResult(requestQuizResult), HttpStatus.OK);
     }
 
