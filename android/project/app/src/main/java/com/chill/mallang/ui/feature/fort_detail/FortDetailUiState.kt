@@ -1,46 +1,58 @@
- package com.chill.mallang.ui.feature.fort_detail
+package com.chill.mallang.ui.feature.fort_detail
 
+import android.content.Context
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
-import com.chill.mallang.data.model.entity.GameUserRecord
+import com.chill.mallang.data.model.entity.AreaDetail
+import com.chill.mallang.data.model.entity.TeamRecords
 
- @Stable
-sealed interface OccupationState {
-    data object Loading : OccupationState
+@Stable
+sealed interface AreaDetailState {
+    @Immutable
+    data object Loading : AreaDetailState
 
+    @Immutable
     data class Success(
-        val areaName: String,
-        val myTeamInfo: TeamInfo,
-        val oppoTeamInfo: TeamInfo,
-    ) : OccupationState
+        val areaDetail: AreaDetail,
+    ) : AreaDetailState
 
+    @Immutable
     data class Error(
-        val errorMessage: String,
-    ) : OccupationState
+        val errorMessage: ErrorMessage,
+    ) : AreaDetailState
 }
 
 @Stable
-sealed interface TeamLeadersState {
-    data object Loading : TeamLeadersState
+sealed interface TeamRecordState {
+    @Immutable
+    data object Loading : TeamRecordState
 
+    @Immutable
     data class Success(
-        val userRecord: GameUserRecord,
-        val myTeamRecords: List<GameUserRecord>,
-        val oppoTeamRecords: List<GameUserRecord>,
-    ) : TeamLeadersState
+        val teamRecords: TeamRecords,
+    ) : TeamRecordState
 
+    @Immutable
     data class Error(
-        val errorMessage: String,
-    ) : TeamLeadersState
+        val errorMessage: ErrorMessage,
+    ) : TeamRecordState
 }
 
-data class TeamInfo(
-    val teamId: Int,
-    val teamPoint: Int,
-    val topUser: UserInfo,
-)
+@Stable
+sealed interface ErrorMessage {
+    @Immutable
+    data class NetworkError(
+        val errorMessage: String,
+    ) : ErrorMessage
 
-data class UserInfo(
-    val userId: Int,
-    val userName: String,
-    val userTier: Int,
-)
+    @Immutable
+    data class RuntimeError(
+        val errorMessageId: Int,
+    ) : ErrorMessage
+
+    fun getErrorMessage(context: Context): String =
+        when (this) {
+            is NetworkError -> errorMessage
+            is RuntimeError -> context.getString(errorMessageId)
+        }
+}

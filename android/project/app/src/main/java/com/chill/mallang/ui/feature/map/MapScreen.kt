@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.data.model.entity.Area
+import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.ui.feature.map.layout.MapScaffold
 import com.chill.mallang.ui.feature.map.mapview.MapView
 import com.chill.mallang.ui.theme.MallangTheme
@@ -38,6 +39,7 @@ fun MapScreen(
 
     val currentLocation by viewModel.currentLocation.collectAsStateWithLifecycle()
     val areas by viewModel.areaState.collectAsStateWithLifecycle()
+    val status by viewModel.statusState.collectAsStateWithLifecycle()
     val selectedArea = viewModel.selectedArea
 
     var hasPermission by remember { mutableStateOf(false) }
@@ -67,6 +69,7 @@ fun MapScreen(
         currentLocation = currentLocation,
         areasState = areas,
         selectedArea = selectedArea,
+        status = status,
         onSelectArea = viewModel::setToSelected,
         onLocate = viewModel::findClosestArea,
         onShowAreaDetail = onShowAreaDetail,
@@ -78,6 +81,7 @@ fun MapScreenContent(
     modifier: Modifier = Modifier,
     currentLocation: LocationState,
     areasState: AreasState,
+    status: TeamList,
     selectedArea: Area?,
     onSelectArea: (Area) -> Unit = {},
     onLocate: () -> Unit = {},
@@ -94,6 +98,7 @@ fun MapScreenContent(
         MapScaffold(
             areaSelected = selectedArea,
             currentLocation = currentLocation,
+            status = status,
             onLocate = onLocate,
             onShowDetail = onShowAreaDetail,
         )
@@ -107,6 +112,7 @@ fun MapPreview() {
         MapScreenContent(
             currentLocation = LocationState.Empty,
             areasState = AreasState.Empty,
+            status = TeamList(listOf()),
             selectedArea = null,
         )
     }
