@@ -13,11 +13,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -36,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,6 +71,9 @@ fun StudyScreen(
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
     val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
 
+    // context
+    val context = LocalContext.current
+
     BackConfirmHandler(
         isBackPressed = isBackPressed,
         onConfirm = {
@@ -86,7 +88,7 @@ fun StudyScreen(
 
     TopbarHandler(
         isVisible = true,
-        title = "학습 퀴즈",
+        title = context.getString(R.string.study_quiz_title),
         onBack = { nav ->
             setBackPressed(true)
             setNavController(nav)
@@ -136,7 +138,7 @@ fun StudyScreen(
                         // 스낵바 띄우기
                         scope.launch {
                             snackBarHostState.showSnackbar(
-                                message = "정답을 선택해 주세요!",
+                                message = context.getString(R.string.unselect_snackbar_message),
                                 duration = SnackbarDuration.Short,
                             )
                         }
@@ -148,19 +150,32 @@ fun StudyScreen(
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
-                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                        .widthIn(min = 180.dp) // 버튼의 최소 너비
-                        .heightIn(min = 80.dp),
+                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올림
+                        .width(180.dp)
+                        .height(80.dp),
                 colors =
                     ButtonDefaults.buttonColors(
                         containerColor = Gray6,
                     ),
                 shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
             ) {
-                Text(
-                    text = "제출하기      >",
-                    style = Typography.headlineLarge,
-                )
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = context.getString(R.string.submit_study),
+                        style = Typography.headlineLarge,
+                        textAlign = TextAlign.End,
+                    )
+                    Spacer(modifier = Modifier.width(15.dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_next),
+                        contentDescription = null,
+                    )
+                }
             }
         }
     }
