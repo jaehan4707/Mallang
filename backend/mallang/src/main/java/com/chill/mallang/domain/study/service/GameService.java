@@ -9,7 +9,6 @@ import com.chill.mallang.domain.study.repository.StudyGameLogRepository;
 import com.chill.mallang.domain.study.repository.StudyGameRepository;
 import com.chill.mallang.domain.study.repository.WordMeanRepository;
 import com.chill.mallang.domain.user.errors.CustomUserErrorCode;
-import com.chill.mallang.domain.user.jwt.JWTUtil;
 import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.user.service.UserSettingService;
@@ -22,11 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GameService {
     private static final Logger logger = LoggerFactory.getLogger(UserSettingService.class);
-    private final JWTUtil jwtUtil;
     private final StudyGameLogRepository studyGameLogRepository;
     private final GameWordService gameWordService;
     private final StudyGameRepository studyGameRepository;
@@ -38,8 +37,7 @@ public class GameService {
     @Autowired
     private WordMeanRepository wordMeanRepository;
 
-    public GameService(JWTUtil jwtUtil, StudyGameRepository studyGameRepository, StudyGameLogRepository studyGameLogRepository, GameWordService gameWordService, CreateGameService createGameService) {
-        this.jwtUtil = jwtUtil;
+    public GameService(StudyGameRepository studyGameRepository, StudyGameLogRepository studyGameLogRepository, GameWordService gameWordService, CreateGameService createGameService) {
         this.studyGameLogRepository = studyGameLogRepository;
         this.studyGameRepository = studyGameRepository;
         this.gameWordService = gameWordService;
@@ -101,6 +99,7 @@ public class GameService {
         WordMean selectedWordMean = gameWordService.getRandomUnusedWordMean(user.getId());
         StudyGame studyGame = getOrCreateStudyGame(selectedWordMean);
         StudyGameDTO studyGameDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);
+        studyGameDTO.setQuizTitle("정답을 맞혀 주세요");
         Map<String, Object> response = new HashMap<>();
         response.put("data",studyGameDTO);
         return response;
@@ -164,14 +163,16 @@ public class GameService {
         StudyGame studyGame = studyGameRepository.findById(studyId)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND));
         logger.info("showResultGame StudyGame: " + studyGame);
-        List<Map<String, String>> wordList = new ArrayList<>();
-        studyGame.getQuestion().getProblems().stream()
-                .sorted(Comparator.comparingInt(Problem::getIdx))
-                .forEach(problem -> {
+        // wordList 생성
+        List<Map<String, String>> wordList = studyGame.getQuestion().getProblems().stream()
+                .sorted(Comparator.comparingInt(Problem::getIdx)) // 문제들을 idx 값 기준으로 정렬
+                .map(problem -> {
                     Map<String, String> wordMap = new HashMap<>();
-                    wordMap.put(problem.getObtion(), problem.getMean());
-                    wordList.add(wordMap);
-                });
+                    wordMap.put("word", problem.getBasic_type()); // assuming 'word' refers to 'basic_type'
+                    wordMap.put("meaning", problem.getMean());
+                    return wordMap;
+                }) // 정렬된 문제들을 wordList에 추가
+                .collect(Collectors.toList());
         // 특정 조건을 만족하는 Problem 객체의 idx 값을 찾기
         Optional<Problem> answerOpt = studyGame.getQuestion().getProblems().stream()
                 .filter(problem -> problem.getBasic_type().equals(studyGame.getWordMean().getWord().getWord()))
@@ -184,6 +185,7 @@ public class GameService {
         if (existingLogOpt.isPresent() && answerOpt.isPresent()) {
             StudyGameLog existingLog = existingLogOpt.get();
             UserStudyLogResponseDTO dto = UserStudyLogResponseDTO.builder()
+                    .quizTitle("정답을 맞혀 주세요")
                     .quizScript(studyGame.getQuestionText())
                     .result(existingLog.isResult())
                     .wordList(wordList)
