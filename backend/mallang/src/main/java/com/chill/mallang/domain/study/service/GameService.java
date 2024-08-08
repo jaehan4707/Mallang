@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -124,6 +125,7 @@ public class GameService {
                 .user(user)
                 .studyGame(studyGame)
                 .wordMean(studyGame.getWordMean())
+                .created_at(LocalDateTime.now())
                 .result(isAnswer)
                 .build();
         studyGameLogRepository.save(newLog);  // 새로운 레코드를 저장

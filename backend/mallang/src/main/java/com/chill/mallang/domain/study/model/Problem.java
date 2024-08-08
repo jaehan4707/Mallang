@@ -21,7 +21,6 @@ public class Problem {
     @JoinColumn(name = "question")
     @JsonBackReference
     private Question question;
-
     private String basic_type;
     private String option;
     private String mean;
