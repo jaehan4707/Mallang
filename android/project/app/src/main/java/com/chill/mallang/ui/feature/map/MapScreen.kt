@@ -19,6 +19,7 @@ import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.ui.feature.map.layout.MapScaffold
 import com.chill.mallang.ui.feature.map.mapview.MapView
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.util.MultiplePermissionsHandler
 import com.google.android.gms.location.LocationServices
@@ -58,12 +59,18 @@ fun MapScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.loadStatus()
+    }
+
     LaunchedEffect(hasPermission) {
         if (hasPermission) {
             // Get area info
             viewModel.loadAreas()
         }
     }
+
+    TopbarHandler(isVisible = true)
 
     MapScreenContent(
         currentLocation = currentLocation,
@@ -73,6 +80,7 @@ fun MapScreen(
         onSelectArea = viewModel::setToSelected,
         onLocate = viewModel::findClosestArea,
         onShowAreaDetail = onShowAreaDetail,
+        onCameraMove = viewModel::resetSelected,
     )
 }
 
@@ -86,6 +94,7 @@ fun MapScreenContent(
     onSelectArea: (Area) -> Unit = {},
     onLocate: () -> Unit = {},
     onShowAreaDetail: (Area) -> Unit = {},
+    onCameraMove: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         MapView(
@@ -94,6 +103,7 @@ fun MapScreenContent(
             selectedArea = selectedArea,
             areasState = areasState,
             onSelectArea = onSelectArea,
+            onCameraMove = onCameraMove,
         )
         MapScaffold(
             areaSelected = selectedArea,

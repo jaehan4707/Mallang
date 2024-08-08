@@ -15,13 +15,13 @@ interface DataStoreRepository {
 
     suspend fun deleteUserEmail()
 
-    suspend fun getUserEmail(): Flow<String?>
+    suspend fun getUserEmail(): String?
 
     suspend fun logout(): Flow<ApiResponse<Unit>>
 
     suspend fun saveUser(user: User)
 
-    suspend fun getUserId(): Flow<Int?>
+    suspend fun getUserId(): Long?
 
-    suspend fun getFactionId(): Flow<Int?>
+    suspend fun getFactionId(): Long?
 }

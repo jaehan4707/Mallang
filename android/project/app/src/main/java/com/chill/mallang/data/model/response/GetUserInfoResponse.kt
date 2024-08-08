@@ -6,13 +6,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GetUserInfoResponse(
     @SerialName("id")
-    val userId: Int? = null,
+    val userId: Long? = null,
     @SerialName("email")
     val email: String? = null,
     @SerialName("nickname")
     val nickName: String? = null,
     @SerialName("faction_id")
-    val faction: Int? = null,
+    val faction: Long? = null,
     @SerialName("try_count")
     val tryCount: Int? = null,
 )

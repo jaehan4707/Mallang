@@ -34,7 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -44,9 +46,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.feature.study.QuizBox
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
@@ -61,12 +65,11 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun QuizResultScreen(
     modifier: Modifier = Modifier,
+    studyResultViewModel: StudyResultViewModel = hiltViewModel(),
     userAnswer: Int,
+    popUpBackStack: () -> Unit = {},
 ) {
-    val studyResultViewModel: StudyResultViewModel = hiltViewModel()
-    val studyResultState = studyResultViewModel.state
-
-    var expandedItem by remember { mutableIntStateOf(-1) }
+    val studyResultState by studyResultViewModel.studyResultState.collectAsStateWithLifecycle()
 
     // TopBar
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
@@ -74,13 +77,16 @@ fun QuizResultScreen(
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
+        onConfirmMessage = stringResource(id = R.string.study_dialog_confirm_message),
         onConfirm = {
             setBackPressed(false)
-            navController?.popBackStack()
+            popUpBackStack()
         },
+        onDismissMessage = stringResource(id = R.string.study_dialog_dismiss_message),
         onDismiss = {
             setBackPressed(false)
         },
+        title = stringResource(id = R.string.confirm_dialog_default_message),
     )
     BackHandler(onBack = { setBackPressed(true) })
 
@@ -92,6 +98,32 @@ fun QuizResultScreen(
             setNavController(nav)
         },
     )
+
+    when (studyResultState) {
+        StudyResultState.Loading -> LoadingDialog()
+
+        is StudyResultState.Success -> {
+            StudyResultScreenContent(
+                modifier = modifier,
+                studyResultState = studyResultState as StudyResultState.Success,
+                userAnswer = userAnswer,
+            )
+        }
+
+        is StudyResultState.Error -> {
+            // 에러 시 표시할 것
+        }
+    }
+}
+
+@Composable
+fun StudyResultScreenContent(
+    modifier: Modifier,
+    studyResultState: StudyResultState.Success,
+    userAnswer: Int,
+) {
+    val context = LocalContext.current
+    var expandedItem by remember { mutableIntStateOf(-1) }
 
     Box(
         modifier =
@@ -105,8 +137,16 @@ fun QuizResultScreen(
                     .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            val title = if (studyResultState.result) "정답!" else "오답!"
-            val titleColor = if (title == "정답!") Green1 else Sub1
+            val title =
+                if (studyResultState.result) {
+                    context.getString(R.string.correct_message)
+                } else {
+                    context.getString(
+                        R.string.wrong_message,
+                    )
+                }
+            val titleColor =
+                if (title == context.getString(R.string.correct_message)) Green1 else Sub1
 
             Text(
                 modifier = Modifier.padding(vertical = 10.dp),
@@ -128,7 +168,7 @@ fun QuizResultScreen(
                 )
             }
             ResultAnswerList(
-                state = studyResultState,
+                studyResultState = studyResultState,
                 userAnswer = userAnswer,
                 fraction = 0.15f,
                 expandedItem = expandedItem,
@@ -142,13 +182,13 @@ fun QuizResultScreen(
 
 @Composable
 fun ResultAnswerList(
-    state: StudyResultState,
+    studyResultState: StudyResultState.Success,
     userAnswer: Int,
     expandedItem: Int = -1,
     fraction: Float,
     onAnswerSelected: (Int) -> Unit = { },
 ) {
-    val size = state.wordList.size
+    val size = studyResultState.wordList.size
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -161,7 +201,7 @@ fun ResultAnswerList(
             AnswerResultListItem(
                 modifier = Modifier.fillParentMaxHeight(fraction),
                 index = index,
-                state = state,
+                studyResultState = studyResultState,
                 userAnswer = userAnswer,
                 expandedItem = expandedItem,
                 onItemClick = { selectedIndex ->
@@ -177,12 +217,12 @@ fun AnswerResultListItem(
     modifier: Modifier = Modifier,
     index: Int,
     userAnswer: Int,
-    state: StudyResultState,
+    studyResultState: StudyResultState.Success,
     expandedItem: Int,
     onItemClick: (Int) -> Unit,
 ) {
     val isUserAnswer = userAnswer == index + 1
-    val isSystemAnswer = state.systemAnswer == index + 1
+    val isSystemAnswer = studyResultState.systemAnswer == index + 1
 
     // 배경색
     val backgroundColor =
@@ -254,7 +294,7 @@ fun AnswerResultListItem(
                 }
                 Spacer(modifier = Modifier.width(30.dp))
                 Text(
-                    text = state.wordList[index].first,
+                    text = studyResultState.wordList[index].first,
                     modifier = Modifier.weight(1f),
                     style = Typography.headlineLarge,
                 )
@@ -286,7 +326,7 @@ fun AnswerResultListItem(
                         .background(color = Color.Unspecified),
             ) {
                 Text(
-                    text = state.wordList[index].second,
+                    text = studyResultState.wordList[index].second,
                     modifier =
                         Modifier
                             .fillMaxWidth()

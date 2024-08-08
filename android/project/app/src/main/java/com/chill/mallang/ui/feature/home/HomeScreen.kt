@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.home
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -63,6 +64,10 @@ fun HomeScreen(
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Log.d("jaehan", "HomeScreen, $uiState")
+    LaunchedEffect(Unit) {
+        Log.d("jaehan", "HIHI")
+    }
     val (showSettingDialog, setShowSettingDialog) =
         rememberSaveable {
             mutableStateOf(false)
@@ -200,7 +205,7 @@ fun HomeContent(
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
     nickname: String = "",
-    factionId: Int = 0,
+    factionId: Long = 0,
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
     exitApplication: () -> Unit = {},
@@ -211,14 +216,16 @@ fun HomeScreenContent(
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
         isBackPressed = isBackPressed.value,
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
         onConfirm = {
             isBackPressed.value = false
             exitApplication()
         },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
         onDismiss = {
             isBackPressed.value = false
         },
-        content = stringResource(R.string.app_exit_message),
+        title = stringResource(R.string.app_exit_message),
     )
     BackHandler(onBack = {
         isBackPressed.value = true
@@ -335,7 +342,7 @@ internal fun UserItem(
 fun UserCharacter(
     modifier: Modifier = Modifier,
     userNickName: String,
-    userFaction: Int,
+    userFaction: Long,
 ) {
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(

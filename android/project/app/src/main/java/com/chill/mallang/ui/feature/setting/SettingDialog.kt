@@ -14,8 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.component.MallangSwitch
@@ -38,18 +39,10 @@ fun SettingDialog(
     onLogOut: () -> Unit = {},
     onSignOut: () -> Unit = {},
 ) {
-    val (backGroundMusicChecked, setBackGroundMusic) =
-        remember {
-            mutableStateOf(false)
-        }
-    val (effectMusicChecked, setEffectMusic) =
-        remember {
-            mutableStateOf(false)
-        }
-    val (notificationChecked, setNotification) =
-        remember {
-            mutableStateOf(false)
-        }
+    val viewModel: SettingViewModel = hiltViewModel()
+    val backGroundMusicChecked by viewModel.backgroundVolume.collectAsStateWithLifecycle(false)
+    val effectMusicChecked by viewModel.soundEffectsVolume.collectAsStateWithLifecycle(false)
+    val notificationChecked by viewModel.notificationAlarm.collectAsStateWithLifecycle()
     Dialog(onDismissRequest = onClose) {
         Surface(
             modifier =
@@ -96,7 +89,7 @@ fun SettingDialog(
                     )
                     MallangSwitch(
                         checked = backGroundMusicChecked,
-                        setChecked = setBackGroundMusic,
+                        setChecked = viewModel::toggleBackgroundVolume,
                         onIconImage = R.drawable.ic_volume_on,
                         offIconImage = R.drawable.ic_volume_off,
                     )
@@ -107,7 +100,7 @@ fun SettingDialog(
                     )
                     MallangSwitch(
                         checked = effectMusicChecked,
-                        setChecked = setEffectMusic,
+                        setChecked = viewModel::toggleSoundEffectsVolume,
                         onIconImage = R.drawable.ic_volume_on,
                         offIconImage = R.drawable.ic_volume_off,
                     )
@@ -125,7 +118,7 @@ fun SettingDialog(
                     Spacer(modifier = Modifier.weight(0.1f))
                     MallangSwitch(
                         checked = notificationChecked,
-                        setChecked = setNotification,
+                        setChecked = viewModel::toggleNotificationAlarm,
                         onIconImage = R.drawable.ic_notification_on,
                         offIconImage = R.drawable.ic_notification_off,
                     )

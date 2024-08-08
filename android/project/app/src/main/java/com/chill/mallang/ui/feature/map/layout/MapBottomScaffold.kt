@@ -1,7 +1,9 @@
 package com.chill.mallang.ui.feature.map.layout
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -61,6 +63,7 @@ fun MapScaffold(
                 .height(330.dp)
                 .background(color = BackGround),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
     ) {
         OccupationStatusBar(
             modifier = Modifier.padding(16.dp),
@@ -73,7 +76,7 @@ fun MapScaffold(
                     .weight(1f)
                     .padding(horizontal = 16.dp),
         )
-
+        Spacer(modifier = Modifier.weight(1f))
         if (areaSelected == null) {
             LocateNearbyButton(
                 modifier = Modifier.padding(bottom = 16.dp),

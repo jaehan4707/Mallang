@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="submit_study">제출하기</string>
+    <string name="unselect_snackbar_message">정답을 선택해 주세요!</string>
+    <string name="study_quiz_title">학습 퀴즈</string>
+    <string name="word_note">단어장</string>
+    <string name="incorrect_word_note">오답노트</string>
+    <string name="change_to_incorrect_note">오답노트로 변경</string>
+    <string name="change_to_word_note">단어장으로 변경</string>
+    <string name="go_to_study_quiz">퀴즈 풀기</string>
+    <string name="correct_message">정답!</string>
+    <string name="wrong_message">오답!</string>
+    <string name="study_load_error_message">"현재 데이터를 불러올 수 없습니다."</string>
+
+</resources>

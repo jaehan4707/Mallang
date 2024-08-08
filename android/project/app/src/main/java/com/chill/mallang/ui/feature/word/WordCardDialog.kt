@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,11 +36,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.PosColorProvider
 import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
-import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
 import kotlinx.coroutines.launch
 
@@ -179,7 +181,7 @@ fun WordCardContent(
     modifier: Modifier = Modifier,
     card: Word,
 ) {
-    if (card is Word.WordCard) {
+    if (card is Word.CorrectWord) {
         Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -188,11 +190,32 @@ fun WordCardContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = card.word,
-                    style = Typography.headlineLarge,
-                    color = Gray6,
-                )
+                Row(
+                    modifier = Modifier.wrapContentSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = card.word,
+                        style = Typography.headlineLarge,
+                        color = Gray6,
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Box(
+                        modifier =
+                            Modifier
+                                .background(
+                                    color = PosColorProvider.getColorForPos(card.pos),
+                                    shape = RoundedCornerShape(5.dp),
+                                ).padding(horizontal = 5.dp, vertical = 2.dp),
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = card.pos,
+                            style = Typography.displaySmall,
+                            color = Color.White,
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = card.meaning,
@@ -223,36 +246,19 @@ fun WordCardContent(
     }
 }
 
+@Preview
 @Composable
-@Preview(showBackground = true)
-fun WordCardPreview() {
-    MallangTheme {
-        WordCardDialog(
-            index = 1,
-            wordCards =
-                arrayListOf(
-                    Word.WordCard(
-                        word = "괄목",
-                        meaning = "눈을 비비고 볼 정도로 매우 놀라다.",
-                        example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-                    ),
-                    Word.WordCard(
-                        word = "상대",
-                        meaning = "서로 마주 대하다.",
-                        example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-                    ),
-                    Word.WordCard(
-                        word = "과장",
-                        meaning = "사실보다 지나치게 불려서 말하거나 행동하다.",
-                        example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-                    ),
-                    Word.WordCard(
-                        word = "시기",
-                        meaning = "때나 경우.",
-                        example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-                    ),
+fun Preview() {
+    WordCardDialog(
+        index = 1,
+        wordCards =
+            arrayListOf(
+                Word.CorrectWord(
+                    word = "단어",
+                    pos = "명사",
+                    meaning = "여기는 단어의 뜻을 나타내는 공간",
+                    example = "여기는 단어를 사용한 예시를 나타내는 공간",
                 ),
-            onDismiss = {},
-        )
-    }
+            ),
+    ) {}
 }

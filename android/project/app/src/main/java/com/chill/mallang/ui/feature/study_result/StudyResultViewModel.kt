@@ -1,12 +1,11 @@
 package com.chill.mallang.ui.feature.study_result
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,8 +15,8 @@ class StudyResultViewModel
     constructor(
         savedStandHandle: SavedStateHandle,
     ) : ViewModel() {
-        var state by mutableStateOf(StudyResultState())
-            private set
+        private val _studyResultState = MutableStateFlow<StudyResultState>(StudyResultState.Loading)
+        val studyResultState = _studyResultState.asStateFlow()
 
         init {
             gradeQuiz(savedStandHandle.get<Int>("studyId") ?: -1)
@@ -26,8 +25,8 @@ class StudyResultViewModel
         private fun gradeQuiz(studyId: Int) {
             viewModelScope.launch {
                 // 퀴즈 결과 불러오기 api 실행
-                state =
-                    state.copy(
+                _studyResultState.value =
+                    StudyResultState.Success(
                         quizTitle = "빈칸을 채워 주세요",
                         quizScript = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 __할만한 성장을 이루었다.",
                         wordList =

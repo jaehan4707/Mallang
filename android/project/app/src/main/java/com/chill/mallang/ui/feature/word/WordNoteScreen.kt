@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.word
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -23,11 +24,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -44,13 +43,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
@@ -58,38 +62,92 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun WordNoteScreen(
     modifier: Modifier = Modifier,
+    wordViewModel: WordNoteViewModel = hiltViewModel(),
+    popUpBackStack: () -> Unit = {},
     navigateToQuiz: (Int) -> Unit = {},
 ) {
-    val wordViewModel: WordNoteViewModel = hiltViewModel()
-    val state = wordViewModel.state
+    val wordNoteState by wordViewModel.wordNoteState.collectAsStateWithLifecycle()
 
     var isWordScreen by remember { mutableStateOf(true) }
-    var selectedWordIndex by remember { mutableStateOf<Int?>(null) }
 
     // TopBar
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
     val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
 
+    // context
+    val context = LocalContext.current
+
     BackConfirmHandler(
         isBackPressed = isBackPressed,
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
         onConfirm = {
             setBackPressed(false)
-            navController?.popBackStack()
+            popUpBackStack()
         },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
         onDismiss = {
             setBackPressed(false)
         },
+        title = stringResource(id = R.string.confirm_dialog_default_message),
     )
     BackHandler(onBack = { setBackPressed(true) })
 
     TopbarHandler(
         isVisible = true,
-        title = if (isWordScreen) "단어장" else "오답노트",
+        title = if (isWordScreen) context.getString(R.string.word_note) else context.getString(R.string.incorrect_word_note),
         onBack = { nav ->
             setBackPressed(true)
             setNavController(nav)
         },
     )
+
+    when (wordNoteState) {
+        is WordNoteState.Success -> {
+            WordNoteScreenContent(
+                modifier = modifier,
+                context = context,
+                wordNoteState = wordNoteState as WordNoteState.Success,
+                navigateToQuiz = navigateToQuiz,
+                isWordScreen = isWordScreen,
+                onClick = {
+                    if (isWordScreen) {
+                        wordViewModel.loadIncorrectWords()
+                        isWordScreen = false
+                    } else {
+                        wordViewModel.loadWords()
+                        isWordScreen = true
+                    }
+                },
+            )
+        }
+
+        is WordNoteState.Error -> {
+            // api 에러일 때
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = context.getString(R.string.study_load_error_message),
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+
+        WordNoteState.Loading -> LoadingDialog()
+    }
+}
+
+@Composable
+fun WordNoteScreenContent(
+    modifier: Modifier,
+    context: Context,
+    wordNoteState: WordNoteState.Success,
+    navigateToQuiz: (Int) -> Unit = {},
+    isWordScreen: Boolean,
+    onClick: () -> Unit = {},
+) {
+    var selectedWordIndex by remember { mutableStateOf<Int?>(null) }
 
     Box(
         modifier =
@@ -108,15 +166,7 @@ fun WordNoteScreen(
                         containerColor = Gray6,
                     ),
                 shape = RoundedCornerShape(10.dp),
-                onClick = {
-                    if (isWordScreen) {
-                        wordViewModel.loadIncorrectWords()
-                        isWordScreen = false
-                    } else {
-                        wordViewModel.loadWords()
-                        isWordScreen = true
-                    }
-                },
+                onClick = onClick,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -127,7 +177,14 @@ fun WordNoteScreen(
                     )
                     Spacer(modifier = Modifier.width(7.dp))
                     Text(
-                        text = if (isWordScreen) "오답노트로 변경" else "단어장으로 변경",
+                        text =
+                            if (isWordScreen) {
+                                context.getString(R.string.change_to_incorrect_note)
+                            } else {
+                                context.getString(
+                                    R.string.change_to_word_note,
+                                )
+                            },
                         style = Typography.displayMedium,
                     )
                 }
@@ -136,13 +193,13 @@ fun WordNoteScreen(
             AnimatedContent(
                 targetState = isWordScreen,
                 transitionSpec = {
-                    pageFlipTransition(targetState, initialState)
+                    pageFlipTransition(targetState)
                 },
                 modifier = Modifier.fillMaxSize(),
                 label = "",
             ) { targetIsWordScreen ->
                 WordList(
-                    wordList = if (targetIsWordScreen) state.wordList else state.wordList,
+                    wordList = if (targetIsWordScreen) wordNoteState.wordList else wordNoteState.wordList,
                     onWordClick = { index ->
                         selectedWordIndex = index
                     },
@@ -157,19 +214,32 @@ fun WordNoteScreen(
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
-                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올
-                        .widthIn(min = 180.dp) // 버튼의 최소 너비
-                        .heightIn(min = 80.dp),
+                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올림
+                        .width(180.dp)
+                        .height(80.dp),
                 colors =
                     ButtonDefaults.buttonColors(
                         containerColor = Gray6,
                     ),
                 shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
             ) {
-                Text(
-                    text = "퀴즈 풀기   >",
-                    style = Typography.headlineLarge,
-                )
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = context.getString(R.string.go_to_study_quiz),
+                        style = Typography.headlineLarge,
+                        textAlign = TextAlign.End,
+                    )
+                    Spacer(modifier = Modifier.width(15.dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_next),
+                        contentDescription = null,
+                    )
+                }
             }
         }
     }
@@ -178,14 +248,14 @@ fun WordNoteScreen(
         selectedWordIndex?.let { index ->
             WordCardDialog(
                 index = index,
-                wordCards = state.wordList,
+                wordCards = wordNoteState.wordList,
                 onDismiss = { selectedWordIndex = null },
             )
         }
     } else {
         // 오답노트일 때는 그때 풀었던 거 보여줌.
         selectedWordIndex?.let { index ->
-            val word = state.wordList[index]
+            val word = wordNoteState.wordList[index]
             if (word is Word.IncorrectWord) {
                 navigateToQuiz(word.studyId)
             }
@@ -201,7 +271,7 @@ fun WordList(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp // 휴대폰 스크린 높이
     val headerHeight = 55.dp // Header 높이
-    val itemHeight = 30.dp // QuizListItem의 높이
+    val itemHeight = 33.dp // QuizListItem의 높이
     val itemSpacing = 10.dp // 아이템 사이 간격
     val padding = 15.dp // 패딩
 
@@ -266,10 +336,7 @@ fun QuizListItem(
 }
 
 // 페이지 넘기는 효과를 위한 함수
-fun pageFlipTransition(
-    targetState: Boolean,
-    initialState: Boolean,
-): ContentTransform =
+fun pageFlipTransition(targetState: Boolean): ContentTransform =
     (
         slideInHorizontally(
             initialOffsetX = { fullWidth -> if (targetState) -fullWidth else fullWidth },

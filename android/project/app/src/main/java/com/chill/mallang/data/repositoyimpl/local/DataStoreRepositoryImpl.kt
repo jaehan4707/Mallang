@@ -53,14 +53,10 @@ class DataStoreRepositoryImpl
         }
 
         override suspend fun getUserEmail() =
-            flow {
-                emit(
-                    dataStore.data
-                        .map { prefs ->
-                            prefs[USER_EMAIL_KEY]
-                        }.first(),
-                )
-            }
+            dataStore.data
+                .map { prefs ->
+                    prefs[USER_EMAIL_KEY]
+                }.first()
 
         override suspend fun logout(): Flow<ApiResponse<Unit>> =
             flow {
@@ -91,24 +87,16 @@ class DataStoreRepositoryImpl
         }
 
         override suspend fun getUserId() =
-            flow {
-                emit(
-                    dataStore.data
-                        .map { prefs ->
-                            prefs[USER_ID_KEY].toString().toIntOrNull()
-                        }.first(),
-                )
-            }
+            dataStore.data
+                .map { prefs ->
+                    prefs[USER_ID_KEY].toString().toLongOrNull()
+                }.first()
 
         override suspend fun getFactionId() =
-            flow {
-                emit(
-                    dataStore.data
-                        .map { prefs ->
-                            prefs[USER_FACTION_ID].toString().toIntOrNull()
-                        }.first(),
-                )
-            }
+            dataStore.data
+                .map { prefs ->
+                    prefs[USER_FACTION_ID].toString().toLongOrNull()
+                }.first()
 
         companion object {
             val ACCESS_TOKEN_KEY = stringPreferencesKey("ACCESS_TOKEN_KEY")

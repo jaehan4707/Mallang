@@ -16,12 +16,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
-
     @Singleton
     @Provides
-    fun providesDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
-        return PreferenceDataStoreFactory.create {
+    fun providesDataStore(
+        @ApplicationContext appContext: Context,
+    ): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create {
             appContext.preferencesDataStoreFile(appContext.getString(R.string.app_name))
         }
-    }
 }
