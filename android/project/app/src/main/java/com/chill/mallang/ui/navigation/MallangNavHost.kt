@@ -95,7 +95,6 @@ fun MallangNavHost(
                 }
             })
         }
-
         composable(
             route = DestinationMain.route,
         ) {
@@ -114,11 +113,12 @@ fun MallangNavHost(
         ) {
             WordNoteScreen(
                 modifier = modifier,
+                popUpBackStack = navController::popBackStack,
                 navigateToQuiz = {
                     navController.navigate(
-                        DestinationQuiz.createRoute(studyId = it),
+                        DestinationStudy.createRoute(studyId = it),
                     ) {
-                        popUpTo(DestinationMain.route) {
+                        popUpTo(DestinationWordNote.route) {
                             inclusive = false
                         }
                     }
@@ -145,7 +145,7 @@ fun MallangNavHost(
         }
 
         composable(
-            route = DestinationQuiz.routeWithArgs,
+            route = DestinationStudy.routeWithArgs,
             arguments =
                 listOf(
                     navArgument("studyId") { type = NavType.IntType },
@@ -155,15 +155,16 @@ fun MallangNavHost(
                 modifier = modifier,
                 navigateToQuizResult = {
                     navController.navigate(
-                        DestinationQuizResult.createRoute(
+                        DestinationStudyResult.createRoute(
                             userAnswer = it,
                         ),
                     ) {
-                        popUpTo(DestinationMain.route) {
+                        popUpTo(DestinationWordNote.route) {
                             inclusive = false
                         }
                     }
                 },
+                popUpBackStack = navController::popBackStack,
                 studyId = backStackEntry.arguments?.getInt("studyId") ?: -1,
             )
         }
@@ -177,13 +178,14 @@ fun MallangNavHost(
         }
 
         composable(
-            route = DestinationQuizResult.routeWithArgs,
-            arguments = DestinationQuizResult.arguments,
+            route = DestinationStudyResult.routeWithArgs,
+            arguments = DestinationStudyResult.arguments,
         ) { navBackStackEntry ->
             val userAnswer = navBackStackEntry.arguments?.getInt("userAnswer")
 
             QuizResultScreen(
                 modifier = modifier,
+                popUpBackStack = navController::popBackStack,
                 userAnswer = userAnswer ?: -1,
             )
         }
