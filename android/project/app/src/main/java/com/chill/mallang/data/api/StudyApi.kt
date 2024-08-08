@@ -1,5 +1,6 @@
 package com.chill.mallang.data.api
 
+import com.chill.mallang.data.model.ResponseBody
 import com.chill.mallang.data.model.response.IncorrectWordResponse
 import com.chill.mallang.data.model.response.WordResponse
 import retrofit2.Response
@@ -11,11 +12,11 @@ interface StudyApi {
     @GET("study/studied-word/{userId}")
     suspend fun getWordList(
         @Path("userId") userId: Int,
-    ): Response<List<WordResponse>>
+    ): Response<ResponseBody<List<WordResponse>>>
 
     // 오답노트 목록 불러오는 api
     @GET("study/wrong-word/all/{userId}")
     suspend fun getIncorrectList(
         @Path("userId") userId: Int,
-    ): Response<List<IncorrectWordResponse>>
+    ): Response<ResponseBody<List<IncorrectWordResponse>>>
 }

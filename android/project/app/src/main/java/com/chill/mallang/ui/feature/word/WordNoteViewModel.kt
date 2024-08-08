@@ -1,15 +1,15 @@
 package com.chill.mallang.ui.feature.word
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.StudyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,8 +21,8 @@ class WordNoteViewModel
         private val studyRepository: StudyRepository,
         private val dataStoreRepository: DataStoreRepository,
     ) : ViewModel() {
-        var state by mutableStateOf(WordNoteState())
-            private set
+        private val _wordNoteState = MutableStateFlow<WordNoteState>(WordNoteState.Loading)
+        val wordNoteState = _wordNoteState.asStateFlow()
 
         init {
             loadWords()
@@ -40,15 +40,19 @@ class WordNoteViewModel
                                 when (response) {
                                     is ApiResponse.Success -> {
                                         Log.d("nakyung", "response: ${response.body}")
-                                        state =
-                                            state.copy(
+                                        _wordNoteState.value =
+                                            WordNoteState.Success(
                                                 wordList = response.body ?: emptyList(),
                                             )
                                     }
 
                                     is ApiResponse.Error -> {
                                         // api 통신 실패
-                                        Log.d("nakyung", response.errorMessage)
+                                        delay(300)
+                                        _wordNoteState.value =
+                                            WordNoteState.Error(
+                                                errorMessage = response.errorMessage,
+                                            )
                                     }
 
                                     ApiResponse.Init -> {}
@@ -66,16 +70,18 @@ class WordNoteViewModel
                         studyRepository.getIncorrectList(userId).collectLatest { response ->
                             when (response) {
                                 is ApiResponse.Success -> {
-                                    Log.d("nakyung", "response: ${response.body}")
-                                    state =
-                                        state.copy(
+                                    _wordNoteState.value =
+                                        WordNoteState.Success(
                                             wordList = response.body ?: emptyList(),
                                         )
                                 }
 
                                 is ApiResponse.Error -> {
                                     // api 통신 실패
-                                    Log.d("nakyung", response.errorMessage)
+                                    _wordNoteState.value =
+                                        WordNoteState.Error(
+                                            errorMessage = response.errorMessage,
+                                        )
                                 }
 
                                 ApiResponse.Init -> {}
