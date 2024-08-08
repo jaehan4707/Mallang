@@ -1,5 +1,4 @@
 package com.chill.mallang.util;
-
 import com.chill.mallang.errors.errorcode.ErrorCode;
 import com.chill.mallang.errors.exception.RestApiException;
 
