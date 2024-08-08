@@ -19,6 +19,7 @@ import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.ui.feature.map.layout.MapScaffold
 import com.chill.mallang.ui.feature.map.mapview.MapView
+import com.chill.mallang.ui.feature.map.state.ProximityState
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.util.MultiplePermissionsHandler
@@ -41,6 +42,7 @@ fun MapScreen(
     val currentLocation by viewModel.currentLocation.collectAsStateWithLifecycle()
     val areas by viewModel.areaState.collectAsStateWithLifecycle()
     val status by viewModel.statusState.collectAsStateWithLifecycle()
+    val proximityState = viewModel.proximityState
     val selectedArea = viewModel.selectedArea
 
     var hasPermission by remember { mutableStateOf(false) }
@@ -77,6 +79,7 @@ fun MapScreen(
         areasState = areas,
         selectedArea = selectedArea,
         status = status,
+        proximityState = proximityState,
         onSelectArea = viewModel::setToSelected,
         onLocate = viewModel::findClosestArea,
         onShowAreaDetail = onShowAreaDetail,
@@ -89,6 +92,7 @@ fun MapScreenContent(
     modifier: Modifier = Modifier,
     currentLocation: LocationState,
     areasState: AreasState,
+    proximityState: ProximityState,
     status: TeamList,
     selectedArea: Area?,
     onSelectArea: (Area) -> Unit = {},
@@ -111,6 +115,7 @@ fun MapScreenContent(
             status = status,
             onLocate = onLocate,
             onShowDetail = onShowAreaDetail,
+            proximityState = proximityState
         )
     }
 }
@@ -124,6 +129,7 @@ fun MapPreview() {
             areasState = AreasState.Empty,
             status = TeamList(listOf()),
             selectedArea = null,
+            proximityState = ProximityState.FarAway,
         )
     }
 }
