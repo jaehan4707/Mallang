@@ -33,11 +33,6 @@ class Game01ViewModel
         // 게임01 현재 상태
         var game01State by mutableStateOf(Game01State.INIT)
 
-        // 게임01 라운드 제한 시간
-        val ROUND_TIME_LIMIT = 100
-
-        // 게임01 라운드 수
-        val ROUND_COUNT = 3
 
         // Timer Job
         private var timerJob: Job? = null
@@ -109,7 +104,7 @@ class Game01ViewModel
 
         private fun fetchQuizIds() {
             viewModelScope.launch {
-                quizRepository.getQuizIds(testAreaId).collectLatest { response ->
+                quizRepository.getQuizIds(TEST_AREA_ID).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
                                 _questionIdList.addAll(response.body ?: listOf())
@@ -187,9 +182,9 @@ class Game01ViewModel
                     .getResults(
                         fetchGameResultRequest =
                             FetchGameResultRequest(
-                                areaId = testAreaId,
                                 userId = testUserId,
                                 factionId = testFactionId,
+                                areaId = TEST_AREA_ID,
                                 quizIds = questionIdList,
                             ),
                     ).collectLatest { response ->
@@ -240,11 +235,12 @@ class Game01ViewModel
             return sdf.format(Date())
         }
 
-        companion object {
+        companion object Game01Constants {
+            const val ROUND_TIME_LIMIT = 100
+            const val ROUND_COUNT = 3
+
             // 더미 데이터
-            val testAreaId: Int = 1
-            val testUserId: Int = 1
-            val testFactionId: Int = 2
+            const val TEST_AREA_ID = 1
         }
     }
 
