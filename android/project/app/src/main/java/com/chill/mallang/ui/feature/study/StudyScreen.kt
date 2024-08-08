@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,6 +62,7 @@ fun StudyScreen(
     modifier: Modifier = Modifier,
     studyViewModel: StudyViewModel = hiltViewModel(),
     studyId: Int = -1,
+    popUpBackStack: () -> Unit = {},
     navigateToQuizResult: (Int) -> Unit = {},
 ) {
     val studyState by studyViewModel.studyState.collectAsStateWithLifecycle()
@@ -76,13 +78,17 @@ fun StudyScreen(
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
-        onConfirm = {
-            setBackPressed(false)
-            navController?.popBackStack()
-        },
-        onDismiss = {
-            setBackPressed(false)
-        },
+        onConfirm =
+            Pair(stringResource(R.string.study_dialog_confirm_message)) {
+                setBackPressed(false)
+                popUpBackStack()
+            },
+        onDismiss =
+            Pair(stringResource(R.string.study_dialog_dismiss_message)) {
+                setBackPressed(false)
+            },
+        title = stringResource(R.string.study_dialog_title),
+        content = stringResource(R.string.study_dialog_content),
     )
     BackHandler(onBack = { setBackPressed(true) })
 

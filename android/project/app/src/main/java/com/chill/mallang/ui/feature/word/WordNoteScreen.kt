@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,6 +63,7 @@ import com.chill.mallang.ui.theme.Typography
 fun WordNoteScreen(
     modifier: Modifier = Modifier,
     wordViewModel: WordNoteViewModel = hiltViewModel(),
+    popUpBackStack: () -> Unit = {},
     navigateToQuiz: (Int) -> Unit = {},
 ) {
     val wordNoteState by wordViewModel.wordNoteState.collectAsStateWithLifecycle()
@@ -77,13 +79,16 @@ fun WordNoteScreen(
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
-        onConfirm = {
-            setBackPressed(false)
-            navController?.popBackStack()
-        },
-        onDismiss = {
-            setBackPressed(false)
-        },
+        onConfirm =
+            Pair(stringResource(id = R.string.positive_button_message)) {
+                setBackPressed(false)
+                popUpBackStack()
+            },
+        onDismiss =
+            Pair(stringResource(id = R.string.nagative_button_message)) {
+                setBackPressed(false)
+            },
+        title = stringResource(id = R.string.confirm_dialog_default_message),
     )
     BackHandler(onBack = { setBackPressed(true) })
 

@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.home
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -211,14 +212,16 @@ fun HomeScreenContent(
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
         isBackPressed = isBackPressed.value,
-        onConfirm = {
-            isBackPressed.value = false
-            exitApplication()
-        },
-        onDismiss = {
-            isBackPressed.value = false
-        },
-        content = stringResource(R.string.app_exit_message),
+        onConfirm =
+            Pair(stringResource(id = R.string.positive_button_message)) {
+                isBackPressed.value = false
+                exitApplication()
+            },
+        onDismiss =
+            Pair(stringResource(id = R.string.nagative_button_message)) {
+                isBackPressed.value = false
+            },
+        title = stringResource(R.string.app_exit_message),
     )
     BackHandler(onBack = {
         isBackPressed.value = true
