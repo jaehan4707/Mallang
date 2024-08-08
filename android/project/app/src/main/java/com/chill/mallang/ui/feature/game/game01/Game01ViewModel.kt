@@ -237,6 +237,12 @@ class Game01ViewModel
             }
         }
 
+        fun getCurrentRound(): Int = gameRound
+
+        fun increaseRound() {
+            gameRound += 1
+        }
+
         fun startTimer() {
             timerJob?.cancel()
             timerJob =
