@@ -41,6 +41,10 @@ class Game01ViewModel
         private val _game01UiEvent = MutableSharedFlow<Game01UiEvent>()
         val gameUiEvent = _game01UiEvent.asSharedFlow()
 
+        // 게임 진행 점령지 ID
+        private var _areaId: Long = 0L
+        val areaId: Long get() = _areaId
+
         // 게임01 현재 상태
         var game01State by mutableStateOf(Game01State.INIT)
 
@@ -87,6 +91,10 @@ class Game01ViewModel
             fetchUserInfo()
         }
 
+        fun initializeAreaId(areaId: Long) {
+            _areaId = areaId
+        }
+
         fun fetchUserInfo() {
             viewModelScope.launch {
                 userRepository.getUserInfo().collectLatest { response ->
@@ -130,7 +138,7 @@ class Game01ViewModel
 
         fun fetchQuizIds() {
             viewModelScope.launch {
-                quizRepository.getQuizIds(TEST_AREA_ID).collectLatest { response ->
+                quizRepository.getQuizIds(areaId).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
                             _questionIdList.addAll(response.body ?: listOf())
@@ -207,7 +215,7 @@ class Game01ViewModel
                     .getResults(
                         fetchGameResultRequest =
                             FetchGameResultRequest(
-                                areaId = TEST_AREA_ID,
+                                areaId = areaId,
                                 userId = userInfo.id,
                                 factionId = userInfo.factionId,
                                 quizIds = questionIdList,
@@ -272,9 +280,6 @@ class Game01ViewModel
         companion object Game01Constants {
             const val ROUND_TIME_LIMIT = 100
             const val ROUND_COUNT = 3
-
-            // 더미 데이터
-            const val TEST_AREA_ID: Long = 1L
         }
     }
 
