@@ -9,6 +9,7 @@ import com.chill.mallang.R
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01LoadingScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01PlayScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01ResultScreen
+import com.chill.mallang.ui.feature.game.game01.SubView.Game01ReviewScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundDoneScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundScreen
 import com.chill.mallang.ui.theme.MallangTheme
@@ -49,6 +50,11 @@ fun Game01Screen(modifier: Modifier = Modifier) {
 
         Game01State.ROUND_DONE ->
             Game01RoundDoneScreen()
+
+        Game01State.REVIEW ->
+            Game01ReviewScreen(
+                completeReview = { viewModel.updateGame01State(Game01State.FINISH) },
+            )
 
         Game01State.FINISH ->
             Game01ResultScreen(
