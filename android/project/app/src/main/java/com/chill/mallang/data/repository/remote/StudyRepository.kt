@@ -5,7 +5,7 @@ import com.chill.mallang.ui.feature.word.Word
 import kotlinx.coroutines.flow.Flow
 
 interface StudyRepository {
-    suspend fun getWordList(userId: Int): Flow<ApiResponse<List<Word.CorrectWord>>>
+    suspend fun getWordList(userId: Long): Flow<ApiResponse<List<Word.CorrectWord>>>
 
-    suspend fun getIncorrectList(userId: Int): Flow<ApiResponse<List<Word.IncorrectWord>>>
+    suspend fun getIncorrectList(userId: Long): Flow<ApiResponse<List<Word.IncorrectWord>>>
 }
