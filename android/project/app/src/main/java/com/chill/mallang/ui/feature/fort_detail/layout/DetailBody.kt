@@ -1,18 +1,14 @@
 package com.chill.mallang.ui.feature.fort_detail.layout
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.TeamInfo
+import com.chill.mallang.ui.component.LoadingBox
 import com.chill.mallang.ui.feature.fort_detail.AreaDetailState
 import com.chill.mallang.ui.theme.Typography
 
@@ -41,15 +38,7 @@ fun DetailBody(
 ) {
     when (occupationState) {
         is AreaDetailState.Loading -> {
-            Surface(
-                modifier = modifier.fillMaxSize(),
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.size(48.dp))
-                }
-            }
+            LoadingBox()
         }
 
         is AreaDetailState.Error -> {
@@ -65,13 +54,9 @@ fun DetailBody(
                 modifier =
                 modifier
                     .fillMaxSize()
-                    .padding(vertical = 20.dp, horizontal = 10.dp),
+                    .padding(horizontal = 10.dp),
             ) {
                 Column {
-                    FortDetailHeader(
-                        fortName = occupationState.areaDetail.areaName,
-                        modifier = Modifier.weight(1F),
-                    )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -107,9 +92,6 @@ fun FortDetailHeader(
     Box(
         modifier =
         modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .background(Color.LightGray.copy(alpha = 0.4f))
             .padding(vertical = 7.dp, horizontal = 10.dp),
     ) {
         Row(
