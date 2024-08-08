@@ -61,7 +61,7 @@ fun WordNoteScreen(
     navigateToQuiz: (Int) -> Unit = {},
 ) {
     val wordViewModel: WordNoteViewModel = hiltViewModel()
-    val state = wordViewModel.state
+    val wordNoteState = wordViewModel.state
 
     var isWordScreen by remember { mutableStateOf(true) }
     var selectedWordIndex by remember { mutableStateOf<Int?>(null) }
@@ -152,7 +152,7 @@ fun WordNoteScreen(
                 label = "",
             ) { targetIsWordScreen ->
                 WordList(
-                    wordList = if (targetIsWordScreen) state.wordList else state.wordList,
+                    wordList = if (targetIsWordScreen) wordNoteState.wordList else wordNoteState.wordList,
                     onWordClick = { index ->
                         selectedWordIndex = index
                     },
@@ -201,14 +201,14 @@ fun WordNoteScreen(
         selectedWordIndex?.let { index ->
             WordCardDialog(
                 index = index,
-                wordCards = state.wordList,
+                wordCards = wordNoteState.wordList,
                 onDismiss = { selectedWordIndex = null },
             )
         }
     } else {
         // 오답노트일 때는 그때 풀었던 거 보여줌.
         selectedWordIndex?.let { index ->
-            val word = state.wordList[index]
+            val word = wordNoteState.wordList[index]
             if (word is Word.IncorrectWord) {
                 navigateToQuiz(word.studyId)
             }

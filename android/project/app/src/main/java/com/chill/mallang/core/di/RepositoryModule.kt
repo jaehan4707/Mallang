@@ -5,12 +5,14 @@ import com.chill.mallang.data.repository.remote.AreaRepository
 import com.chill.mallang.data.repository.remote.FactionRepository
 import com.chill.mallang.data.repository.remote.FirebaseRepository
 import com.chill.mallang.data.repository.remote.QuizRepository
+import com.chill.mallang.data.repository.remote.StudyRepository
 import com.chill.mallang.data.repository.remote.UserRepository
 import com.chill.mallang.data.repositoyimpl.local.DataStoreRepositoryImpl
 import com.chill.mallang.data.repositoyimpl.remote.AreaRepositoryImpl
 import com.chill.mallang.data.repositoyimpl.remote.FactionRepositoryImpl
 import com.chill.mallang.data.repositoyimpl.remote.FirebaseRepositoryImpl
 import com.chill.mallang.data.repositoyimpl.remote.QuizRepositoryImpl
+import com.chill.mallang.data.repositoyimpl.remote.StudyRepositoryImpl
 import com.chill.mallang.data.repositoyimpl.remote.UserRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -44,4 +46,8 @@ interface RepositoryModule {
     @Binds
     @Singleton
     fun provideFactionRepository(factionRepositoryImpl: FactionRepositoryImpl): FactionRepository
+
+    @Binds
+    @Singleton
+    fun provideStudyRepository(studyRepositoryImpl: StudyRepositoryImpl): StudyRepository
 }
