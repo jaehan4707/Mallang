@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.fort_detail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import com.chill.mallang.data.model.entity.TeamRecords
 import com.chill.mallang.data.model.entity.UserInfo
 import com.chill.mallang.data.model.entity.UserRecord
 import com.chill.mallang.ui.feature.fort_detail.layout.DetailBody
+import com.chill.mallang.ui.feature.fort_detail.layout.FortDetailHeader
 import com.chill.mallang.ui.feature.fort_detail.layout.GameStartBody
 import com.chill.mallang.ui.feature.fort_detail.layout.TeamRecordBody
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
@@ -40,7 +42,12 @@ fun FortDetailScreen(
         }
     }
 
-    TopbarHandler(isVisible = true)
+    TopbarHandler(
+        isVisible = true,
+        titleContent = if(occupationState is AreaDetailState.Success){
+            {FortDetailHeader(fortName = (occupationState as AreaDetailState.Success).areaDetail.areaName)}
+        } else null,
+    )
 
     AreaDetailContent(
         modifier = modifier,
@@ -59,6 +66,7 @@ fun AreaDetailContent(
         modifier =
             modifier
                 .fillMaxSize(),
+        verticalArrangement = Arrangement.Top
     ) {
         DetailBody(
             occupationState = areaDetailState,
