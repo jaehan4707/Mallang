@@ -4,37 +4,61 @@ import com.chill.mallang.domain.study.model.Problem;
 import com.chill.mallang.domain.study.model.Question;
 import com.chill.mallang.domain.study.model.StudyGame;
 import com.chill.mallang.domain.study.model.WordMean;
+import com.chill.mallang.domain.study.repository.ProblemRepository;
+import com.chill.mallang.domain.study.repository.QuestionRepository;
+import com.chill.mallang.domain.study.repository.StudyGameRepository;
+import com.chill.mallang.domain.study.repository.WordMeanRepository;
+import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CreateGameService {
+    private final StudyGameRepository studyGameRepository;
+    private final StudyOpenAIService studyOpenAIService;
+    private final QuestionRepository questionRepository;
+    private final ProblemRepository problemRepository;
 
     public StudyGame initializeStudyGame(WordMean wordMean) {
-        StudyGame studyGame = new StudyGame();
-        studyGame.setWordMean(wordMean);
-        studyGame.setQuestionText("What is the meaning of this word?");
+        JSONObject result = studyOpenAIService.makeNewStudyQuiz(wordMean.getWord().getWord(),wordMean.getMean());
+        StudyGame studyGame = StudyGame.builder()
+                .wordMean(wordMean)
+                .questionText(result.getString("question"))
+                .build();
+        studyGameRepository.save(studyGame);
+        initializeQuestion(studyGame, result);
         return studyGame;
     }
 
-    public Question initializeQuestion(StudyGame studyGame) {
-        Question question = new Question();
-        question.setStudyGame(studyGame);
+    public Question initializeQuestion(StudyGame studyGame, JSONObject result) {
+        Question question = Question.builder()
+                .studyGame(studyGame)
+                .build();
+        questionRepository.save(question);
+        addProblemsToQuestion(question, result);
         return question;
     }
 
-    public void addProblemsToQuestion(Question question, WordMean wordMean) {
-        question.addProblem(createProblem("ExampleWord1", "활용1", "ExampleMean1", 1));
-        question.addProblem(createProblem("ExampleWord2", "활용2", "ExampleMean2", 2));
-        question.addProblem(createProblem("ExampleWord3", "활용3", "ExampleMean3", 3));
-        question.addProblem(createProblem(wordMean.getWord().getWord(), "활용4", wordMean.getMean(), 4));
-    }
+    public void addProblemsToQuestion(Question question, JSONObject result) {
+        JSONArray jsonArray = result.getJSONArray("options");
+        // JSONArray의 각 JSONObject를 처리
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-    public Problem createProblem(String basicType, String obtion, String mean, int idx) {
-        Problem problem = new Problem();
-        problem.setBasic_type(basicType);
-        problem.setObtion(obtion);
-        problem.setMean(mean);
-        problem.setIdx(idx);
-        return problem;
+            String basic_type = jsonObject.getString("basic_type");
+            String option = jsonObject.getString("word");
+            String mean = jsonObject.getString("meaning");
+            int idx = jsonObject.getInt("idx");
+            Problem problem = Problem.builder()
+                    .question(question)
+                    .basic_type(basic_type)
+                    .option(option)
+                    .mean(mean)
+                    .idx(idx)
+                    .build();
+            problemRepository.save(problem);
+        }
     }
 }

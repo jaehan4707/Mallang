@@ -27,6 +27,6 @@ public interface StudyGameLogRepository extends JpaRepository<StudyGameLog, Long
     Optional<StudyGameLog> getOneWrongStudyGameLogByUserIdStudyId(@Param("userId") Long userId, @Param("studyId") Long studyId);
 
     //이미 푼 문제인지 아닌지 확인 용
-    @Query(value = "SELECT * FROM study_game_log WHERE user_id = :userId AND study_game_id = :studyId FOR UPDATE", nativeQuery = true)
-    Optional<StudyGameLog> findByStudyGameAndUserForUpdate(@Param("userId") Long userId, @Param("studyId") Long studyId);
+    @Query(value = "SELECT * FROM study_game_log WHERE user_id = :userId AND study_game_id = :studyId ORDER BY id DESC LIMIT 1 FOR UPDATE", nativeQuery = true)
+    Optional<StudyGameLog> findByStudyGameAndUserForLastResult(@Param("userId") Long userId, @Param("studyId") Long studyId);
 }
