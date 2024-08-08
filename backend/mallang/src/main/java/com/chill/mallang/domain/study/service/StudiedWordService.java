@@ -30,6 +30,7 @@ public class StudiedWordService {
             WordCardDto wordCardDto = WordCardDto.builder()
                     .word(studyGameLog.getStudyGame().getWordMean().getWord().getWord())
                     .meaning(studyGameLog.getStudyGame().getWordMean().getMean())
+                    .pos(studyGameLog.getStudyGame().getWordMean().getType())
                     .example(null) // 아직 예문 데이터가 없음
                     .build();
 
