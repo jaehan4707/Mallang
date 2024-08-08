@@ -127,16 +127,23 @@ public class GameService {
         logger.info("existingLogOpt: "+existingLogOpt);
         if (existingLogOpt.isPresent()) {
             StudyGameLog existingLog = existingLogOpt.get();
-            existingLog.setResult(isAnswer);
-            studyGameLogRepository.save(existingLog);  // 기존 레코드를 업데이트
+            StudyGameLog updatedLog = StudyGameLog.builder()
+                    .id(existingLog.getId())
+                    .result(isAnswer)
+                    .user(existingLog.getUser())
+                    .studyGame(existingLog.getStudyGame())
+                    .wordMean(existingLog.getWordMean())
+                    .build();
+            studyGameLogRepository.save(updatedLog);
             logger.info("Updated existing StudyGameLog: " + existingLog);
         } else {
             // StudyGameLog 기록 저장
-            StudyGameLog newLog = new StudyGameLog();
-            newLog.setUser(user);
-            newLog.setStudyGame(studyGame);
-            newLog.setWordMean(studyGame.getWordMean());
-            newLog.setResult(isAnswer);
+            StudyGameLog newLog = StudyGameLog.builder()
+                    .user(user)
+                    .studyGame(studyGame)
+                    .wordMean(studyGame.getWordMean())
+                    .result(isAnswer)
+                    .build();
             studyGameLogRepository.save(newLog);  // 새로운 레코드를 저장
             logger.info("Created new StudyGameLog: " + newLog);
         }
