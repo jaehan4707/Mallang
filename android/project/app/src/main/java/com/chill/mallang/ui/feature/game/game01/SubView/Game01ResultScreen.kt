@@ -86,9 +86,9 @@ fun Game01ResultContent(
                 )
                 LongBlackButton(
                     modifier =
-                    modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
+                        modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
                     onClick = {},
                     text = "확인",
                 )
@@ -131,9 +131,9 @@ fun ResultImageBody(modifier: Modifier = Modifier) {
 
     Box(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .size(size),
+            modifier
+                .fillMaxWidth()
+                .size(size),
         contentAlignment = Alignment.Center,
     ) {
         Image(
@@ -171,9 +171,15 @@ fun ResultDetailBody(
         Text(
             text =
                 if (myTeamScore > oppoTeamScore) {
-                    stringResource(id = R.string.win_message_format, (myTeamScore - oppoTeamScore).toInt())
+                    stringResource(
+                        id = R.string.win_message_format,
+                        (myTeamScore - oppoTeamScore).toInt(),
+                    )
                 } else if (myTeamScore < oppoTeamScore) {
-                    stringResource(id = R.string.win_message_format, (oppoTeamScore - myTeamScore).toInt())
+                    stringResource(
+                        id = R.string.win_message_format,
+                        (oppoTeamScore - myTeamScore).toInt(),
+                    )
                 } else {
                     stringResource(id = R.string.draw_message_format)
                 },
@@ -190,11 +196,11 @@ fun LeaderBoardBody(
 ) {
     Column(
         modifier =
-        modifier
-            .padding(10.dp)
-            .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(20.dp))
-            .fillMaxWidth()
-            .height(300.dp),
+            modifier
+                .padding(10.dp)
+                .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(20.dp))
+                .fillMaxWidth()
+                .height(300.dp),
     ) {
         Box(
             modifier =
@@ -217,7 +223,7 @@ fun LeaderBoardBody(
                     .fillMaxWidth(),
         ) {
             itemsIndexed(leaderList) { index, userRecord ->
-                GameRecordListItem(userRecord.copy(userPlace = index))
+                GameRecordListItem(userPlace = index + 1, userRecord = userRecord)
             }
         }
     }
