@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,11 +35,13 @@ import com.chill.mallang.ui.theme.Typography
 fun BackConfirmDialog(
     content: String = "",
     title: String = "",
-    onConfirm: Pair<String, () -> Unit> = Pair(stringResource(id = R.string.positive_button_message)) {},
-    onDismiss: Pair<String, () -> Unit> = Pair(stringResource(id = R.string.nagative_button_message)) {},
+    onConfirmMessage: String = "",
+    onDismissMessage: String = "",
+    onConfirm: () -> Unit = {},
+    onDismiss: () -> Unit = {},
 ) {
     Dialog(
-        onDismissRequest = onDismiss.second,
+        onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
         content = {
             Surface(
@@ -81,7 +82,7 @@ fun BackConfirmDialog(
                     Row {
                         Spacer(modifier = Modifier.weight(0.3f))
                         Button(
-                            onClick = onConfirm.second,
+                            onClick = onConfirm,
                             shape = RoundedCornerShape(10.dp),
                             colors =
                                 ButtonDefaults.buttonColors(
@@ -90,14 +91,14 @@ fun BackConfirmDialog(
                                 ),
                         ) {
                             Text(
-                                text = onConfirm.first,
+                                text = onConfirmMessage,
                                 style = Typography.displayMedium,
                             )
                         }
                         Spacer(modifier = Modifier.weight(0.1f))
                         Button(
                             shape = RoundedCornerShape(10.dp),
-                            onClick = onDismiss.second,
+                            onClick = onDismiss,
                             colors =
                                 ButtonDefaults.buttonColors(
                                     contentColor = White,
@@ -105,7 +106,7 @@ fun BackConfirmDialog(
                                 ),
                         ) {
                             Text(
-                                text = onDismiss.first,
+                                text = onDismissMessage,
                                 style = Typography.displayMedium,
                             )
                         }

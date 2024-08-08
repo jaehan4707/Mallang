@@ -212,15 +212,15 @@ fun HomeScreenContent(
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
         isBackPressed = isBackPressed.value,
-        onConfirm =
-            Pair(stringResource(id = R.string.positive_button_message)) {
-                isBackPressed.value = false
-                exitApplication()
-            },
-        onDismiss =
-            Pair(stringResource(id = R.string.nagative_button_message)) {
-                isBackPressed.value = false
-            },
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
+        onConfirm = {
+            isBackPressed.value = false
+            exitApplication()
+        },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
+        onDismiss = {
+            isBackPressed.value = false
+        },
         title = stringResource(R.string.app_exit_message),
     )
     BackHandler(onBack = {

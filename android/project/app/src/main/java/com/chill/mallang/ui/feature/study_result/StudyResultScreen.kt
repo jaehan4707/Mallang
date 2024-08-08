@@ -77,15 +77,15 @@ fun QuizResultScreen(
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
-        onConfirm =
-            Pair(stringResource(id = R.string.study_dialog_confirm_message)) {
-                setBackPressed(false)
-                popUpBackStack()
-            },
-        onDismiss =
-            Pair(stringResource(id = R.string.study_dialog_dismiss_message)) {
-                setBackPressed(false)
-            },
+        onConfirmMessage = stringResource(id = R.string.study_dialog_confirm_message),
+        onConfirm = {
+            setBackPressed(false)
+            popUpBackStack()
+        },
+        onDismissMessage = stringResource(id = R.string.study_dialog_dismiss_message),
+        onDismiss = {
+            setBackPressed(false)
+        },
         title = stringResource(id = R.string.confirm_dialog_default_message),
     )
     BackHandler(onBack = { setBackPressed(true) })

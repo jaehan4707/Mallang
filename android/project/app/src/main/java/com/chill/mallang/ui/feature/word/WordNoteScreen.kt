@@ -79,15 +79,15 @@ fun WordNoteScreen(
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
-        onConfirm =
-            Pair(stringResource(id = R.string.positive_button_message)) {
-                setBackPressed(false)
-                popUpBackStack()
-            },
-        onDismiss =
-            Pair(stringResource(id = R.string.nagative_button_message)) {
-                setBackPressed(false)
-            },
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
+        onConfirm = {
+            setBackPressed(false)
+            popUpBackStack()
+        },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
+        onDismiss = {
+            setBackPressed(false)
+        },
         title = stringResource(id = R.string.confirm_dialog_default_message),
     )
     BackHandler(onBack = { setBackPressed(true) })

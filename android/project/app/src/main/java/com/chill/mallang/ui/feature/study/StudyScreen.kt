@@ -78,15 +78,15 @@ fun StudyScreen(
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
-        onConfirm =
-            Pair(stringResource(R.string.study_dialog_confirm_message)) {
-                setBackPressed(false)
-                popUpBackStack()
-            },
-        onDismiss =
-            Pair(stringResource(R.string.study_dialog_dismiss_message)) {
-                setBackPressed(false)
-            },
+        onConfirmMessage = stringResource(R.string.study_dialog_confirm_message),
+        onConfirm = {
+            setBackPressed(false)
+            popUpBackStack()
+        },
+        onDismissMessage = stringResource(R.string.study_dialog_dismiss_message),
+        onDismiss = {
+            setBackPressed(false)
+        },
         title = stringResource(R.string.study_dialog_title),
         content = stringResource(R.string.study_dialog_content),
     )
