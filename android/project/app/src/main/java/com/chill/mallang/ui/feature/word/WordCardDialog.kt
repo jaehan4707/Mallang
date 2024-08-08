@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.chill.mallang.R
@@ -186,11 +189,32 @@ fun WordCardContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = card.word,
-                    style = Typography.headlineLarge,
-                    color = Gray6,
-                )
+                Row(
+                    modifier = Modifier.wrapContentSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = card.word,
+                        style = Typography.headlineLarge,
+                        color = Gray6,
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Box(
+                        modifier =
+                            Modifier
+                                .background(
+                                    color = PosColorProvider.getColorForPos(card.pos),
+                                    shape = RoundedCornerShape(5.dp),
+                                ).padding(horizontal = 5.dp, vertical = 2.dp),
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = card.pos,
+                            style = Typography.displaySmall,
+                            color = Color.White,
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = card.meaning,
@@ -219,4 +243,40 @@ fun WordCardContent(
             )
         }
     }
+}
+
+object PosColorProvider {
+    private val colorMap =
+        mapOf(
+            "명사" to Color(0xFFE57373), // Red shade for Noun
+            "대명사" to Color(0xFFBA68C8), // Purple shade for Pronoun
+            "수사" to Color(0xFF7986CB), // Blue shade for Numeral
+            "동사" to Color(0xFF64B5F6), // Light Blue shade for Verb
+            "형용사" to Color(0xFF4DB6AC), // Teal shade for Adjective
+            "관형사" to Color(0xFF81C784), // Green shade for Determiner
+            "부사" to Color(0xFFFFD54F), // Yellow shade for Adverb
+            "조사" to Color(0xFFFF8A65), // Orange shade for Postposition
+            "감탄사" to Color(0xFFA1887F), // Brown shade for Interjection
+        )
+
+    fun getColorForPos(pos: String): Color {
+        return colorMap[pos] ?: Gray6 // 기본 색상 반환
+    }
+}
+
+@Preview
+@Composable
+fun Preview() {
+    WordCardDialog(
+        index = 1,
+        wordCards =
+            arrayListOf(
+                Word.CorrectWord(
+                    word = "단어",
+                    pos = "명사",
+                    meaning = "여기는 단어의 뜻을 나타내는 공간",
+                    example = "여기는 단어를 사용한 예시를 나타내는 공간",
+                ),
+            ),
+    ) {}
 }
