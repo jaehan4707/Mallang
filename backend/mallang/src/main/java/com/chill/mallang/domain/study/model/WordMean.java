@@ -21,6 +21,7 @@ public class WordMean {
     private String mean;
     private String type;
     private String level;
+    private String example;
 
 
 }
