@@ -31,45 +31,14 @@ class WordNoteViewModel
         // 처음 단어장 정보 불러오기 api
         fun loadWords() {
             viewModelScope.launch {
-                dataStoreRepository.getUserId().collect { userId ->
-                    if (userId != null) {
-                        Log.d("nakyung", "userId: $userId")
-                        studyRepository
-                            .getWordList(userId)
-                            .collectLatest { response ->
-                                when (response) {
-                                    is ApiResponse.Success -> {
-                                        Log.d("nakyung", "response: ${response.body}")
-                                        _wordNoteState.value =
-                                            WordNoteState.Success(
-                                                wordList = response.body ?: emptyList(),
-                                            )
-                                    }
-
-                                    is ApiResponse.Error -> {
-                                        // api 통신 실패
-                                        delay(300)
-                                        _wordNoteState.value =
-                                            WordNoteState.Error(
-                                                errorMessage = response.errorMessage,
-                                            )
-                                    }
-
-                                    ApiResponse.Init -> {}
-                                }
-                            }
-                    }
-                }
-            }
-        }
-
-        fun loadIncorrectWords() {
-            viewModelScope.launch {
-                dataStoreRepository.getUserId().collect { userId ->
-                    if (userId != null) {
-                        studyRepository.getIncorrectList(userId).collectLatest { response ->
+                dataStoreRepository.getUserId()?.let { userId ->
+                    Log.d("nakyung", "userId: $userId")
+                    studyRepository
+                        .getWordList(userId)
+                        .collectLatest { response ->
                             when (response) {
                                 is ApiResponse.Success -> {
+                                    Log.d("nakyung", "response: ${response.body}")
                                     _wordNoteState.value =
                                         WordNoteState.Success(
                                             wordList = response.body ?: emptyList(),
@@ -78,6 +47,7 @@ class WordNoteViewModel
 
                                 is ApiResponse.Error -> {
                                     // api 통신 실패
+                                    delay(300)
                                     _wordNoteState.value =
                                         WordNoteState.Error(
                                             errorMessage = response.errorMessage,
@@ -87,7 +57,37 @@ class WordNoteViewModel
                                 ApiResponse.Init -> {}
                             }
                         }
+                } ?: run {
+                    _wordNoteState.value = WordNoteState.Error(errorMessage = "User Id is Null")
+                }
+            }
+        }
+
+        fun loadIncorrectWords() {
+            viewModelScope.launch {
+                dataStoreRepository.getUserId()?.let { userId ->
+                    studyRepository.getIncorrectList(userId).collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Success -> {
+                                _wordNoteState.value =
+                                    WordNoteState.Success(
+                                        wordList = response.body ?: emptyList(),
+                                    )
+                            }
+
+                            is ApiResponse.Error -> {
+                                // api 통신 실패
+                                _wordNoteState.value =
+                                    WordNoteState.Error(
+                                        errorMessage = response.errorMessage,
+                                    )
+                            }
+
+                            ApiResponse.Init -> {}
+                        }
                     }
+                } ?: run {
+                    _wordNoteState.value = WordNoteState.Error(errorMessage = "User Id is Null")
                 }
             }
         }
