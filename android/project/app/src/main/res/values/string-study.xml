@@ -8,4 +8,6 @@
     <string name="change_to_incorrect_note">오답노트로 변경</string>
     <string name="change_to_word_note">단어장으로 변경</string>
     <string name="go_to_study_quiz">퀴즈 풀기</string>
+    <string name="correct_message">정답!</string>
+    <string name="wrong_message">오답!</string>
 </resources>
