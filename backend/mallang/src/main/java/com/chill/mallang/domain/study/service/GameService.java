@@ -5,6 +5,7 @@ import com.chill.mallang.domain.study.dto.UserStudyLogResponseDTO;
 import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import com.chill.mallang.domain.study.errors.CustomStudyErrorCode;
 import com.chill.mallang.domain.study.model.*;
+import com.chill.mallang.domain.study.repository.ProblemRepository;
 import com.chill.mallang.domain.study.repository.StudyGameLogRepository;
 import com.chill.mallang.domain.study.repository.StudyGameRepository;
 import com.chill.mallang.domain.study.repository.WordMeanRepository;
@@ -15,34 +16,25 @@ import com.chill.mallang.domain.user.service.UserSettingService;
 import com.chill.mallang.errors.errorcode.CustomErrorCode;
 import com.chill.mallang.errors.exception.RestApiException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class GameService {
     private static final Logger logger = LoggerFactory.getLogger(UserSettingService.class);
     private final StudyGameLogRepository studyGameLogRepository;
     private final GameWordService gameWordService;
     private final StudyGameRepository studyGameRepository;
     private final CreateGameService createGameService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private WordMeanRepository wordMeanRepository;
-
-    public GameService(StudyGameRepository studyGameRepository, StudyGameLogRepository studyGameLogRepository, GameWordService gameWordService, CreateGameService createGameService) {
-        this.studyGameLogRepository = studyGameLogRepository;
-        this.studyGameRepository = studyGameRepository;
-        this.gameWordService = gameWordService;
-        this.createGameService = createGameService;
-    }
+    private final UserRepository userRepository;
+    private final WordMeanRepository wordMeanRepository;
+    private final ProblemRepository problemRepository;
     //사용자 조회
     private User getUserFromRequest(Long userId) {
         logger.info("userId"+userId);
@@ -73,13 +65,15 @@ public class GameService {
     private StudyGameDTO createUserStudyLogRequestDTO(User user, StudyGame studyGame, WordMean wordMean) {
         WordMeanDTO wordMeanDTO = gameWordService.convertToDTO(wordMean);
         List<Map<String, String>> wordList = new ArrayList<>();
-        studyGame.getQuestion().getProblems().stream()
+        List<Problem> problemList = problemRepository.findWordListByStudentId(studyGame.getId());
+        problemList.stream()
                 .sorted(Comparator.comparingInt(Problem::getIdx))
-                .forEach(problem -> {
-            Map<String, String> wordMap = new HashMap<>();
-            wordMap.put(problem.getObtion(), problem.getMean());
-            wordList.add(wordMap);
-        });
+                .map(problem -> {
+                    Map<String, String> wordMap = new HashMap<>();
+                    wordMap.put("word", problem.getOption());
+                    return wordMap;
+                })
+                .forEach(wordList::add);
         return StudyGameDTO.builder()
                 .studyId(studyGame.getId())
                 .quizScript(studyGame.getQuestionText())
@@ -111,49 +105,30 @@ public class GameService {
         WordMean wordMean = studyGame.getWordMean();
         Map<String, Object> response = new HashMap<>();
         Boolean isAnswer = false;
-        List<Problem> problems = studyGame.getQuestion().getProblems();
+        List<Problem> problems = problemRepository.findWordListByStudentId(studyId);
+        Problem selectedAnswerWord = problems.stream()
+                .filter(problem -> problem.getIdx() == answer)
+                .findFirst().orElseThrow(()->new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND));
+        String selectedAnswer = selectedAnswerWord.getBasic_type();
         if (answer >= 0 && answer < problems.size()) {
             String correctWord = studyGame.getWordMean().getWord().getWord();
-            String selectedAnswerWord = problems.get(answer.intValue()).getBasic_type();
-            if (correctWord.equals(selectedAnswerWord)) {
+            if (correctWord.equals(selectedAnswer)) {
                 isAnswer = true;
             }
         } else {
             logger.info("Invalid answer index: " + answer);
         }
         response.put("data", isAnswer);
-        // 중복 데이터 확인 및 업데이트 로직
-        Optional<StudyGameLog> existingLogOpt = studyGameLogRepository.findByStudyGameAndUserForUpdate(userId, studyId);
-        logger.info("existingLogOpt: "+existingLogOpt);
-        if (existingLogOpt.isPresent()) {
-            StudyGameLog existingLog = existingLogOpt.get();
-            StudyGameLog updatedLog = StudyGameLog.builder()
-                    .id(existingLog.getId())
-                    .result(isAnswer)
-                    .user(existingLog.getUser())
-                    .studyGame(existingLog.getStudyGame())
-                    .wordMean(existingLog.getWordMean())
-                    .build();
-            studyGameLogRepository.save(updatedLog);
-            logger.info("Updated existing StudyGameLog: " + existingLog);
-        } else {
-            // StudyGameLog 기록 저장
-            StudyGameLog newLog = StudyGameLog.builder()
-                    .user(user)
-                    .studyGame(studyGame)
-                    .wordMean(studyGame.getWordMean())
-                    .result(isAnswer)
-                    .build();
-            studyGameLogRepository.save(newLog);  // 새로운 레코드를 저장
-            logger.info("Created new StudyGameLog: " + newLog);
-        }
+        // StudyGameLog 기록 저장
+        StudyGameLog newLog = StudyGameLog.builder()
+                .user(user)
+                .studyGame(studyGame)
+                .wordMean(studyGame.getWordMean())
+                .result(isAnswer)
+                .build();
+        studyGameLogRepository.save(newLog);  // 새로운 레코드를 저장
+        logger.info("Created new StudyGameLog: " + newLog);
         return response;
-    }
-
-    public Optional<Problem> findProblemByWord(StudyGame studyGame, String word) {
-        return studyGame.getQuestion().getProblems().stream()
-                .filter(problem -> word.equals(problem.getBasic_type()))
-                .findFirst();
     }
 
     public Map<String, Object> showResultGame(Long userId, Long studyId) {
@@ -166,7 +141,7 @@ public class GameService {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND));
         logger.info("showResultGame StudyGame: " + studyGame);
         // wordList 생성
-        List<Map<String, String>> wordList = studyGame.getQuestion().getProblems().stream()
+        List<Map<String, String>> wordList = problemRepository.findWordListByStudentId(studyId).stream()
                 .sorted(Comparator.comparingInt(Problem::getIdx)) // 문제들을 idx 값 기준으로 정렬
                 .map(problem -> {
                     Map<String, String> wordMap = new HashMap<>();
@@ -176,13 +151,13 @@ public class GameService {
                 }) // 정렬된 문제들을 wordList에 추가
                 .collect(Collectors.toList());
         // 특정 조건을 만족하는 Problem 객체의 idx 값을 찾기
-        Optional<Problem> answerOpt = studyGame.getQuestion().getProblems().stream()
+        Optional<Problem> answerOpt = problemRepository.findWordListByStudentId(studyId).stream()
                 .filter(problem -> problem.getBasic_type().equals(studyGame.getWordMean().getWord().getWord()))
                 .findFirst();
         Problem answer = answerOpt.orElse(null);
         Map<String, Object> response = new HashMap<>();
         // 유저 게임 기록 확인
-        Optional<StudyGameLog> existingLogOpt = studyGameLogRepository.findByStudyGameAndUserForUpdate(userId, studyId);
+        Optional<StudyGameLog> existingLogOpt = studyGameLogRepository.findByStudyGameAndUserForLastResult(userId, studyId);
         logger.info("showResultGame log: "+existingLogOpt);
         if (existingLogOpt.isPresent() && answerOpt.isPresent()) {
             StudyGameLog existingLog = existingLogOpt.get();

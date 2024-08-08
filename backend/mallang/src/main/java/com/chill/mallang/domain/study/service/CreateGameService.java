@@ -4,7 +4,10 @@ import com.chill.mallang.domain.study.model.Problem;
 import com.chill.mallang.domain.study.model.Question;
 import com.chill.mallang.domain.study.model.StudyGame;
 import com.chill.mallang.domain.study.model.WordMean;
+import com.chill.mallang.domain.study.repository.ProblemRepository;
+import com.chill.mallang.domain.study.repository.QuestionRepository;
 import com.chill.mallang.domain.study.repository.StudyGameRepository;
+import com.chill.mallang.domain.study.repository.WordMeanRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,21 +18,26 @@ import org.springframework.stereotype.Service;
 public class CreateGameService {
     private final StudyGameRepository studyGameRepository;
     private final StudyOpenAIService studyOpenAIService;
+    private final QuestionRepository questionRepository;
+    private final ProblemRepository problemRepository;
 
     public StudyGame initializeStudyGame(WordMean wordMean) {
         JSONObject result = studyOpenAIService.makeNewStudyQuiz(wordMean.getWord().getWord(),wordMean.getMean());
-        StudyGame studyGame = new StudyGame();
-        studyGame.setWordMean(wordMean);
-        studyGame.setQuestionText(result.getString("question"));
+        StudyGame studyGame = StudyGame.builder()
+                .wordMean(wordMean)
+                .questionText(result.getString("question"))
+                .build();
+        studyGameRepository.save(studyGame);
         initializeQuestion(studyGame, result);
         return studyGame;
     }
 
     public Question initializeQuestion(StudyGame studyGame, JSONObject result) {
-        Question question = new Question();
-        question.setStudyGame(studyGame);
+        Question question = Question.builder()
+                .studyGame(studyGame)
+                .build();
+        questionRepository.save(question);
         addProblemsToQuestion(question, result);
-        studyGame.setQuestion(question);
         return question;
     }
 
@@ -40,19 +48,17 @@ public class CreateGameService {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
 
             String basic_type = jsonObject.getString("basic_type");
-            String option = jsonObject.getString("option");
-            String mean = jsonObject.getString("mean");
+            String option = jsonObject.getString("word");
+            String mean = jsonObject.getString("meaning");
             int idx = jsonObject.getInt("idx");
-            question.addProblem(createProblem(basic_type,option, mean, idx));
+            Problem problem = Problem.builder()
+                    .question(question)
+                    .basic_type(basic_type)
+                    .option(option)
+                    .mean(mean)
+                    .idx(idx)
+                    .build();
+            problemRepository.save(problem);
         }
-    }
-
-    public Problem createProblem(String basicType, String obtion, String mean, int idx) {
-        Problem problem = new Problem();
-        problem.setBasic_type(basicType);
-        problem.setObtion(obtion);
-        problem.setMean(mean);
-        problem.setIdx(idx);
-        return problem;
     }
 }
