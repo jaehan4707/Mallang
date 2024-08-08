@@ -35,16 +35,17 @@ public class GameWordService {
 
     @Transactional
     public WordMeanDTO convertToDTO(WordMean wordMean) {
-        WordMeanDTO wordMeanDTO = new WordMeanDTO();
-        wordMeanDTO.setId(wordMean.getId());
-        wordMeanDTO.setMean(wordMean.getMean());
-        wordMeanDTO.setType(wordMean.getType());
-        wordMeanDTO.setLevel(wordMean.getLevel());
-
-        WordDTO wordDTO = new WordDTO();
-        wordDTO.setId(wordMean.getWord().getId());
-        wordDTO.setWord(wordMean.getWord().getWord());
-        wordMeanDTO.setWord(wordDTO);
+        WordDTO wordDTO = WordDTO.builder()
+                .id(wordMean.getWord().getId())
+                .word(wordMean.getWord().getWord())
+                .build();
+        WordMeanDTO wordMeanDTO = WordMeanDTO.builder()
+                .id(wordMean.getId())
+                .mean(wordMean.getMean())
+                .type(wordMean.getType())
+                .level(wordMean.getLevel())
+                .word(wordDTO)
+                .build();
         return wordMeanDTO;
     }
 

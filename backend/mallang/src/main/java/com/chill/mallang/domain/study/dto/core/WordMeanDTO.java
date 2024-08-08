@@ -1,10 +1,10 @@
 package com.chill.mallang.domain.study.dto.core;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 public class WordMeanDTO {
     private Long id;
     private String mean;

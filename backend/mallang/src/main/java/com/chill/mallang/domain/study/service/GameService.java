@@ -65,18 +65,17 @@ public class GameService {
 
     private StudyGameDTO createUserStudyLogRequestDTO(User user, StudyGame studyGame, WordMean wordMean) {
         WordMeanDTO wordMeanDTO = gameWordService.convertToDTO(wordMean);
-        List<Map<String, String>> wordList = new ArrayList<>();
+        List<String> wordList = new ArrayList<>();
         List<Problem> problemList = problemRepository.findWordListByStudentId(studyGame.getId());
         problemList.stream()
                 .sorted(Comparator.comparingInt(Problem::getIdx))
                 .map(problem -> {
-                    Map<String, String> wordMap = new HashMap<>();
-                    wordMap.put("word", problem.getOption());
-                    return wordMap;
+                    return problem.getOption();
                 })
                 .forEach(wordList::add);
         return StudyGameDTO.builder()
                 .studyId(studyGame.getId())
+                .quizTitle("빈칸을 채워 주세요")
                 .quizScript(studyGame.getQuestionText())
                 .wordList(wordList)
                 .build();
@@ -89,7 +88,6 @@ public class GameService {
         WordMean selectedWordMean = gameWordService.getRandomUnusedWordMean(user.getId());
         StudyGame studyGame = getOrCreateStudyGame(selectedWordMean);
         StudyGameDTO studyGameDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);
-        studyGameDTO.setQuizTitle("빈칸을 채워 주세요");
         Map<String, Object> response = new HashMap<>();
         response.put("data",studyGameDTO);
         return response;
