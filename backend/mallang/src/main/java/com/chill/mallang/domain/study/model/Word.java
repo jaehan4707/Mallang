@@ -18,8 +18,4 @@ public class Word {
 
     private String word;
 
-    @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<WordMean> wordMean;
-
 }
