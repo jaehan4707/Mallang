@@ -1,8 +1,8 @@
 package com.chill.mallang.domain.quiz.service;
 
-import com.chill.mallang.domain.quiz.dto.request.RequestQuizAnswer;
-import com.chill.mallang.domain.quiz.dto.request.RequestQuizResult;
-import com.chill.mallang.domain.quiz.dto.response.ResponseQuiz;
+import com.chill.mallang.domain.quiz.dto.request.QuizAnswerRequest;
+import com.chill.mallang.domain.quiz.dto.request.QuizResultRequest;
+import com.chill.mallang.domain.quiz.dto.response.QuizResponse;
 import com.chill.mallang.domain.quiz.dto.response.TeamRankResponse;
 import com.chill.mallang.domain.quiz.error.QuizErrorCode;
 import com.chill.mallang.domain.quiz.model.Answer;
@@ -48,7 +48,7 @@ public class QuizService {
         logger.info(String.valueOf("QuizDTO : "), quiz);
 
         if (quiz.isPresent()) {
-            ResponseQuiz responseQuiz = ResponseQuiz.builder()
+            QuizResponse responseQuiz = QuizResponse.builder()
                     .id(quiz.get().getId())
                     .question(quiz.get().getQuestion())  // 추가된 부분
                     .answer(quiz.get().getAnswer())
@@ -64,7 +64,7 @@ public class QuizService {
         }
     }
 
-    public void submitAnswer(RequestQuizAnswer requestQuizAnswer) {
+    public void submitAnswer(QuizAnswerRequest requestQuizAnswer) {
         logger.info(String.valueOf(requestQuizAnswer));
 
         String question = quizRepository.findById(requestQuizAnswer.getQuizId()).get().getQuestion();
@@ -77,7 +77,7 @@ public class QuizService {
         logger.info("Success Save Answer");
     }
 
-    public void saveAnswer(RequestQuizAnswer requestQuizAnswer, float score) {
+    public void saveAnswer(QuizAnswerRequest requestQuizAnswer, float score) {
 
         Answer answer = Answer.builder()
                 .user(userRepository.findById(requestQuizAnswer.getUserId()).orElseThrow(() -> new RestApiException(QuizErrorCode.USER_NOT_FOUND)))
@@ -101,7 +101,7 @@ public class QuizService {
     }
 
     @Transactional
-    public Map<String, Object> quizResult(RequestQuizResult requestQuizResult) {
+    public Map<String, Object> quizResult(QuizResultRequest requestQuizResult) {
         Long userID = requestQuizResult.getUserID();
         Long areaID = requestQuizResult.getAreaID();
         Long factionID = requestQuizResult.getFactionID();
@@ -112,7 +112,6 @@ public class QuizService {
         // 최종 제출 세팅
 
         List<Float> responseScore = new ArrayList<>();
-
         // User Score 확인
         float sum = 0;
         for (Long quizID : requestQuizResult.getQuizID()) {
