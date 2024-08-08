@@ -25,20 +25,21 @@ import com.chill.mallang.ui.theme.MallangTheme
 @Composable
 fun FortDetailScreen(
     modifier: Modifier = Modifier,
-    areaId: Int?,
-    userId: Int?,
-    teamId: Int?,
+    areaId: Long?,
+    onStartGame: () -> Unit = {},
 ) {
     val viewModel: FortDetailViewModel = hiltViewModel()
     val occupationState by viewModel.areaDetailStateFlow.collectAsStateWithLifecycle()
     val teamLeadersState by viewModel.teamRecordStateFlow.collectAsStateWithLifecycle()
+    val tryCountState by viewModel.tryCountStateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        if (areaId == null || userId == null || teamId == null) {
+        if (areaId == null) {
             viewModel.invalidateData()
         } else {
-            viewModel.loadOccupationState(areaId, teamId)
-            viewModel.loadTeamLeadersState(areaId, userId)
+            viewModel.loadOccupationState(areaId)
+            viewModel.loadTeamLeadersState(areaId)
+            viewModel.loadTryCount()
         }
     }
 
@@ -53,6 +54,8 @@ fun FortDetailScreen(
         modifier = modifier,
         areaDetailState = occupationState,
         teamRecordState = teamLeadersState,
+        onStartGame = onStartGame,
+        tryCountState = tryCountState,
     )
 }
 
@@ -61,6 +64,8 @@ fun AreaDetailContent(
     modifier: Modifier = Modifier,
     areaDetailState: AreaDetailState,
     teamRecordState: TeamRecordState,
+    tryCountState: TryCountState,
+    onStartGame: () -> Unit = {},
 ) {
     Column(
         modifier =
@@ -74,6 +79,8 @@ fun AreaDetailContent(
         )
         GameStartBody(
             modifier = Modifier.weight(2F),
+            onStartGame = onStartGame,
+            tryCountState = tryCountState,
         )
         TeamRecordBody(
             teamRecordState = teamRecordState,
@@ -90,6 +97,7 @@ fun FortDetailScreenPreview() {
             modifier = Modifier,
             areaDetailState = AreaDetailState.Loading,
             teamRecordState = TeamRecordState.Loading,
+            tryCountState = TryCountState.Loading,
         )
     }
 }
@@ -116,6 +124,7 @@ fun FortDetailScreenPreviewWithData() {
                         listOf(UserRecord(1, 1, 1)),
                     ),
                 ),
+            tryCountState = TryCountState.Success(3),
         )
     }
 }

@@ -14,41 +14,61 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chill.mallang.R
+import com.chill.mallang.ui.feature.fort_detail.TryCountState
+import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
 
-
 @Composable
-fun GameStartBody(modifier: Modifier = Modifier) {
+fun GameStartBody(
+    modifier: Modifier = Modifier,
+    tryCountState: TryCountState,
+    onStartGame: () -> Unit = {},
+) {
     Column(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
+            modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Button(
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 100.dp),
-            onClick = { },
+            enabled = tryCountState is TryCountState.Success && tryCountState.tryCount > 0,
+            onClick = onStartGame,
             shape = RoundedCornerShape(10.dp),
             colors =
-            ButtonDefaults.buttonColors(
-                Color.Black,
-                Color.White,
-            ),
+                ButtonDefaults.buttonColors(
+                    containerColor = Color.Black,
+                    contentColor = Color.White,
+                ),
         ) {
             Text(
                 stringResource(R.string.game_start),
                 style = Typography.displayLarge,
                 fontSize = 30.sp,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
-        Text(text = stringResource(R.string.remaining_chance, 3))
+        when (tryCountState) {
+            is TryCountState.Success -> {
+                Text(text = stringResource(R.string.remaining_chance, tryCountState.tryCount))
+            }
+
+            else -> {
+                Text(text = stringResource(R.string.remaining_chance, 0))
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun GameStartBodyPreview() {
+    MallangTheme {
+        GameStartBody(tryCountState = TryCountState.Success(3))
     }
 }
