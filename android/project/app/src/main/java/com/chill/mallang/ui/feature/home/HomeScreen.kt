@@ -64,6 +64,10 @@ fun HomeScreen(
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Log.d("jaehan", "HomeScreen, $uiState")
+    LaunchedEffect(Unit) {
+        Log.d("jaehan", "HIHI")
+    }
     val (showSettingDialog, setShowSettingDialog) =
         rememberSaveable {
             mutableStateOf(false)
@@ -201,7 +205,7 @@ fun HomeContent(
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
     nickname: String = "",
-    factionId: Int = 0,
+    factionId: Long = 0,
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
     exitApplication: () -> Unit = {},
@@ -338,7 +342,7 @@ internal fun UserItem(
 fun UserCharacter(
     modifier: Modifier = Modifier,
     userNickName: String,
-    userFaction: Int,
+    userFaction: Long,
 ) {
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
