@@ -1,9 +1,24 @@
 package com.chill.mallang.ui.feature.study
 
-data class StudyState(
-    val studyId: Int = -1,
-    val quizTitle: String = "",
-    val quizScript: String = "",
-    val wordList: List<String> = emptyList(),
-    val isResultScreen: Boolean = false,
-)
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
+
+@Stable
+sealed interface StudyState {
+    @Immutable
+    data object Loading : StudyState
+
+    @Immutable
+    data class Success(
+        val studyId: Int = -1,
+        val quizTitle: String = "",
+        val quizScript: String = "",
+        val wordList: List<String> = emptyList(),
+        val isResultScreen: Boolean = false,
+    ) : StudyState
+
+    @Immutable
+    data class Error(
+        val errorMessage: String = "",
+    ) : StudyState
+}
