@@ -5,10 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ResponseQuiz {
-    private Long id;
-
+public class QuizAnswerResponse {
+    private long id;
     private String question;
     private String answer;
-    private int difficulty; // 상 중 하
 }

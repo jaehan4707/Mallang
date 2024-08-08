@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import static java.time.LocalDateTime.now;
 
 @Data
-public class RequestQuizAnswer {
+public class QuizAnswerRequest {
     @NotNull
     private Long quizId;
     @NotNull

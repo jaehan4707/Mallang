@@ -15,7 +15,6 @@ public class QuizScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(QuizScheduler.class);
     private final QuizAssignmentService quizAssignmentService;
-    private final OpenAIService openAIService;
 
     // 문제 생성 스케쥴러
 //    @Scheduled(fixedRate = 100_000)
@@ -25,7 +24,10 @@ public class QuizScheduler {
 //        logger.info("TEST!!!! Generate Quiz");
 //    }
 
-    @Scheduled(fixedRate = 1_800_000)
+    // Test용 30분 스케쥴링
+//    @Scheduled(fixedRate = 1_800_000)
+    // 실 사용 6시간 스케쥴링
+    @Scheduled(cron = "0 0 0,6,12,18 * * *")
     @Transactional
     public void assignQuizzesToArea(){
         logger.info("퀴즈 재배치 시작");
