@@ -18,17 +18,18 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        val json = Json {
-            isLenient = true
-            prettyPrint = true
-            ignoreUnknownKeys = true
-            coerceInputValues = true
-        }
-        return Retrofit.Builder()
+        val json =
+            Json {
+                isLenient = true
+                prettyPrint = true
+                ignoreUnknownKeys = true
+                coerceInputValues = true
+            }
+        return Retrofit
+            .Builder()
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .baseUrl(BuildConfig.BASE_URL + BuildConfig.API_VERSION)
             .client(okHttpClient)
@@ -37,14 +38,13 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(
-        accessTokenInterceptor: AccessTokenInterceptor,
-    ) = OkHttpClient.Builder().run {
-        addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-        addNetworkInterceptor(accessTokenInterceptor)
-        connectTimeout(10, TimeUnit.SECONDS)
-        readTimeout(10, TimeUnit.SECONDS)
-        writeTimeout(10, TimeUnit.SECONDS)
-        build()
-    }
+    fun provideOkHttpClient(accessTokenInterceptor: AccessTokenInterceptor) =
+        OkHttpClient.Builder().run {
+            addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            addNetworkInterceptor(accessTokenInterceptor)
+            connectTimeout(10, TimeUnit.SECONDS)
+            readTimeout(10, TimeUnit.SECONDS)
+            writeTimeout(10, TimeUnit.SECONDS)
+            build()
+        }
 }

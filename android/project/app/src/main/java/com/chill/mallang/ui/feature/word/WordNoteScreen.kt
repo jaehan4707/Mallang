@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.word
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -44,13 +45,16 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
@@ -58,13 +62,13 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun WordNoteScreen(
     modifier: Modifier = Modifier,
+    wordViewModel: WordNoteViewModel = hiltViewModel(),
+    popUpBackStack: () -> Unit = {},
     navigateToQuiz: (Int) -> Unit = {},
 ) {
-    val wordViewModel: WordNoteViewModel = hiltViewModel()
-    val state = wordViewModel.state
+    val wordNoteState by wordViewModel.wordNoteState.collectAsStateWithLifecycle()
 
     var isWordScreen by remember { mutableStateOf(true) }
-    var selectedWordIndex by remember { mutableStateOf<Int?>(null) }
 
     // TopBar
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
@@ -75,13 +79,16 @@ fun WordNoteScreen(
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
         onConfirm = {
             setBackPressed(false)
-            navController?.popBackStack()
+            popUpBackStack()
         },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
         onDismiss = {
             setBackPressed(false)
         },
+        title = stringResource(id = R.string.confirm_dialog_default_message),
     )
     BackHandler(onBack = { setBackPressed(true) })
 
@@ -93,6 +100,54 @@ fun WordNoteScreen(
             setNavController(nav)
         },
     )
+
+    when (wordNoteState) {
+        is WordNoteState.Success -> {
+            WordNoteScreenContent(
+                modifier = modifier,
+                context = context,
+                wordNoteState = wordNoteState as WordNoteState.Success,
+                navigateToQuiz = navigateToQuiz,
+                isWordScreen = isWordScreen,
+                onClick = {
+                    if (isWordScreen) {
+                        wordViewModel.loadIncorrectWords()
+                        isWordScreen = false
+                    } else {
+                        wordViewModel.loadWords()
+                        isWordScreen = true
+                    }
+                },
+            )
+        }
+
+        is WordNoteState.Error -> {
+            // api 에러일 때
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = context.getString(R.string.study_load_error_message),
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+
+        WordNoteState.Loading -> LoadingDialog()
+    }
+}
+
+@Composable
+fun WordNoteScreenContent(
+    modifier: Modifier,
+    context: Context,
+    wordNoteState: WordNoteState.Success,
+    navigateToQuiz: (Int) -> Unit = {},
+    isWordScreen: Boolean,
+    onClick: () -> Unit = {},
+) {
+    var selectedWordIndex by remember { mutableStateOf<Int?>(null) }
 
     Box(
         modifier =
@@ -111,15 +166,7 @@ fun WordNoteScreen(
                         containerColor = Gray6,
                     ),
                 shape = RoundedCornerShape(10.dp),
-                onClick = {
-                    if (isWordScreen) {
-                        wordViewModel.loadIncorrectWords()
-                        isWordScreen = false
-                    } else {
-                        wordViewModel.loadWords()
-                        isWordScreen = true
-                    }
-                },
+                onClick = onClick,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -152,7 +199,7 @@ fun WordNoteScreen(
                 label = "",
             ) { targetIsWordScreen ->
                 WordList(
-                    wordList = if (targetIsWordScreen) state.wordList else state.wordList,
+                    wordList = if (targetIsWordScreen) wordNoteState.wordList else wordNoteState.wordList,
                     onWordClick = { index ->
                         selectedWordIndex = index
                     },
@@ -201,14 +248,14 @@ fun WordNoteScreen(
         selectedWordIndex?.let { index ->
             WordCardDialog(
                 index = index,
-                wordCards = state.wordList,
+                wordCards = wordNoteState.wordList,
                 onDismiss = { selectedWordIndex = null },
             )
         }
     } else {
         // 오답노트일 때는 그때 풀었던 거 보여줌.
         selectedWordIndex?.let { index ->
-            val word = state.wordList[index]
+            val word = wordNoteState.wordList[index]
             if (word is Word.IncorrectWord) {
                 navigateToQuiz(word.studyId)
             }

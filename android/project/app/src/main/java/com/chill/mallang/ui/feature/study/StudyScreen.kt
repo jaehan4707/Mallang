@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.study
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,6 +28,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,14 +38,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.CustomSnackBar
+import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
@@ -55,17 +60,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun StudyScreen(
     modifier: Modifier = Modifier,
-    navigateToQuizResult: (Int) -> Unit = {},
+    studyViewModel: StudyViewModel = hiltViewModel(),
     studyId: Int = -1,
+    popUpBackStack: () -> Unit = {},
+    navigateToQuizResult: (Int) -> Unit = {},
 ) {
-    val studyViewModel: StudyViewModel = hiltViewModel()
-    val studyState = studyViewModel.state
+    val studyState by studyViewModel.studyState.collectAsStateWithLifecycle()
 
     studyViewModel.loadQuizData(studyId)
-
-    // SnackBarHostState 생성
-    val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     // TopBar
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
@@ -76,13 +78,17 @@ fun StudyScreen(
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
+        onConfirmMessage = stringResource(R.string.study_dialog_confirm_message),
         onConfirm = {
             setBackPressed(false)
-            navController?.popBackStack()
+            popUpBackStack()
         },
+        onDismissMessage = stringResource(R.string.study_dialog_dismiss_message),
         onDismiss = {
             setBackPressed(false)
         },
+        title = stringResource(R.string.study_dialog_title),
+        content = stringResource(R.string.study_dialog_content),
     )
     BackHandler(onBack = { setBackPressed(true) })
 
@@ -94,6 +100,37 @@ fun StudyScreen(
             setNavController(nav)
         },
     )
+
+    when (studyState) {
+        is StudyState.Success -> {
+            StudyScreenContent(
+                modifier = modifier,
+                context = context,
+                studyViewModel = studyViewModel,
+                studyState = studyState as StudyState.Success,
+                navigateToQuizResult = navigateToQuizResult,
+            )
+        }
+
+        is StudyState.Error -> {
+            // 에러났을 때 처리
+        }
+
+        StudyState.Loading -> LoadingDialog()
+    }
+}
+
+@Composable
+fun StudyScreenContent(
+    modifier: Modifier = Modifier,
+    context: Context,
+    studyViewModel: StudyViewModel,
+    studyState: StudyState.Success,
+    navigateToQuizResult: (Int) -> Unit = {},
+) {
+    // SnackBarHostState 생성
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         snackbarHost = {
@@ -230,7 +267,7 @@ fun QuizBox(
 
 @Composable
 fun AnswerList(
-    state: StudyState,
+    state: StudyState.Success,
     viewModel: StudyViewModel,
     fraction: Float,
     onAnswerSelected: (Int) -> Unit = { },
@@ -263,7 +300,7 @@ fun AnswerListItem(
     modifier: Modifier = Modifier,
     index: Int,
     viewModel: StudyViewModel,
-    state: StudyState,
+    state: StudyState.Success,
     onItemClick: (Int) -> Unit,
 ) {
     Column {
