@@ -10,26 +10,29 @@ import com.chill.mallang.R
 @Composable
 fun BackConfirmHandler(
     isBackPressed: Boolean = true,
-    onConfirm: () -> Unit,
-    onDismiss: (Boolean) -> Unit,
-    content: String = stringResource(R.string.confirm_dialog_default_message),
+    onConfirmMessage: String = stringResource(id = R.string.positive_button_message),
+    onDismissMessage: String = stringResource(id = R.string.nagative_button_message),
+    onConfirm: () -> Unit = {},
+    onDismiss: (Boolean) -> Unit = {},
+    title: String = "",
+    content: String = "",
 ) {
-    val showDialog = remember {
-        mutableStateOf(false)
-    }
+    val showDialog =
+        remember {
+            mutableStateOf(false)
+        }
     LaunchedEffect(isBackPressed) {
         showDialog.value = isBackPressed
     }
 
     if (showDialog.value) {
         BackConfirmDialog(
-            onConfirm = {
-                onConfirm()
-            },
-            onDismiss = {
-                onDismiss(false)
-            },
-            content = content
+            title = title,
+            onConfirm = onConfirm,
+            onConfirmMessage = onConfirmMessage,
+            onDismiss = { onDismiss(false) },
+            onDismissMessage = onDismissMessage,
+            content = content,
         )
     }
 }

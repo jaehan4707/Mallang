@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -32,11 +32,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chill.mallang.R
+import com.chill.mallang.data.model.entity.GameUserRecord
 import com.chill.mallang.ui.component.LongBlackButton
-import com.chill.mallang.ui.feature.fort_detail.RecordListItem
-import com.chill.mallang.ui.feature.fort_detail.UserRecord
 import com.chill.mallang.ui.feature.game.game01.Game01FinalResultUiState
 import com.chill.mallang.ui.feature.game.game01.Game01ViewModel
+import com.chill.mallang.ui.feature.game.game01.Layout.GameRecordListItem
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
@@ -44,9 +44,9 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun Game01ResultScreen(
     viewModel: Game01ViewModel = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val game01FinalResultUiState by viewModel.resultUiState.collectAsStateWithLifecycle()
+    val resultUiState by viewModel.resultUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.fetchFinalResult()
@@ -56,73 +56,73 @@ fun Game01ResultScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        Game01ResultContent(game01FinalResultUiState)
+        Game01ResultContent(resultUiState)
     }
 }
 
 @Composable
 fun Game01ResultContent(
-    game01FinalResultUiState: Game01FinalResultUiState,
+    resultUiState: Game01FinalResultUiState,
     modifier: Modifier = Modifier,
 ) {
-    when(game01FinalResultUiState) {
+    when (resultUiState) {
         is Game01FinalResultUiState.Loading -> {
             CircularProgressIndicator()
         }
+
         is Game01FinalResultUiState.Success -> {
             Column {
                 ScoreBody(
-                    totalScore = game01FinalResultUiState.finalResults.userPlayResult.totalScore,
+                    totalScore = resultUiState.finalResult.userPlayResult.totalScore,
                 )
                 ResultImageBody()
                 ResultTitleBody()
                 ResultDetailBody(
-                    myTeamScore = game01FinalResultUiState.finalResults.teamPlayResult.myTeamTotalScore,
-                    oppoTeamScore = game01FinalResultUiState.finalResults.teamPlayResult.oppoTeamTotalScore,
+                    myTeamScore = resultUiState.finalResult.teamPlayResult.myTeamTotalScore,
+                    oppoTeamScore = resultUiState.finalResult.teamPlayResult.oppoTeamTotalScore,
                 )
                 LeaderBoardBody(
-                    leaderList = game01FinalResultUiState.finalResults.teamPlayResult.myTeamRankList,
+                    leaderList = resultUiState.finalResult.teamPlayResult.myTeamRankList,
                 )
                 LongBlackButton(
-                    modifier = modifier
+                    modifier =
+                    modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp),
                     onClick = {},
-                    text = "확인"
+                    text = "확인",
                 )
             }
-
         }
+
         is Game01FinalResultUiState.Error -> {
-            Text(text = game01FinalResultUiState.errorMessage)
+            Text(text = resultUiState.errorMessage)
         }
     }
 }
 
 @Composable
 fun ScoreBody(
-    totalScore: Int = 0,
+    totalScore: Float = 0.0F,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ){
+        contentAlignment = Alignment.Center,
+    ) {
         Text(
-            text = "300점",
-            fontSize = 30.sp
+            text = stringResource(id = R.string.game_score_format, totalScore.toInt()),
+            fontSize = 30.sp,
         )
     }
 }
 
 @Composable
-fun ResultImageBody(
-    modifier: Modifier = Modifier
-) {
+fun ResultImageBody(modifier: Modifier = Modifier) {
     var isExpanded by remember { mutableStateOf(false) }
     val size by animateDpAsState(
         targetValue = if (isExpanded) 300.dp else 100.dp,
-        animationSpec = tween(durationMillis = 1500)
+        animationSpec = tween(durationMillis = 1500),
     )
 
     LaunchedEffect(Unit) {
@@ -130,11 +130,12 @@ fun ResultImageBody(
     }
 
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxWidth()
             .size(size),
         contentAlignment = Alignment.Center,
-    ){
+    ) {
         Image(
             modifier = modifier.size(250.dp),
             painter = painterResource(id = R.drawable.img_clap),
@@ -144,74 +145,79 @@ fun ResultImageBody(
 }
 
 @Composable
-fun ResultTitleBody(
-    modifier: Modifier = Modifier,
-) {
+fun ResultTitleBody(modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ){
+        contentAlignment = Alignment.Center,
+    ) {
         Text(
             text = "Success !",
             style = Typography.displayLarge,
-            fontSize = 70.sp
+            fontSize = 70.sp,
         )
     }
 }
 
 @Composable
 fun ResultDetailBody(
-    myTeamScore: Int = 0,
-    oppoTeamScore: Int = 0,
+    myTeamScore: Float = 0.0F,
+    oppoTeamScore: Float = 0.0F,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ){
+        contentAlignment = Alignment.Center,
+    ) {
         Text(
             text =
-            if(myTeamScore > oppoTeamScore) { stringResource(id = R.string.win_message_format, myTeamScore - oppoTeamScore) }
-            else if(myTeamScore < oppoTeamScore){ stringResource(id = R.string.win_message_format, oppoTeamScore - myTeamScore) }
-            else {stringResource(id = R.string.draw_message_format)},
+                if (myTeamScore > oppoTeamScore) {
+                    stringResource(id = R.string.win_message_format, (myTeamScore - oppoTeamScore).toInt())
+                } else if (myTeamScore < oppoTeamScore) {
+                    stringResource(id = R.string.win_message_format, (oppoTeamScore - myTeamScore).toInt())
+                } else {
+                    stringResource(id = R.string.draw_message_format)
+                },
             style = Typography.bodySmall,
-            fontSize = 24.sp
+            fontSize = 24.sp,
         )
     }
 }
 
 @Composable
 fun LeaderBoardBody(
-    leaderList: List<UserRecord>,
-    modifier: Modifier = Modifier
+    leaderList: List<GameUserRecord>,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .padding(10.dp)
             .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(20.dp))
             .fillMaxWidth()
-            .height(300.dp)
+            .height(300.dp),
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp, vertical = 5.dp),
-            contentAlignment = Alignment.Center
-        ){
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp, vertical = 5.dp),
+            contentAlignment = Alignment.Center,
+        ) {
             Text(
                 text = "팀 기여도 순위",
                 style = Typography.displayLarge,
                 fontSize = 35.sp,
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp),
             )
         }
         LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 15.dp, vertical = 10.dp)
-                .fillMaxWidth()
-        ){
-            items(leaderList) { userRecord ->
-                RecordListItem(userRecord)
+            modifier =
+                Modifier
+                    .padding(horizontal = 15.dp, vertical = 10.dp)
+                    .fillMaxWidth(),
+        ) {
+            itemsIndexed(leaderList) { index, userRecord ->
+                GameRecordListItem(userRecord.copy(userPlace = index))
             }
         }
     }
@@ -219,7 +225,7 @@ fun LeaderBoardBody(
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun Game01ResultScreenPreview(){
+fun Game01ResultScreenPreview() {
     MallangTheme {
         Game01ResultScreen()
     }

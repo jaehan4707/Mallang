@@ -22,3 +22,6 @@ val Green1 = Color(0xFF007804)
 val Green2 = Color(0xFFD5FFD7)
 val BackGround = Color(0xFFFAFAFA)
 
+val QuokkaLightBrown = Color(0xFFFFF5DE)
+val QuokkaRealBrown = Color(0xFFD29A73)
+val SuperLightGray = Color(0xFFE9E9E9)

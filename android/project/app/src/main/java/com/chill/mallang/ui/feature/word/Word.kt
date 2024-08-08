@@ -5,13 +5,12 @@ sealed class Word(
 ) {
     data class IncorrectWord(
         val studyId: Int,
-        val finish: Boolean,
         override val word: String, // 문제 title
     ) : Word(word = word)
 
-    data class WordCard(
+    data class CorrectWord(
+        override val word: String,
         val meaning: String,
         val example: String,
-        override val word: String,
     ) : Word(word = word)
 }

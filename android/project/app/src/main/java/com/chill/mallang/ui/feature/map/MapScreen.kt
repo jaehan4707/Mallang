@@ -16,8 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.data.model.entity.Area
+import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.ui.feature.map.layout.MapScaffold
 import com.chill.mallang.ui.feature.map.mapview.MapView
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.util.MultiplePermissionsHandler
 import com.google.android.gms.location.LocationServices
@@ -38,6 +40,7 @@ fun MapScreen(
 
     val currentLocation by viewModel.currentLocation.collectAsStateWithLifecycle()
     val areas by viewModel.areaState.collectAsStateWithLifecycle()
+    val status by viewModel.statusState.collectAsStateWithLifecycle()
     val selectedArea = viewModel.selectedArea
 
     var hasPermission by remember { mutableStateOf(false) }
@@ -56,6 +59,10 @@ fun MapScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.loadStatus()
+    }
+
     LaunchedEffect(hasPermission) {
         if (hasPermission) {
             // Get area info
@@ -63,13 +70,17 @@ fun MapScreen(
         }
     }
 
+    TopbarHandler(isVisible = true)
+
     MapScreenContent(
         currentLocation = currentLocation,
         areasState = areas,
         selectedArea = selectedArea,
+        status = status,
         onSelectArea = viewModel::setToSelected,
         onLocate = viewModel::findClosestArea,
         onShowAreaDetail = onShowAreaDetail,
+        onCameraMove = viewModel::resetSelected,
     )
 }
 
@@ -78,10 +89,12 @@ fun MapScreenContent(
     modifier: Modifier = Modifier,
     currentLocation: LocationState,
     areasState: AreasState,
+    status: TeamList,
     selectedArea: Area?,
     onSelectArea: (Area) -> Unit = {},
     onLocate: () -> Unit = {},
     onShowAreaDetail: (Area) -> Unit = {},
+    onCameraMove: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         MapView(
@@ -90,10 +103,12 @@ fun MapScreenContent(
             selectedArea = selectedArea,
             areasState = areasState,
             onSelectArea = onSelectArea,
+            onCameraMove = onCameraMove,
         )
         MapScaffold(
             areaSelected = selectedArea,
             currentLocation = currentLocation,
+            status = status,
             onLocate = onLocate,
             onShowDetail = onShowAreaDetail,
         )
@@ -107,6 +122,7 @@ fun MapPreview() {
         MapScreenContent(
             currentLocation = LocationState.Empty,
             areasState = AreasState.Empty,
+            status = TeamList(listOf()),
             selectedArea = null,
         )
     }

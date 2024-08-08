@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.chill.mallang.R
@@ -38,7 +37,6 @@ import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
-import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
 import kotlinx.coroutines.launch
 
@@ -179,7 +177,7 @@ fun WordCardContent(
     modifier: Modifier = Modifier,
     card: Word,
 ) {
-    if (card is Word.WordCard) {
+    if (card is Word.CorrectWord) {
         Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -220,39 +218,5 @@ fun WordCardContent(
                 color = Gray6,
             )
         }
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun WordCardPreview() {
-    MallangTheme {
-        WordCardDialog(
-            index = 1,
-            wordCards =
-                arrayListOf(
-                    Word.WordCard(
-                        word = "괄목",
-                        meaning = "눈을 비비고 볼 정도로 매우 놀라다.",
-                        example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-                    ),
-                    Word.WordCard(
-                        word = "상대",
-                        meaning = "서로 마주 대하다.",
-                        example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-                    ),
-                    Word.WordCard(
-                        word = "과장",
-                        meaning = "사실보다 지나치게 불려서 말하거나 행동하다.",
-                        example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-                    ),
-                    Word.WordCard(
-                        word = "시기",
-                        meaning = "때나 경우.",
-                        example = "우리나라의 경제는 그동안 세계에 유례가 없을 정도로 괄목할 만한 성장을 이루었다.",
-                    ),
-                ),
-            onDismiss = {},
-        )
     }
 }

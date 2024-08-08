@@ -16,11 +16,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -28,11 +34,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.CustomSnackBar
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray3
@@ -41,33 +49,65 @@ import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
 import com.chill.mallang.ui.util.addFocusCleaner
+import kotlinx.coroutines.launch
 
 @Composable
 fun NicknameScreen(
     modifier: Modifier = Modifier,
     onSuccess: (String) -> Unit = {},
+    viewModel: NicknameViewModel = hiltViewModel(),
+    popUpBackStack: () -> Unit = {},
 ) {
-    val nicknameViewModel: NicknameViewModel = hiltViewModel()
-    val nicknameState = nicknameViewModel.nicknameState
+    val nicknameState = viewModel.nicknameState
     val focusManager = LocalFocusManager.current
-    val nickNameUiState by nicknameViewModel.uiState.collectAsStateWithLifecycle()
+    val nickNameUiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // SnackBarHostState 생성
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     HandleNickNameUiEvent(uiState = nickNameUiState, onSuccess = onSuccess)
 
-    Surface(
-        color = BackGround,
-        modifier =
-            modifier
-                .fillMaxSize()
-                .addFocusCleaner(focusManager),
-    ) {
-        NickNameContent(
-            focusManager = focusManager,
-            uiState = nicknameState,
-            checkNickName = {
-                nicknameViewModel.checkNickName()
-            },
-        )
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackBarHostState,
+                snackbar = { snackBarData ->
+                    CustomSnackBar(
+                        snackBarData = snackBarData,
+                        backgroundColor = Gray6,
+                        textColor = White,
+                    )
+                },
+            )
+        },
+    ) { innerPadding ->
+        Surface(
+            color = BackGround,
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .addFocusCleaner(focusManager),
+        ) {
+            NickNameContent(
+                focusManager = focusManager,
+                uiState = nicknameState,
+                checkNickName = {
+                    // 정규식에 맞는 경우에만 checkNickName() 실행
+                    if (nicknameState.errorMessage == "") {
+                        viewModel.checkNickName()
+                    } else {
+                        scope.launch {
+                            snackBarHostState.showSnackbar(
+                                message = nicknameState.errorMessage,
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+                    }
+                },
+            )
+        }
     }
 }
 
@@ -102,13 +142,13 @@ fun NickNameContent(
             modifier = Modifier.height(120.dp),
         )
         Spacer(modifier = Modifier.weight(0.2f))
-        TextWithIcon(text = "사용할 닉네임을 입력해 주세요", icon = R.drawable.ic_mage)
+        TextWithIcon(text = stringResource(R.string.login_info_message), icon = R.drawable.ic_mage)
         Spacer(modifier = Modifier.height(30.dp))
         Column(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CustomTextField(
@@ -128,7 +168,7 @@ fun NickNameContent(
             onClick = {
                 checkNickName()
             },
-            text = "결정하기",
+            text = stringResource(R.string.button_decide_message),
         )
         Spacer(modifier = Modifier.weight(1f))
     }
@@ -139,7 +179,7 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
     focusManager: FocusManager,
-    placeholder: String = "닉네임",
+    placeholder: String = stringResource(R.string.nickname_place_holder),
     nickName: String = "",
     errorMessage: String = "",
     onClearPressed: () -> Unit = {},
@@ -164,9 +204,9 @@ fun CustomTextField(
                 }
             },
             modifier =
-                modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
+            modifier
+                .fillMaxWidth()
+                .height(48.dp),
             shape = RoundedCornerShape(10.dp),
             singleLine = true,
             keyboardActions =
@@ -202,9 +242,9 @@ fun CustomTextField(
         Text(
             text = errorMessage,
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, start = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, start = 4.dp),
             color = Sub1,
             style = Typography.displayMedium,
         )

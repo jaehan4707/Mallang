@@ -1,6 +1,5 @@
-package com.chill.mallang.ui.feature.quiz_result
+package com.chill.mallang.ui.feature.study_result
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
@@ -9,6 +8,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -33,7 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -43,12 +46,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
-import com.chill.mallang.ui.feature.quiz.AnswerList
+import com.chill.mallang.ui.component.LoadingDialog
+import com.chill.mallang.ui.feature.study.QuizBox
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Green1
+import com.chill.mallang.ui.theme.Green2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Sub2
@@ -57,25 +65,65 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun QuizResultScreen(
     modifier: Modifier = Modifier,
+    studyResultViewModel: StudyResultViewModel = hiltViewModel(),
+    userAnswer: Int,
     popUpBackStack: () -> Unit = {},
 ) {
-    val quizResultViewModel: QuizResultViewModel = hiltViewModel()
-    val state = quizResultViewModel.state
+    val studyResultState by studyResultViewModel.studyResultState.collectAsStateWithLifecycle()
 
-    var expandedItem by remember { mutableIntStateOf(-1) }
+    // TopBar
+    val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
+    val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
 
-    val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
-        isBackPressed = isBackPressed.value,
+        isBackPressed = isBackPressed,
+        onConfirmMessage = stringResource(id = R.string.study_dialog_confirm_message),
         onConfirm = {
-            isBackPressed.value = false
+            setBackPressed(false)
             popUpBackStack()
         },
+        onDismissMessage = stringResource(id = R.string.study_dialog_dismiss_message),
         onDismiss = {
-            isBackPressed.value = false
+            setBackPressed(false)
+        },
+        title = stringResource(id = R.string.confirm_dialog_default_message),
+    )
+    BackHandler(onBack = { setBackPressed(true) })
+
+    TopbarHandler(
+        isVisible = true,
+        title = "풀이 결과",
+        onBack = { nav ->
+            setBackPressed(true)
+            setNavController(nav)
         },
     )
-    BackHandler(onBack = { isBackPressed.value = true })
+
+    when (studyResultState) {
+        StudyResultState.Loading -> LoadingDialog()
+
+        is StudyResultState.Success -> {
+            StudyResultScreenContent(
+                modifier = modifier,
+                studyResultState = studyResultState as StudyResultState.Success,
+                userAnswer = userAnswer,
+            )
+        }
+
+        is StudyResultState.Error -> {
+            // 에러 시 표시할 것
+        }
+    }
+}
+
+@Composable
+fun StudyResultScreenContent(
+    modifier: Modifier,
+    studyResultState: StudyResultState.Success,
+    userAnswer: Int,
+) {
+    val context = LocalContext.current
+    var expandedItem by remember { mutableIntStateOf(-1) }
 
     Box(
         modifier =
@@ -89,8 +137,16 @@ fun QuizResultScreen(
                     .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            val title = if (state.userAnswer == state.systemAnswer) "정답!" else "오답!"
-            val titleColor = if (title == "정답!") Green1 else Sub1
+            val title =
+                if (studyResultState.result) {
+                    context.getString(R.string.correct_message)
+                } else {
+                    context.getString(
+                        R.string.wrong_message,
+                    )
+                }
+            val titleColor =
+                if (title == context.getString(R.string.correct_message)) Green1 else Sub1
 
             Text(
                 modifier = Modifier.padding(vertical = 10.dp),
@@ -99,13 +155,21 @@ fun QuizResultScreen(
                 fontSize = 40.sp,
                 color = titleColor,
             )
-            QuizBoxWithUnderline(
-                systemMessage = state.quizTitle,
-                quizScript = state.quizScript,
-                underline = state.wordList[state.systemAnswer - 1].first,
-            )
-            AnswerList(
-                state = state,
+            if (!studyResultState.result) { // 오답일 때는 기존처럼 __ 빈칸 뚫린 거로
+                QuizBox(
+                    quizTitle = studyResultState.quizTitle,
+                    quizScript = studyResultState.quizScript,
+                )
+            } else { // 정답일 때는 빈칸 없이
+                QuizBoxWithUnderline(
+                    systemMessage = studyResultState.quizTitle,
+                    quizScript = studyResultState.quizScript,
+                    underline = studyResultState.wordList[studyResultState.systemAnswer - 1].first,
+                )
+            }
+            ResultAnswerList(
+                studyResultState = studyResultState,
+                userAnswer = userAnswer,
                 fraction = 0.15f,
                 expandedItem = expandedItem,
                 onAnswerSelected = { selectedIndex ->
@@ -117,19 +181,53 @@ fun QuizResultScreen(
 }
 
 @Composable
+fun ResultAnswerList(
+    studyResultState: StudyResultState.Success,
+    userAnswer: Int,
+    expandedItem: Int = -1,
+    fraction: Float,
+    onAnswerSelected: (Int) -> Unit = { },
+) {
+    val size = studyResultState.wordList.size
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(15.dp),
+        modifier =
+            Modifier
+                .padding(12.dp)
+                .fillMaxSize(),
+    ) {
+        items(size) { index ->
+            AnswerResultListItem(
+                modifier = Modifier.fillParentMaxHeight(fraction),
+                index = index,
+                studyResultState = studyResultState,
+                userAnswer = userAnswer,
+                expandedItem = expandedItem,
+                onItemClick = { selectedIndex ->
+                    onAnswerSelected(selectedIndex)
+                },
+            )
+        }
+    }
+}
+
+@Composable
 fun AnswerResultListItem(
     modifier: Modifier = Modifier,
     index: Int,
-    state: QuizResultState,
+    userAnswer: Int,
+    studyResultState: StudyResultState.Success,
     expandedItem: Int,
     onItemClick: (Int) -> Unit,
 ) {
-    val isUserAnswer = state.userAnswer == index + 1
-    val isSystemAnswer = state.systemAnswer == index + 1
+    val isUserAnswer = userAnswer == index + 1
+    val isSystemAnswer = studyResultState.systemAnswer == index + 1
 
     // 배경색
     val backgroundColor =
         when {
+            isUserAnswer && isSystemAnswer -> Green2
             isUserAnswer && !isSystemAnswer -> Sub2
             else -> Color.White
         }
@@ -137,6 +235,7 @@ fun AnswerResultListItem(
     // 번호, 테두리 색상
     val borderColor =
         when {
+            isUserAnswer && isSystemAnswer -> Green1
             isUserAnswer && !isSystemAnswer -> Sub1
             else -> Gray6
         }
@@ -195,7 +294,7 @@ fun AnswerResultListItem(
                 }
                 Spacer(modifier = Modifier.width(30.dp))
                 Text(
-                    text = state.wordList[index].first,
+                    text = studyResultState.wordList[index].first,
                     modifier = Modifier.weight(1f),
                     style = Typography.headlineLarge,
                 )
@@ -227,7 +326,7 @@ fun AnswerResultListItem(
                         .background(color = Color.Unspecified),
             ) {
                 Text(
-                    text = state.wordList[index].second,
+                    text = studyResultState.wordList[index].second,
                     modifier =
                         Modifier
                             .fillMaxWidth()
@@ -247,7 +346,6 @@ fun QuizBoxWithUnderline(
     quizScript: String,
     underline: String,
 ) {
-    Log.d("nakyung", underline)
     Box(
         modifier =
             Modifier
@@ -285,21 +383,17 @@ fun QuizBoxWithUnderline(
             Text(
                 text =
                     buildAnnotatedString {
-                        val startIndex = quizScript.indexOf(underline)
-                        if (startIndex != -1) {
-                            append(quizScript.substring(0, startIndex))
-                            withStyle(
-                                style =
-                                    SpanStyle(
-                                        textDecoration = TextDecoration.Underline,
-                                    ),
-                            ) {
-                                append(underline)
-                            }
-                            append(quizScript.substring(startIndex + underline.length))
-                        } else {
-                            append(quizScript)
+                        val parts = quizScript.split("__")
+                        append(parts[0])
+                        withStyle(
+                            style =
+                                SpanStyle(
+                                    textDecoration = TextDecoration.Underline,
+                                ),
+                        ) {
+                            append(underline)
                         }
+                        append(parts[1])
                     },
                 style = Typography.headlineSmall,
             )
@@ -311,6 +405,6 @@ fun QuizBoxWithUnderline(
 @Composable
 fun ResultPreview() {
     MallangTheme {
-        QuizResultScreen()
+        QuizResultScreen(userAnswer = 2)
     }
 }
