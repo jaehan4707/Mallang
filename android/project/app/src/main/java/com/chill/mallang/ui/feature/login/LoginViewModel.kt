@@ -73,19 +73,17 @@ class LoginViewModel
 
         private fun loadUserInfo() {
             viewModelScope.launch {
-                dataStoreRepository.getUserEmail().collectLatest { email ->
-                    email?.let {
-                        userRepository.checkUserEmail(it).collectLatest { response ->
-                            when (response) {
-                                is ApiResponse.Error -> {
-                                    when (response.errorCode) {
-                                        409 -> _uiEvent.emit(LoginUiEvent.AuthLogin)
-                                        else -> _loginUiState.value = LoginUiState.Loading
-                                    }
+                dataStoreRepository.getUserEmail()?.let { email ->
+                    userRepository.checkUserEmail(email).collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Error -> {
+                                when (response.errorCode) {
+                                    409 -> _uiEvent.emit(LoginUiEvent.AuthLogin)
+                                    else -> _loginUiState.value = LoginUiState.Loading
                                 }
-
-                                else -> _loginUiState.value = LoginUiState.Loading
                             }
+
+                            else -> _loginUiState.value = LoginUiState.Loading
                         }
                     }
                 }

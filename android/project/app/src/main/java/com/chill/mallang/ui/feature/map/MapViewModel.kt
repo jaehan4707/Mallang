@@ -107,6 +107,10 @@ class MapViewModel
             selectedArea = area
         }
 
+        fun resetSelected() {
+            selectedArea = null
+        }
+
         /**
          * 현재 가진 점령지 목록 중에서 현 위치와 가장 가까운 점령지 선택
          */

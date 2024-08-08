@@ -1,14 +1,7 @@
 package com.chill.mallang.ui.feature.map.mapview
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,12 +10,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.chill.mallang.data.model.entity.Area
+import com.chill.mallang.ui.component.LoadingBox
 import com.chill.mallang.ui.feature.map.AreasState
 import com.chill.mallang.ui.feature.map.CustomMarkerState
 import com.chill.mallang.ui.feature.map.LocationState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.SphericalUtil
+import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
@@ -35,6 +30,7 @@ fun MapView(
     selectedArea: Area?,
     areasState: AreasState,
     onSelectArea: (Area) -> Unit = {},
+    onCameraMove: () -> Unit = {},
 ) {
     val cameraPositionState = rememberCameraPositionState()
     val uiSettings =
@@ -51,6 +47,14 @@ fun MapView(
         remember {
             mutableStateOf(listOf<CustomMarkerState>())
         }
+
+    LaunchedEffect(cameraPositionState.position) {
+        if (cameraPositionState.isMoving && // 카메라가 이동 중일 때
+            cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE // 터치로 이동한 경우
+        ) {
+            onCameraMove()
+        }
+    }
 
     // 현재 위치가 바뀌면 카메라를 현 위치로 이동
     LaunchedEffect(currentLocation) {
@@ -121,21 +125,7 @@ fun MapView(
             }
         }
         if (!isMapLoaded) {
-            AnimatedVisibility(
-                modifier =
-                    Modifier
-                        .matchParentSize(),
-                visible = !isMapLoaded,
-                enter = EnterTransition.None,
-                exit = fadeOut(),
-            ) {
-                CircularProgressIndicator(
-                    modifier =
-                        Modifier
-                            .background(MaterialTheme.colorScheme.primary)
-                            .wrapContentSize(),
-                )
-            }
+            LoadingBox()
         }
     }
 }
