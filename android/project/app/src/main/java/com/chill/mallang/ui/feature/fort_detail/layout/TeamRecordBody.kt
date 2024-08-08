@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.fort_detail.layout
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -141,7 +140,6 @@ fun RecordListItem(
                 .fillMaxWidth()
                 .padding(vertical = 5.dp)
                 .height(height = 65.dp)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
     ) {
         Row(
@@ -187,50 +185,57 @@ fun CustomBorderBox(
                 .border(
                     width = 2.dp,
                     color = if (isSelected) Color.Black else Color.Transparent,
-                    shape = RoundedTopCornersShape(
-                        cornerRadius = 16.dp
-                    )
+                    shape =
+                        RoundedTopCornersShape(
+                            cornerRadius = 16.dp,
+                        ),
                 ),
         color = if (isSelected) MaterialTheme.colorScheme.background else contrastColor,
-        shape = RoundedTopCornersShape(
-            cornerRadius = 16.dp
-        )
+        shape =
+            RoundedTopCornersShape(
+                cornerRadius = 16.dp,
+            ),
     ) {
         content()
     }
 }
 
-class RoundedTopCornersShape(private val cornerRadius: Dp) : Shape {
+class RoundedTopCornersShape(
+    private val cornerRadius: Dp,
+) : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
-        density: Density
+        density: Density,
     ): Outline {
-        with(density){
-            val path = Path().apply {
-                moveTo(0f, size.height)
-                lineTo(0f, cornerRadius.toPx())
-                arcTo(
-                    rect = Rect(
-                        offset = Offset(0f, 0f),
-                        size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2)
-                    ),
-                    startAngleDegrees = 180f,
-                    sweepAngleDegrees = 90f,
-                    forceMoveTo = false
-                )
-                lineTo(size.width - cornerRadius.toPx(), 0f)
-                arcTo(
-                    rect = Rect(
-                        offset = Offset(size.width - cornerRadius.toPx() * 2, 0f),
-                        size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2)
-                    ),
-                    startAngleDegrees = 270f,
-                    sweepAngleDegrees = 90f,
-                    forceMoveTo = false
-                )
-                lineTo(size.width, size.height)
-            }
+        with(density) {
+            val path =
+                Path().apply {
+                    moveTo(0f, size.height)
+                    lineTo(0f, cornerRadius.toPx())
+                    arcTo(
+                        rect =
+                            Rect(
+                                offset = Offset(0f, 0f),
+                                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
+                            ),
+                        startAngleDegrees = 180f,
+                        sweepAngleDegrees = 90f,
+                        forceMoveTo = false,
+                    )
+                    lineTo(size.width - cornerRadius.toPx(), 0f)
+                    arcTo(
+                        rect =
+                            Rect(
+                                offset = Offset(size.width - cornerRadius.toPx() * 2, 0f),
+                                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
+                            ),
+                        startAngleDegrees = 270f,
+                        sweepAngleDegrees = 90f,
+                        forceMoveTo = false,
+                    )
+                    lineTo(size.width, size.height)
+                }
             return Outline.Generic(path)
         }
     }
