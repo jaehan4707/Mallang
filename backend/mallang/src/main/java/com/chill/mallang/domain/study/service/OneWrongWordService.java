@@ -32,7 +32,7 @@ public class OneWrongWordService {
 
     public Map<String, Object> getOneWrongWord(Long userId, Long studyId){  // studyId : 문제 번호
         Optional<StudyGameLog> studyGameLog = studyGameLogRepository.getOneWrongStudyGameLogByUserIdStudyId(userId,studyId);
-        Long questionId = questionRepository.findIdByStudyId(studyId);
+        Long questionId = questionRepository.findIdByStudyGameId(studyId);
         logger.info("questionId : " + questionId.toString());
 
         if (!studyGameLog.isPresent()) {
