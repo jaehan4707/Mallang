@@ -44,6 +44,7 @@ import com.chill.mallang.ui.theme.Typography
 @Composable
 fun Game01ResultScreen(
     viewModel: Game01ViewModel = viewModel(),
+    finishGame: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val resultUiState by viewModel.resultUiState.collectAsStateWithLifecycle()
@@ -52,13 +53,18 @@ fun Game01ResultScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        Game01ResultContent(resultUiState)
+        Game01ResultContent(
+            resultUiState = resultUiState,
+            finishGame = finishGame,
+            modifier = modifier,
+        )
     }
 }
 
 @Composable
 fun Game01ResultContent(
     resultUiState: Game01FinalResultUiState,
+    finishGame: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     when (resultUiState) {
@@ -85,7 +91,9 @@ fun Game01ResultContent(
                         modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp),
-                    onClick = {},
+                    onClick = {
+                        finishGame()
+                    },
                     text = "확인",
                 )
             }
