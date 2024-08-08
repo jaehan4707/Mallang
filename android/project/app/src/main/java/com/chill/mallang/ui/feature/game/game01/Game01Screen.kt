@@ -7,7 +7,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.chill.mallang.R
-import com.chill.mallang.ui.feature.game.game01.Game01ViewModel.GameConstants.ROUND_COUNT
+import com.chill.mallang.ui.feature.game.game01.Game01ViewModel.Game01Constants.ROUND_COUNT
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01LoadingScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01PlayScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01ResultScreen
