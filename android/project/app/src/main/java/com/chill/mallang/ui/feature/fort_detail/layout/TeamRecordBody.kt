@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -25,17 +25,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.UserRecord
+import com.chill.mallang.ui.component.LoadingBox
 import com.chill.mallang.ui.feature.fort_detail.TeamRecordState
 import com.chill.mallang.ui.theme.Typography
-
 
 @Composable
 fun TeamRecordBody(
@@ -51,15 +60,7 @@ fun TeamRecordBody(
 
     when (teamRecordState) {
         is TeamRecordState.Loading -> {
-            Surface(
-                modifier = modifier.fillMaxSize(),
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+            LoadingBox()
         }
 
         is TeamRecordState.Error -> {
@@ -81,25 +82,18 @@ fun TeamRecordBody(
                 ) {
                     tabs.forEachIndexed { index, title ->
                         Box {
-                            CustomBorderBox(
-                                bottomBorderColor =
-                                if (selectedTabIndex == index) {
-                                    Color.White
-                                } else {
-                                    Color.Black
-                                },
-                                bottomBorderWidth =
-                                if (selectedTabIndex == index) {
-                                    4.dp
-                                } else {
-                                    1.dp
-                                },
-                            )
-                            Tab(
-                                selected = selectedTabIndex == index,
-                                onClick = { selectedTabIndex = index },
-                                text = { Text(title) },
-                            )
+                            CustomBorderBox(isSelected = selectedTabIndex == index) {
+                                Tab(
+                                    selected = selectedTabIndex == index,
+                                    onClick = { selectedTabIndex = index },
+                                    text = {
+                                        Text(
+                                            title,
+                                            color = if (selectedTabIndex == index) Color.Black else MaterialTheme.colorScheme.background,
+                                        )
+                                    },
+                                )
+                            }
                         }
                     }
                 }
@@ -117,14 +111,20 @@ fun TeamTab(
     recordList: List<UserRecord>,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier =
-        modifier
-            .padding(horizontal = 10.dp)
-            .padding(vertical = 10.dp),
-    ) {
-        items(recordList) { record ->
-            RecordListItem(record)
+    if (recordList.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(text = stringResource(R.string.no_record))
+        }
+    } else {
+        LazyColumn(
+            modifier =
+                modifier
+                    .padding(horizontal = 10.dp)
+                    .padding(vertical = 10.dp),
+        ) {
+            items(recordList) { record ->
+                RecordListItem(record)
+            }
         }
     }
 }
@@ -137,18 +137,18 @@ fun RecordListItem(
     Box(
         contentAlignment = Alignment.Center,
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(vertical = 5.dp)
-            .height(height = 65.dp)
-            .background(Color.White, shape = RoundedCornerShape(16.dp))
-            .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.dp)
+                .height(height = 65.dp)
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
     ) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
@@ -176,36 +176,68 @@ fun RecordListItem(
 @Composable
 fun CustomBorderBox(
     modifier: Modifier = Modifier,
-    bottomBorderColor: Color = Color.White,
-    bottomBorderWidth: Dp = 2.dp,
+    isSelected: Boolean = false,
+    contrastColor: Color = Color.Black,
+    content: @Composable () -> Unit = {},
 ) {
-    Box(modifier = modifier) {
-        Box(
-            modifier =
-            Modifier
+    Surface(
+        modifier =
+            modifier
                 .fillMaxSize()
-                .background(Color.White)
                 .border(
                     width = 2.dp,
-                    color = Color.Black,
-                    shape =
-                    RoundedCornerShape(
-                        topStart = 16.dp,
-                        topEnd = 16.dp,
-                        bottomStart = 0.dp,
-                        bottomEnd = 0.dp,
-                    ),
+                    color = if (isSelected) Color.Black else Color.Transparent,
+                    shape = RoundedTopCornersShape(
+                        cornerRadius = 16.dp
+                    )
                 ),
+        color = if (isSelected) MaterialTheme.colorScheme.background else contrastColor,
+        shape = RoundedTopCornersShape(
+            cornerRadius = 16.dp
         )
-
-        Box(
-            modifier =
-            Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 2.dp)
-                .height(bottomBorderWidth)
-                .fillMaxWidth()
-                .background(bottomBorderColor),
-        )
+    ) {
+        content()
     }
+}
+
+class RoundedTopCornersShape(private val cornerRadius: Dp) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        with(density){
+            val path = Path().apply {
+                moveTo(0f, size.height)
+                lineTo(0f, cornerRadius.toPx())
+                arcTo(
+                    rect = Rect(
+                        offset = Offset(0f, 0f),
+                        size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2)
+                    ),
+                    startAngleDegrees = 180f,
+                    sweepAngleDegrees = 90f,
+                    forceMoveTo = false
+                )
+                lineTo(size.width - cornerRadius.toPx(), 0f)
+                arcTo(
+                    rect = Rect(
+                        offset = Offset(size.width - cornerRadius.toPx() * 2, 0f),
+                        size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2)
+                    ),
+                    startAngleDegrees = 270f,
+                    sweepAngleDegrees = 90f,
+                    forceMoveTo = false
+                )
+                lineTo(size.width, size.height)
+            }
+            return Outline.Generic(path)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun CustomBorderBoxPreview() {
+    CustomBorderBox()
 }
