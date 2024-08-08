@@ -1,12 +1,17 @@
 package com.chill.mallang.ui.feature.game.game01
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.feature.game.game01.Game01ViewModel.Game01Constants.ROUND_COUNT
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01LoadingScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01PlayScreen
@@ -14,13 +19,48 @@ import com.chill.mallang.ui.feature.game.game01.SubView.Game01ResultScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01ReviewScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundDoneScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundScreen
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun Game01Screen(modifier: Modifier = Modifier) {
+fun Game01Screen(
+    areaId: Long = -1L,
+    popUpBackStack: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
     val viewModel: Game01ViewModel = hiltViewModel()
+    val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
+    val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.initializeAreaId(areaId)
+    }
+
+    BackConfirmHandler(
+        isBackPressed = isBackPressed,
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
+        onConfirm = {
+            setBackPressed(false)
+            popUpBackStack()
+        },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
+        onDismiss = {
+            setBackPressed(false)
+        },
+        title = stringResource(id = R.string.game_give_up_message),
+    )
+    BackHandler(onBack = { setBackPressed(true) })
+
+    TopbarHandler(
+        isVisible = true,
+        title = stringResource(id = R.string.game_title),
+        onBack = { nav ->
+            setBackPressed(true)
+            setNavController(nav)
+        },
+    )
 
     HandleGame01Event(
         game01UiEvent = viewModel.gameUiEvent,
@@ -75,6 +115,7 @@ fun Game01Screen(modifier: Modifier = Modifier) {
         Game01State.FINISH ->
             Game01ResultScreen(
                 viewModel = viewModel,
+                finishGame = popUpBackStack,
             )
     }
 }
