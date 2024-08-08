@@ -24,7 +24,7 @@ class StudyRepositoryImpl
                     is ApiResponse.Success -> {
                         emit(
                             ApiResponse.Success(
-                                response.body?.map {
+                                response.body?.data?.map {
                                     Word.CorrectWord(
                                         word = it.word ?: "",
                                         example = it.example ?: "",
@@ -60,7 +60,7 @@ class StudyRepositoryImpl
                     is ApiResponse.Success -> {
                         emit(
                             ApiResponse.Success(
-                                response.body?.map {
+                                response.body?.data?.map {
                                     Word.IncorrectWord(
                                         studyId = it.studyId ?: -1,
                                         word = it.word ?: "",
