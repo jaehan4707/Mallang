@@ -89,13 +89,13 @@ class DataStoreRepositoryImpl
         override suspend fun getUserId() =
             dataStore.data
                 .map { prefs ->
-                    prefs[USER_ID_KEY].toString().toIntOrNull()
+                    prefs[USER_ID_KEY].toString().toLongOrNull()
                 }.first()
 
         override suspend fun getFactionId() =
             dataStore.data
                 .map { prefs ->
-                    prefs[USER_FACTION_ID].toString().toIntOrNull()
+                    prefs[USER_FACTION_ID].toString().toLongOrNull()
                 }.first()
 
         companion object {
