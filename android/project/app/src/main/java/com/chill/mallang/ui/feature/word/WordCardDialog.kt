@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.chill.mallang.R
-import com.chill.mallang.ui.component.PosColorProvider
+import com.chill.mallang.ui.component.PosBox
 import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray4
@@ -58,10 +58,10 @@ fun WordCardDialog(
         content = {
             Surface(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.35f)
-                        .padding(20.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.35f)
+                    .padding(20.dp),
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(width = 2.dp, color = Gray6),
                 color = Color.White,
@@ -102,10 +102,10 @@ fun WordCardDialog(
                         // 오른쪽 닫기 아이콘
                         Box(
                             modifier =
-                                Modifier
-                                    .padding(10.dp)
-                                    .size(15.dp)
-                                    .weight(1f),
+                            Modifier
+                                .padding(10.dp)
+                                .size(15.dp)
+                                .weight(1f),
                             contentAlignment = Alignment.CenterEnd,
                         ) {
                             ImageButton(
@@ -120,9 +120,9 @@ fun WordCardDialog(
 
                     HorizontalPager(
                         modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.Center),
+                        Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center),
                         state = pagerState,
                         pageSpacing = pageSpacing,
                     ) { page ->
@@ -200,21 +200,7 @@ fun WordCardContent(
                         color = Gray6,
                     )
                     Spacer(modifier = Modifier.width(10.dp))
-                    Box(
-                        modifier =
-                            Modifier
-                                .background(
-                                    color = PosColorProvider.getColorForPos(card.pos),
-                                    shape = RoundedCornerShape(5.dp),
-                                ).padding(horizontal = 5.dp, vertical = 2.dp),
-                    ) {
-                        Text(
-                            modifier = Modifier.align(Alignment.Center),
-                            text = card.pos,
-                            style = Typography.displaySmall,
-                            color = Color.White,
-                        )
-                    }
+                    PosBox(pos = card.pos)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
