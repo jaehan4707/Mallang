@@ -41,7 +41,7 @@ class FortDetailViewModel
 
         fun loadTryCount() {
             viewModelScope.launch {
-                val userId = dataStoreRepository.getUserId()?.toLong() ?: 1
+                val userId = dataStoreRepository.getUserId()
                 userId?.let { id ->
                     areaRepository
                         .getTryCount(id)
@@ -58,7 +58,7 @@ class FortDetailViewModel
 
         fun loadOccupationState(areaId: Long) {
             viewModelScope.launch {
-                val teamId = dataStoreRepository.getFactionId()?.toLong() ?: 1
+                val teamId = dataStoreRepository.getFactionId()
                 teamId?.let { id ->
                     areaRepository
                         .getAreaDetail(areaId, id)
@@ -74,7 +74,7 @@ class FortDetailViewModel
 
         fun loadTeamLeadersState(areaId: Long) {
             viewModelScope.launch {
-                val userId = dataStoreRepository.getUserId()?.toLong() ?: 1
+                val userId = dataStoreRepository.getUserId()
                 userId?.let { id ->
                     areaRepository
                         .getAreaRecords(areaId, id)
