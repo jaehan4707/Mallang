@@ -85,7 +85,7 @@ class MapViewModel
             }
         }
 
-        fun loadTryCount(areaId: Int) {
+        fun loadTryCount(areaId: Long) {
             viewModelScope.launch {
                 areaRepository.getTryCount(areaId).collectLatest { response ->
                     when (response) {
