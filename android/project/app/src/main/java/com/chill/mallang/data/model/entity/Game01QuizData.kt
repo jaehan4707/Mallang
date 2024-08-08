@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Immutable
 data class Game01QuizData(
-    val id: Int,
+    val id: Long,
     val question: String,
     val answer: String,
     val difficulty: Int,

@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class FetchGameResultRequest(
     @SerialName("areaID")
-    val areaId: Int,
+    val areaId: Long,
     @SerialName("userID")
-    val userId: Int,
+    val userId: Long,
     @SerialName("factionID")
-    val factionId: Int,
+    val factionId: Long,
     @SerialName("quizID")
-    val quizIds: List<Int>,
+    val quizIds: List<Long>,
 )

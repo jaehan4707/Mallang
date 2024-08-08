@@ -48,8 +48,8 @@ class Game01ViewModel
         private var timerJob: Job? = null
 
         // 게임01 문제 ID List
-        private var _questionIdList = mutableListOf<Int>()
-        val questionIdList: List<Int> get() = _questionIdList
+        private var _questionIdList = mutableListOf<Long>()
+        val questionIdList: List<Long> get() = _questionIdList
 
         // 게임01 문제 데이터셋 List
         private var _questionDataSetList = mutableListOf<Game01QuizData>()
@@ -169,7 +169,7 @@ class Game01ViewModel
             pauseTimer()
             updateGame01State(Game01State.ROUND_SUBMIT)
 
-            val quizId = questionIdList[gameRound - 1]
+            val quizId = questionIdList[gameRound - 1].toLong()
             val roundPlayingTime = getRoundPlayingTime()
             val userAnswer = userAnswerList[gameRound]
             val currentTimestamp = getCurrentTimestamp()
@@ -274,7 +274,7 @@ class Game01ViewModel
             const val ROUND_COUNT = 3
 
             // 더미 데이터
-            const val TEST_AREA_ID = 1
+            const val TEST_AREA_ID: Long = 1L
         }
     }
 

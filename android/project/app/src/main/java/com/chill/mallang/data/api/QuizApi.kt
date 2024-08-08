@@ -14,12 +14,12 @@ import retrofit2.http.Path
 interface QuizApi {
     @GET("quiz/start/{areaId}")
     suspend fun getQuizIds(
-        @Path("areaId") areaId: Int,
-    ): Response<ResponseBody<List<Int>>>
+        @Path("areaId") areaId: Long,
+    ): Response<ResponseBody<List<Long>>>
 
     @GET("quiz/{quizId}")
     suspend fun getQuiz(
-        @Path("quizId") quizId: Int,
+        @Path("quizId") quizId: Long,
     ): Response<ResponseBody<Game01QuizData>>
 
     @POST("quiz/submit")
