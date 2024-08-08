@@ -141,7 +141,7 @@ fun MallangNavHost(
             arguments = DestinationAreaDetail.arguments,
         ) { navBackStackEntry ->
             val areaId = navBackStackEntry.arguments?.getLong(DestinationAreaDetail.arg)
-            FortDetailScreen(areaId = 1, userId = 1, teamId = 1)
+            FortDetailScreen(areaId = 1)
         }
 
         composable(
