@@ -48,10 +48,6 @@ fun Game01ResultScreen(
 ) {
     val resultUiState by viewModel.resultUiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchFinalResult()
-    }
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
