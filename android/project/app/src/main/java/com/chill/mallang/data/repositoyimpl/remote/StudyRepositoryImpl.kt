@@ -14,7 +14,7 @@ class StudyRepositoryImpl
     constructor(
         private val studyApi: StudyApi,
     ) : StudyRepository {
-        override suspend fun getWordList(userId: Int): Flow<ApiResponse<List<Word.CorrectWord>>> =
+        override suspend fun getWordList(userId: Long): Flow<ApiResponse<List<Word.CorrectWord>>> =
             flow {
                 val response =
                     apiHandler {
@@ -51,7 +51,7 @@ class StudyRepositoryImpl
                 }
             }
 
-        override suspend fun getIncorrectList(userId: Int): Flow<ApiResponse<List<Word.IncorrectWord>>> =
+        override suspend fun getIncorrectList(userId: Long): Flow<ApiResponse<List<Word.IncorrectWord>>> =
             flow {
                 val response =
                     apiHandler {

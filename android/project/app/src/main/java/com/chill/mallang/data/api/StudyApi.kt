@@ -11,12 +11,12 @@ interface StudyApi {
     // 단어장 목록 불러오는 api
     @GET("study/studied-word/{userId}")
     suspend fun getWordList(
-        @Path("userId") userId: Int,
+        @Path("userId") userId: Long,
     ): Response<ResponseBody<List<WordResponse>>>
 
     // 오답노트 목록 불러오는 api
     @GET("study/wrong-word/all/{userId}")
     suspend fun getIncorrectList(
-        @Path("userId") userId: Int,
+        @Path("userId") userId: Long,
     ): Response<ResponseBody<List<IncorrectWordResponse>>>
 }

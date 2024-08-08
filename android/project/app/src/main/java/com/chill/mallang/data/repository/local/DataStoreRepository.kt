@@ -21,7 +21,7 @@ interface DataStoreRepository {
 
     suspend fun saveUser(user: User)
 
-    suspend fun getUserId(): Int?
+    suspend fun getUserId(): Long?
 
-    suspend fun getFactionId(): Int?
+    suspend fun getFactionId(): Long?
 }
