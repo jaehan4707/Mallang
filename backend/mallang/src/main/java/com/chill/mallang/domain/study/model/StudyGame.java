@@ -1,12 +1,13 @@
 package com.chill.mallang.domain.study.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class StudyGame {
 
     @Id
@@ -14,7 +15,7 @@ public class StudyGame {
     private Long id;
 
     @ManyToOne
-    private WordMean wordmean;
+    private WordMean wordMean;
+    private String questionText;
 
-    private String question;
 }

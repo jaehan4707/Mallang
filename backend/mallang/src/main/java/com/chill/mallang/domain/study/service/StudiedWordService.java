@@ -20,15 +20,17 @@ public class StudiedWordService {
     @Autowired
     StudyGameLogRepository studyGameLogRepository;
 
-    public Map<String, Object> getStudiedWord(Long areaId){
-        List<StudyGameLog> studyGameLogs = studyGameLogRepository.getStudyGameLogByUserId(areaId);
-        logger.info(studyGameLogs.toString());
+    public Map<String, Object> getStudiedWord(Long userId){
+        List<StudyGameLog> studyGameLogs = studyGameLogRepository.getStudyGameLogByUserId(userId);
+        logger.info("userId : " + userId);
+        logger.info("studyGameLogs : " + studyGameLogs.toString());
 
         ArrayList<WordCardDto> wordCards = new ArrayList<>();
         for (StudyGameLog studyGameLog : studyGameLogs) {
             WordCardDto wordCardDto = WordCardDto.builder()
-                    .word(studyGameLog.getStudyGame().getWordmean().getWord().getWord())
-                    .meaning(studyGameLog.getStudyGame().getWordmean().getMean())
+                    .word(studyGameLog.getStudyGame().getWordMean().getWord().getWord())
+                    .meaning(studyGameLog.getStudyGame().getWordMean().getMean())
+                    .pos(studyGameLog.getStudyGame().getWordMean().getType())
                     .example(null) // 아직 예문 데이터가 없음
                     .build();
 
@@ -36,7 +38,7 @@ public class StudiedWordService {
         }
 
         return new HashMap<>(){{
-            put("body",wordCards);
+            put("data",wordCards);
         }};
     }
 }

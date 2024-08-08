@@ -2,14 +2,17 @@ package com.chill.mallang.domain.study.model;
 
 import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class StudyGameLog {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,6 +22,12 @@ public class StudyGameLog {
 
     @ManyToOne
     private StudyGame studyGame;
+
+    @ManyToOne
+    private WordMean wordMean;
+
+    @NotNull
+    private LocalDateTime created_at;
 
     private boolean result;
 }
