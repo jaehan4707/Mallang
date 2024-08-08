@@ -10,6 +10,7 @@ sealed class Word(
 
     data class CorrectWord(
         override val word: String,
+        val pos: String,
         val meaning: String,
         val example: String,
     ) : Word(word = word)

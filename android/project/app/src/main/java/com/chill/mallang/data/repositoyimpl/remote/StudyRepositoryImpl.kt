@@ -27,6 +27,7 @@ class StudyRepositoryImpl
                                 response.body?.data?.map {
                                     Word.CorrectWord(
                                         word = it.word ?: "",
+                                        pos = it.pos ?: "",
                                         example = it.example ?: "",
                                         meaning = it.meaning ?: "",
                                     )
