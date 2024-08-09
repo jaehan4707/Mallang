@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.fort_detail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import com.chill.mallang.data.model.entity.TeamRecords
 import com.chill.mallang.data.model.entity.UserInfo
 import com.chill.mallang.data.model.entity.UserRecord
 import com.chill.mallang.ui.feature.fort_detail.layout.DetailBody
+import com.chill.mallang.ui.feature.fort_detail.layout.FortDetailHeader
 import com.chill.mallang.ui.feature.fort_detail.layout.GameStartBody
 import com.chill.mallang.ui.feature.fort_detail.layout.TeamRecordBody
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
@@ -23,31 +25,37 @@ import com.chill.mallang.ui.theme.MallangTheme
 @Composable
 fun FortDetailScreen(
     modifier: Modifier = Modifier,
-    areaId: Int?,
-    userId: Int?,
-    teamId: Int?,
-    navigateToGame: () -> Unit = {},
+    areaId: Long?,
+    onStartGame: () -> Unit = {},
 ) {
     val viewModel: FortDetailViewModel = hiltViewModel()
     val occupationState by viewModel.areaDetailStateFlow.collectAsStateWithLifecycle()
     val teamLeadersState by viewModel.teamRecordStateFlow.collectAsStateWithLifecycle()
+    val tryCountState by viewModel.tryCountStateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        if (areaId == null || userId == null || teamId == null) {
+        if (areaId == null) {
             viewModel.invalidateData()
         } else {
-            viewModel.loadOccupationState(areaId, teamId)
-            viewModel.loadTeamLeadersState(areaId, userId)
+            viewModel.loadOccupationState(areaId)
+            viewModel.loadTeamLeadersState(areaId)
+            viewModel.loadTryCount()
         }
     }
 
-    TopbarHandler(isVisible = true)
+    TopbarHandler(
+        isVisible = true,
+        titleContent = if(occupationState is AreaDetailState.Success){
+            {FortDetailHeader(fortName = (occupationState as AreaDetailState.Success).areaDetail.areaName)}
+        } else null,
+    )
 
     AreaDetailContent(
         modifier = modifier,
         areaDetailState = occupationState,
         teamRecordState = teamLeadersState,
-        navigateToGame = navigateToGame,
+        onStartGame = onStartGame,
+        tryCountState = tryCountState,
     )
 }
 
@@ -56,12 +64,14 @@ fun AreaDetailContent(
     modifier: Modifier = Modifier,
     areaDetailState: AreaDetailState,
     teamRecordState: TeamRecordState,
-    navigateToGame: () -> Unit = {}
+    tryCountState: TryCountState,
+    onStartGame: () -> Unit = {},
 ) {
     Column(
         modifier =
             modifier
                 .fillMaxSize(),
+        verticalArrangement = Arrangement.Top
     ) {
         DetailBody(
             occupationState = areaDetailState,
@@ -69,7 +79,8 @@ fun AreaDetailContent(
         )
         GameStartBody(
             modifier = Modifier.weight(2F),
-            navigateToGame = navigateToGame,
+            onStartGame = onStartGame,
+            tryCountState = tryCountState,
         )
         TeamRecordBody(
             teamRecordState = teamRecordState,
@@ -86,6 +97,7 @@ fun FortDetailScreenPreview() {
             modifier = Modifier,
             areaDetailState = AreaDetailState.Loading,
             teamRecordState = TeamRecordState.Loading,
+            tryCountState = TryCountState.Loading,
         )
     }
 }
@@ -112,6 +124,7 @@ fun FortDetailScreenPreviewWithData() {
                         listOf(UserRecord(1, 1, 1)),
                     ),
                 ),
+            tryCountState = TryCountState.Success(3),
         )
     }
 }

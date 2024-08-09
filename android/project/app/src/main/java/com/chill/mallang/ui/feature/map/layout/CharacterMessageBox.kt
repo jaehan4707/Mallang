@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -15,13 +16,16 @@ import com.chill.mallang.ui.component.SpeechBubble
 import com.chill.mallang.ui.theme.MallangTheme
 
 @Composable
-fun CharacterMessageBox(modifier: Modifier = Modifier) {
+fun CharacterMessageBox(
+    modifier: Modifier = Modifier,
+    messageWithCharacter: MessageWithCharacter,
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         SpeechBubble(
             modifier = Modifier,
         ) {
             Text(
-                "목적지에 도착했어요!",
+                messageWithCharacter.message,
                 modifier =
                     Modifier
                         .padding(16.dp),
@@ -29,16 +33,22 @@ fun CharacterMessageBox(modifier: Modifier = Modifier) {
         }
         Image(
             modifier = Modifier,
-            painter = painterResource(id = R.drawable.ic_logo),
+            painter = painterResource(id = messageWithCharacter.character),
             contentDescription = "",
         )
     }
 }
 
+@Immutable
+data class MessageWithCharacter(
+    val message: String,
+    val character: Int,
+)
+
 @Preview
 @Composable
 fun CharacterMessageBoxPreview() {
     MallangTheme {
-        CharacterMessageBox()
+        CharacterMessageBox(messageWithCharacter = MessageWithCharacter(message = "목적지에 도착했어요!", character = R.drawable.ic_logo))
     }
 }

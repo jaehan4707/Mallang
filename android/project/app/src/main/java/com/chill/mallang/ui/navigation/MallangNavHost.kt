@@ -143,11 +143,11 @@ fun MallangNavHost(
         ) { navBackStackEntry ->
             val areaId = navBackStackEntry.arguments?.getLong(DestinationAreaDetail.arg)
             FortDetailScreen(
-                areaId = 1,
-                userId = 1,
-                teamId = 1,
-                navigateToGame = {
-                    navController.navigate(DestinationGame.createRoute(areaId = areaId ?: -1))
+                areaId = areaId,
+                onStartGame = {
+                    navController.navigate(
+                        DestinationGame.createRoute(areaId = areaId ?: -1),
+                    )
                 }
             )
         }

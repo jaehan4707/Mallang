@@ -14,11 +14,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.ui.feature.map.LocationState
+import com.chill.mallang.ui.feature.map.state.ProximityState
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.MallangTheme
 import com.google.android.gms.maps.model.LatLng
@@ -32,6 +35,7 @@ fun MapScaffold(
     modifier: Modifier = Modifier,
     status: TeamList,
     areaSelected: Area?,
+    proximityState: ProximityState,
     currentLocation: LocationState,
     onLocate: () -> Unit = {},
     onShowDetail: (Area) -> Unit = {},
@@ -56,6 +60,33 @@ fun MapScaffold(
         }
     }
 
+    val context = LocalContext.current
+
+    val messageWithCharacter by remember(proximityState, areaSelected) {
+        derivedStateOf {
+            when (proximityState) {
+                is ProximityState.Adjacent -> {
+                    MessageWithCharacter(
+                        message = context.getString(R.string.adjacent),
+                        character = R.drawable.ic_logo,
+                    )
+                }
+                is ProximityState.Distant -> {
+                    MessageWithCharacter(
+                        message = context.getString(R.string.distant, proximityState.distance),
+                        character = R.drawable.ic_logo,
+                    )
+                }
+                is ProximityState.FarAway -> {
+                    MessageWithCharacter(
+                        message = context.getString(R.string.far_away),
+                        character = R.drawable.ic_logo,
+                    )
+                }
+            }
+        }
+    }
+
     Column(
         modifier =
             modifier
@@ -75,6 +106,7 @@ fun MapScaffold(
                 Modifier
                     .weight(1f)
                     .padding(horizontal = 16.dp),
+            messageWithCharacter = messageWithCharacter,
         )
         Spacer(modifier = Modifier.weight(1f))
         if (areaSelected == null) {
@@ -108,6 +140,7 @@ private fun MapScaffoldPreview() {
                 TeamList(
                     listOf(),
                 ),
+            proximityState = ProximityState.FarAway,
         )
     }
 }
@@ -123,6 +156,7 @@ private fun MapScaffoldPreviewWithAreaInfo() {
             areaSelected = Area(1, "찰밭공원", 0.0, 0.0),
             currentLocation = LocationState.Tracking(LatLng(0.0, 0.0)),
             status = TeamList(listOf()),
+            proximityState = ProximityState.Adjacent(100),
         )
     }
 }

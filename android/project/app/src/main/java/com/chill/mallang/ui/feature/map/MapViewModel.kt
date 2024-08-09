@@ -10,6 +10,7 @@ import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.AreaRepository
+import com.chill.mallang.ui.feature.map.state.ProximityState
 import com.chill.mallang.ui.feature.map.state.TryCountState
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
@@ -40,13 +41,33 @@ class MapViewModel
         private val _tryCountState = MutableStateFlow<TryCountState>(TryCountState.Empty)
         val tryCountState: StateFlow<TryCountState> = _tryCountState
 
+        var proximityState by mutableStateOf<ProximityState>(ProximityState.FarAway)
+            private set
+
         var selectedArea by mutableStateOf<Area?>(null)
             private set
 
-        fun setLocation(latlng: LatLng) {
+        fun setLocation(latLng: LatLng) {
             _currentLocation.update {
-                LocationState.Tracking(latlng)
+                LocationState.Tracking(latLng)
             }
+
+            proximityState =
+                if (selectedArea != null) {
+                    val distance =
+                        SphericalUtil
+                            .computeDistanceBetween(
+                                selectedArea!!.latLng,
+                                latLng,
+                            ).toInt()
+                    if (distance < 20) {
+                        ProximityState.Adjacent(distance)
+                    } else {
+                        ProximityState.Distant(distance)
+                    }
+                } else {
+                    getProximityClosestArea(latLng)
+                }
         }
 
         fun loadAreas() {
@@ -85,30 +106,33 @@ class MapViewModel
             }
         }
 
-        fun loadTryCount(areaId: Int) {
-            viewModelScope.launch {
-                areaRepository.getTryCount(areaId).collectLatest { response ->
-                    when (response) {
-                        is ApiResponse.Success -> {
-                            if (response.body != null) {
-                                _tryCountState.emit(TryCountState.HasValue(response.body.count))
-                            } else {
-                                _tryCountState.emit(TryCountState.Error())
-                            }
-                        }
-                        is ApiResponse.Error -> _tryCountState.emit(TryCountState.Error(response.errorMessage))
-                        else -> {}
-                    }
-                }
-            }
-        }
-
         fun setToSelected(area: Area) {
             selectedArea = area
+
+            proximityState =
+                if (currentLocation.value is LocationState.Tracking) {
+                    val distance =
+                        SphericalUtil
+                            .computeDistanceBetween(
+                                selectedArea!!.latLng,
+                                (currentLocation.value as LocationState.Tracking).latLng,
+                            ).toInt()
+                    if (distance < 20) {
+                        ProximityState.Adjacent(distance)
+                    } else {
+                        ProximityState.Distant(distance)
+                    }
+                } else {
+                    ProximityState.FarAway
+                }
         }
 
         fun resetSelected() {
             selectedArea = null
+            if (currentLocation.value is LocationState.Tracking) {
+                val latLng = (currentLocation.value as LocationState.Tracking).latLng
+                proximityState = getProximityClosestArea(latLng)
+            }
         }
 
         /**
@@ -116,22 +140,42 @@ class MapViewModel
          */
         fun findClosestArea() {
             viewModelScope.launch {
-                if (areaState.value is AreasState.HasValue && currentLocation.value is LocationState.Tracking) {
-                    val areas = areaState.value as AreasState.HasValue
-                    val location = currentLocation.value as LocationState.Tracking
-
+                if (currentLocation.value is LocationState.Tracking) {
                     val closest =
-                        areas.list.minByOrNull { area ->
-                            SphericalUtil.computeDistanceBetween(
-                                area.latLng,
-                                location.latLng,
-                            )
-                        }
-
+                        getClosestArea((currentLocation.value as LocationState.Tracking).latLng)
                     if (closest != null) {
-                        selectedArea = closest
+                        setToSelected(closest)
                     }
                 }
+            }
+        }
+
+        private fun getClosestArea(latLng: LatLng): Area? =
+            if (areaState.value is AreasState.HasValue) {
+                val areas = areaState.value as AreasState.HasValue
+
+                areas.list.minByOrNull { area ->
+                    SphericalUtil.computeDistanceBetween(
+                        area.latLng,
+                        latLng,
+                    )
+                }
+            } else {
+                null
+            }
+
+        private fun getProximityClosestArea(latLng: LatLng) : ProximityState {
+            val closest = getClosestArea(latLng)
+            return if (closest != null) {
+                val distance =
+                    SphericalUtil.computeDistanceBetween(closest.latLng, latLng).toInt()
+                if (distance < 20) {
+                    ProximityState.Adjacent(distance)
+                } else {
+                    ProximityState.FarAway
+                }
+            } else {
+                ProximityState.FarAway
             }
         }
     }

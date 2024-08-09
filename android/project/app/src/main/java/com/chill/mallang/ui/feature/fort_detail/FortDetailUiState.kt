@@ -39,6 +39,23 @@ sealed interface TeamRecordState {
 }
 
 @Stable
+sealed interface TryCountState {
+    @Immutable
+    data object Loading : TryCountState
+
+    @Immutable
+    data class Success(
+        val tryCount: Int,
+    ) : TryCountState
+
+    @Immutable
+    data class Error(
+        val errorMessage: ErrorMessage,
+    ) : TryCountState
+
+}
+
+@Stable
 sealed interface ErrorMessage {
     @Immutable
     data class NetworkError(

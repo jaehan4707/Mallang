@@ -19,18 +19,18 @@ interface AreaApi {
 
     @GET("areas/try-count/{userId}")
     suspend fun getTryCount(
-        @Path("userId") userId: Int,
+        @Path("userId") userId: Long,
     ): Response<ResponseBody<TryCount>>
 
     @GET("areas/{areaId}/{userTeam}")
     suspend fun getAreaDetail(
-        @Path("areaId") areaId: Int,
-        @Path("userTeam") userTeam: Int,
+        @Path("areaId") areaId: Long,
+        @Path("userTeam") userTeam: Long,
     ): Response<ResponseBody<AreaDetail>>
 
     @GET("areas/records/{areaId}/{userId}")
     suspend fun getAreaRecords(
-        @Path("areaId") areaId: Int,
-        @Path("userId") userId: Int,
+        @Path("areaId") areaId: Long,
+        @Path("userId") userId: Long,
     ): Response<ResponseBody<TeamRecords>>
 }
