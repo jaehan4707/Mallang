@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.R
@@ -41,7 +43,10 @@ import com.chill.mallang.ui.util.noRippleClickable
 
 val SampleData =
     listOf(
-        User(nickName = "짜이한", factionId = 1L) to listOf(10, 20),
+        User(
+            nickName = "닉네임111111111111111111111111111111111111111111111111",
+            factionId = 1L,
+        ) to listOf(10, 20),
         User(nickName = "이나갱", factionId = 1L) to listOf(20, 30),
         User(nickName = "코리안캉", factionId = 1L) to listOf(30, 40),
         User(nickName = "성수킴", factionId = 1L) to listOf(1, 9),
@@ -99,7 +104,7 @@ fun SummaryContent(modifier: Modifier = Modifier) {
                 }) { index ->
                     val data = SampleData[index]
                     SummaryItem(
-                        areaName = "점령지1",
+                        areaName = "점령지112312312312312312312312",
                         score = data.second,
                         topUser = data.first,
                     )
@@ -113,7 +118,7 @@ fun SummaryContent(modifier: Modifier = Modifier) {
 @Composable
 fun SummaryItem(
     modifier: Modifier = Modifier,
-    areaName: String = "점령지1",
+    areaName: String = "111111111111111111111111111111111111111111111111",
     score: List<Int> = listOf(10, 20),
     topUser: User = User(nickName = "짜이한", factionId = 1L),
     onClick: () -> Unit = {},
@@ -126,7 +131,7 @@ fun SummaryItem(
         }
     Card(
         modifier =
-            Modifier
+            modifier
                 .size(180.dp)
                 .noRippleClickable {
                     onClick()
@@ -142,15 +147,33 @@ fun SummaryItem(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
-                    modifier = Modifier.weight(0.1f),
+                    modifier = Modifier.weight(0.15f),
                     painter = painterResource(id = R.drawable.ic_location),
                     contentDescription = "",
                 )
-                Text(text = areaName, style = Typography.displayLarge)
-                Spacer(modifier = Modifier.weight(0.3f))
-                BoldColoredText(text = score[0].toString(), textColor = Sub1)
-                BoldColoredText(text = " : ", textColor = Color.Black)
-                BoldColoredText(text = score[1].toString(), textColor = SkyBlue)
+                Text(
+                    modifier = Modifier.weight(0.6f),
+                    text = areaName,
+                    style = Typography.displayLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(modifier = Modifier.weight(0.1f))
+                BoldColoredText(
+                    modifier = Modifier.weight(0.1f),
+                    text = score[0].toString(),
+                    textColor = Sub1,
+                )
+                BoldColoredText(
+                    modifier = Modifier.weight(0.1f),
+                    text = " : ",
+                    textColor = Color.Black,
+                )
+                BoldColoredText(
+                    modifier = Modifier.weight(0.1f),
+                    text = score[1].toString(),
+                    textColor = SkyBlue,
+                )
             }
 
             Image(
@@ -159,7 +182,14 @@ fun SummaryItem(
                 contentDescription = "",
             )
 
-            Text(text = topUser.nickName, style = Typography.headlineSmall)
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = topUser.nickName,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                style = Typography.headlineSmall,
+            )
             ImageButton(
                 modifier = Modifier.align(Alignment.End),
                 icon = R.drawable.ic_search,
