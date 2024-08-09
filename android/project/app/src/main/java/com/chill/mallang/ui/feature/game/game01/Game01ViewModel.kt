@@ -79,6 +79,11 @@ class Game01ViewModel
             MutableStateFlow<Game01QUizUiState>(Game01QUizUiState.Loading)
         val QuizUiState = _QuizUiState.asStateFlow()
 
+        // 리뷰 UiState
+        private var _reviewUiState =
+            MutableStateFlow<Game01ReviewUiState>(Game01ReviewUiState.Loading)
+        val reviewUiState = _reviewUiState.asStateFlow()
+
         // 최종 결과 UiState
         private var _resultUiState =
             MutableStateFlow<Game01FinalResultUiState>(Game01FinalResultUiState.Loading)
