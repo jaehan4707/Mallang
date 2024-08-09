@@ -5,9 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -133,19 +131,18 @@ fun Badge(
                 bottomEnd = 100.dp,
             ),
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
+        Box(
         ) {
             Image(
                 modifier =
                     Modifier
                         .padding(horizontal = 8.dp)
-                        .size(48.dp),
+                        .size(48.dp)
+                        .align(Alignment.TopCenter),
                 painter = painterResource(id = badge),
                 contentDescription = null,
             )
-            Text(level.toString(), modifier = Modifier.padding(bottom = 8.dp))
+            Text(level.toString(), modifier = Modifier.padding(bottom = 8.dp).align(Alignment.BottomCenter))
         }
     }
 }
