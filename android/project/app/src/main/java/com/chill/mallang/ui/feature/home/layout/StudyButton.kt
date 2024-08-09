@@ -26,8 +26,7 @@ fun StudyButton(
 ) {
     Button(
         modifier =
-            modifier
-                .width(150.dp),
+            modifier.width(180.dp),
         onClick = onClick,
         shape = leftRoundedShape,
         colors =

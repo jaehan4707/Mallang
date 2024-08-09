@@ -27,8 +27,7 @@ fun MapButton(
 ) {
     Button(
         modifier =
-            modifier
-                .width(150.dp),
+            modifier.width(180.dp),
         onClick = onClick,
         shape = rightRoundedCornerShape,
         colors =

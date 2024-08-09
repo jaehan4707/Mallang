@@ -21,13 +21,19 @@ fun BottomButtonHolder(
     onClickMap: () -> Unit = {},
     onClickSetting: () -> Unit = {},
 ) {
-    Box(modifier = modifier.fillMaxWidth().height(210.dp)) {
+    Box(modifier = modifier
+        .fillMaxWidth()
+        .height(210.dp)) {
         SettingsButton(
-            modifier = Modifier.padding(8.dp).size(40.dp).align(Alignment.TopEnd),
+            modifier = Modifier
+                .padding(8.dp)
+                .size(40.dp)
+                .align(Alignment.TopEnd),
             onClick = onClickSetting,
         )
         Row(
-            modifier = Modifier.align(Alignment.Center).padding(40.dp),
+            modifier = Modifier
+                .align(Alignment.Center),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             StudyButton(onClick = onClickStudy)
