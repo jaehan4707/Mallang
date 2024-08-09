@@ -24,4 +24,12 @@ interface DataStoreRepository {
     suspend fun getUserId(): Long?
 
     suspend fun getFactionId(): Long?
+
+    suspend fun saveLevel(level: Int)
+
+    suspend fun saveExp(exp: Float)
+
+    suspend fun getLevel(): Int?
+
+    suspend fun getExp(): Float?
 }
