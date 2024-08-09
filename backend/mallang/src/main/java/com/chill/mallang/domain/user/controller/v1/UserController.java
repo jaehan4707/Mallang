@@ -23,8 +23,7 @@ public class UserController {
     @Operation(summary="user 정보 조회 with email", description = "해당 유저 정보 조회 API,헤더에 토큰 첨부 필수")
     @GetMapping("/info")
     public ResponseEntity<?> getUserByEmail(HttpServletRequest request) {
-        Map<String, Object> response = userService.findByEmailFromToken(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(userService.findByEmailFromToken(request), HttpStatus.OK);
     }
 
     @Operation(summary="email 중복 조회", description = "email 중복 API,헤더에 토큰 첨부 필수")
