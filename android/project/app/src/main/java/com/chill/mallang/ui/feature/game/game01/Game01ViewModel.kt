@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.game.game01
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -7,15 +8,19 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.data.model.entity.Game01QuizData
+import com.chill.mallang.data.model.entity.User
 import com.chill.mallang.data.model.request.FetchGameResultRequest
 import com.chill.mallang.data.model.request.GradingUserAnswerRequest
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.QuizRepository
+import com.chill.mallang.data.repository.remote.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -24,27 +29,31 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+private const val TAG = "Game01ViewModel"
+
 @HiltViewModel
 class Game01ViewModel
     @Inject
     constructor(
+        private val userRepository: UserRepository,
         private val quizRepository: QuizRepository,
     ) : ViewModel() {
+        private val _game01UiEvent = MutableSharedFlow<Game01UiEvent>()
+        val gameUiEvent = _game01UiEvent.asSharedFlow()
+
+        // 게임 진행 점령지 ID
+        private var _areaId: Long = 0L
+        val areaId: Long get() = _areaId
+
         // 게임01 현재 상태
         var game01State by mutableStateOf(Game01State.INIT)
-
-        // 게임01 라운드 제한 시간
-        val ROUND_TIME_LIMIT = 100
-
-        // 게임01 라운드 수
-        val ROUND_COUNT = 3
 
         // Timer Job
         private var timerJob: Job? = null
 
         // 게임01 문제 ID List
-        private var _questionIdList = mutableListOf<Int>()
-        val questionIdList: List<Int> get() = _questionIdList
+        private var _questionIdList = mutableListOf<Long>()
+        val questionIdList: List<Long> get() = _questionIdList
 
         // 게임01 문제 데이터셋 List
         private var _questionDataSetList = mutableListOf<Game01QuizData>()
@@ -75,16 +84,36 @@ class Game01ViewModel
             MutableStateFlow<Game01FinalResultUiState>(Game01FinalResultUiState.Loading)
         val resultUiState = _resultUiState.asStateFlow()
 
+        private val _userInfo = mutableStateOf<User>(User())
+        val userInfo: User get() = _userInfo.value
+
         init {
-            loadInitData()
+            fetchUserInfo()
         }
 
-        fun loadInitData() {
-            fetchQuizIds()
+        fun initializeAreaId(areaId: Long) {
+            _areaId = areaId
         }
 
-        fun startGame() {
-            fetchQuiz()
+        fun fetchUserInfo() {
+            viewModelScope.launch {
+                userRepository.getUserInfo().collectLatest { response ->
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            _userInfo.value = response.body!!
+                            _game01UiEvent.emit(Game01UiEvent.CompleteUserInfoLoad)
+                        }
+
+                        is ApiResponse.Error -> {
+                            Log.d(TAG, "fetchUserInfo: ${response.errorMessage}")
+                        }
+
+                        is ApiResponse.Init -> {
+                            Log.d(TAG, "fetchUserInfo: $response")
+                        }
+                    }
+                }
+            }
         }
 
         fun completeRoundLoad() {
@@ -103,19 +132,19 @@ class Game01ViewModel
             }
         }
 
-        private fun updateGame01State(game01State: Game01State) {
+        fun updateGame01State(game01State: Game01State) {
             this.game01State = game01State
         }
 
-        private fun fetchQuizIds() {
+        fun fetchQuizIds() {
             viewModelScope.launch {
-                quizRepository.getQuizIds(testAreaId).collectLatest { response ->
+                quizRepository.getQuizIds(areaId).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
-                                _questionIdList.addAll(response.body ?: listOf())
-                            updateGame01State(Game01State.ROUND_LOAD)
-                            startGame()
+                            _questionIdList.addAll(response.body ?: listOf())
+                            _game01UiEvent.emit(Game01UiEvent.CompleteQuizIdsLoad)
                         }
+
                         is ApiResponse.Error -> {}
                         is ApiResponse.Init -> {}
                     }
@@ -123,19 +152,20 @@ class Game01ViewModel
             }
         }
 
-        private fun fetchQuiz() {
+        fun fetchQuiz() {
             viewModelScope.launch {
                 quizRepository.getQuiz(questionIdList[gameRound - 1]).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
                             response.body?.let { _questionDataSetList.add(it) }
+                            _game01UiEvent.emit(Game01UiEvent.CompleteQuizLoad)
                             _QuizUiState.emit(
                                 Game01QUizUiState.Success(
                                     QuizDataSet = response.body!!,
                                 ),
                             )
-                            updateGame01State(Game01State.ROUND_READY)
                         }
+
                         is ApiResponse.Error -> {}
                         is ApiResponse.Init -> {}
                     }
@@ -145,20 +175,20 @@ class Game01ViewModel
 
         fun postUserAnswer() {
             pauseTimer()
+            updateGame01State(Game01State.ROUND_SUBMIT)
 
-            val quizId = questionIdList[gameRound - 1]
+            val quizId = questionIdList[gameRound - 1].toLong()
             val roundPlayingTime = getRoundPlayingTime()
             val userAnswer = userAnswerList[gameRound]
             val currentTimestamp = getCurrentTimestamp()
 
             viewModelScope.launch {
-                updateGame01State(Game01State.ROUND_SUBMIT)
                 quizRepository
                     .postUserAnswer(
                         gradingUserAnswerRequest =
                             GradingUserAnswerRequest(
                                 quizId = quizId,
-                                userId = testUserId,
+                                userId = userInfo.id,
                                 userAnswer = userAnswer,
                                 answerTime = roundPlayingTime,
                                 created_at = currentTimestamp,
@@ -166,15 +196,13 @@ class Game01ViewModel
                     ).collectLatest { response ->
                         when (response) {
                             is ApiResponse.Success -> {
-                                if (gameRound == ROUND_COUNT) {
-                                    updateGame01State(Game01State.FINISH)
-                                } else {
-                                    gameRound += 1
-                                    updateGame01State(Game01State.ROUND_LOAD)
-                                    fetchQuiz()
-                                }
+                                _game01UiEvent.emit(Game01UiEvent.CompletePostUserAnswer)
                             }
-                            is ApiResponse.Error -> {}
+
+                            is ApiResponse.Error -> {
+                                Log.d(TAG, "postUserAnswer: ${response.errorMessage}")
+                            }
+
                             is ApiResponse.Init -> {}
                         }
                     }
@@ -187,9 +215,9 @@ class Game01ViewModel
                     .getResults(
                         fetchGameResultRequest =
                             FetchGameResultRequest(
-                                areaId = testAreaId,
-                                userId = testUserId,
-                                factionId = testFactionId,
+                                areaId = areaId,
+                                userId = userInfo.id,
+                                factionId = userInfo.factionId,
                                 quizIds = questionIdList,
                             ),
                     ).collectLatest { response ->
@@ -200,18 +228,27 @@ class Game01ViewModel
                                         finalResult = response.body!!,
                                     ),
                                 )
-                                if (gameRound == ROUND_COUNT) {
-                                    updateGame01State(Game01State.FINISH)
-                                } else {
-                                    gameRound += 1
-                                    updateGame01State(Game01State.ROUND_READY)
-                                }
+                                _game01UiEvent.emit(Game01UiEvent.CompleteGameResultLoad)
                             }
-                            is ApiResponse.Error -> {}
+
+                            is ApiResponse.Error -> {
+                                _resultUiState.emit(
+                                    Game01FinalResultUiState.Error(
+                                        errorMessage = response.errorMessage,
+                                    ),
+                                )
+                            }
+
                             is ApiResponse.Init -> {}
                         }
                     }
             }
+        }
+
+        fun getCurrentRound(): Int = gameRound
+
+        fun increaseRound() {
+            gameRound += 1
         }
 
         fun startTimer() {
@@ -240,11 +277,9 @@ class Game01ViewModel
             return sdf.format(Date())
         }
 
-        companion object {
-            // 더미 데이터
-            val testAreaId: Int = 1
-            val testUserId: Int = 1
-            val testFactionId: Int = 2
+        companion object Game01Constants {
+            const val ROUND_TIME_LIMIT = 100
+            const val ROUND_COUNT = 3
         }
     }
 
@@ -255,5 +290,6 @@ enum class Game01State {
     ROUND_RUNNING, // 라운드 진행 상태       (라운드 진행 중인 단계)
     ROUND_SUBMIT, // 라운드 답안 제출 상태   (라운드에서 작성한 사용자 답안을 서버에 POST 하는 단계)
     ROUND_DONE, // 라운드 완료 상태       (답안 제출 및 채점이 완료된 단계)
+    REVIEW, // 게임 결과 리뷰 상태       (게임 결과를 사용자가 확인하고, 채점 결과를 리뷰하는 단계)
     FINISH, // 게임 완료 상태         (사용자가 게임을 완료하고, 사용자에게 결과를 알리는 단계)
 }

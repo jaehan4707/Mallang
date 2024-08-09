@@ -1,21 +1,78 @@
 package com.chill.mallang.ui.feature.game.game01
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.feature.game.game01.Game01ViewModel.Game01Constants.ROUND_COUNT
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01LoadingScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01PlayScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01ResultScreen
+import com.chill.mallang.ui.feature.game.game01.SubView.Game01ReviewScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundDoneScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundScreen
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun Game01Screen(modifier: Modifier = Modifier) {
+fun Game01Screen(
+    areaId: Long = -1L,
+    popUpBackStack: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
     val viewModel: Game01ViewModel = hiltViewModel()
+    val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
+    val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.initializeAreaId(areaId)
+    }
+
+    BackConfirmHandler(
+        isBackPressed = isBackPressed,
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
+        onConfirm = {
+            setBackPressed(false)
+            popUpBackStack()
+        },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
+        onDismiss = {
+            setBackPressed(false)
+        },
+        title = stringResource(id = R.string.game_give_up_message),
+    )
+    BackHandler(onBack = { setBackPressed(true) })
+
+    TopbarHandler(
+        isVisible = true,
+        title = stringResource(id = R.string.game_title),
+        onBack = { nav ->
+            setBackPressed(true)
+            setNavController(nav)
+        },
+    )
+
+    HandleGame01Event(
+        game01UiEvent = viewModel.gameUiEvent,
+        fetchQuizIdsInfo = { viewModel.fetchQuizIds() },
+        fetchQuizData = { viewModel.fetchQuiz() },
+        fetchFinalResult = { viewModel.fetchFinalResult() },
+        updateGame01StateToRoundLoad = { viewModel.updateGame01State(Game01State.ROUND_LOAD) },
+        updateGame01StateToRoundReady = { viewModel.updateGame01State(Game01State.ROUND_READY) },
+        updateGame01StateToReview = { viewModel.updateGame01State(Game01State.REVIEW) },
+        getCurrentRound = { viewModel.getCurrentRound() },
+        increaseRound = { viewModel.increaseRound() },
+    )
 
     when (viewModel.game01State) {
         Game01State.INIT ->
@@ -50,10 +107,64 @@ fun Game01Screen(modifier: Modifier = Modifier) {
         Game01State.ROUND_DONE ->
             Game01RoundDoneScreen()
 
+        Game01State.REVIEW ->
+            Game01ReviewScreen(
+                completeReview = { viewModel.updateGame01State(Game01State.FINISH) },
+            )
+
         Game01State.FINISH ->
             Game01ResultScreen(
                 viewModel = viewModel,
+                finishGame = popUpBackStack,
             )
+    }
+}
+
+@Composable
+fun HandleGame01Event(
+    game01UiEvent: SharedFlow<Game01UiEvent>,
+    updateGame01StateToRoundLoad: () -> Unit,
+    updateGame01StateToRoundReady: () -> Unit,
+    updateGame01StateToReview: () -> Unit,
+    fetchQuizIdsInfo: () -> Unit,
+    fetchQuizData: () -> Unit,
+    fetchFinalResult: () -> Unit,
+    getCurrentRound: () -> Int,
+    increaseRound: () -> Unit,
+) {
+    LaunchedEffect(game01UiEvent) {
+        game01UiEvent.collectLatest { event ->
+            when (event) {
+                Game01UiEvent.CompleteUserInfoLoad -> {
+                    fetchQuizIdsInfo()
+                }
+
+                Game01UiEvent.CompleteQuizIdsLoad -> {
+                    updateGame01StateToRoundLoad()
+                    fetchQuizData()
+                }
+
+                Game01UiEvent.CompleteQuizLoad -> {
+                    updateGame01StateToRoundReady()
+                }
+
+                Game01UiEvent.CompletePostUserAnswer -> {
+                    val currentRound = getCurrentRound()
+
+                    if (currentRound == ROUND_COUNT) {
+                        fetchFinalResult()
+                    } else {
+                        increaseRound()
+                        fetchQuizData()
+                        updateGame01StateToRoundLoad()
+                    }
+                }
+
+                Game01UiEvent.CompleteGameResultLoad -> {
+                    updateGame01StateToReview()
+                }
+            }
+        }
     }
 }
 

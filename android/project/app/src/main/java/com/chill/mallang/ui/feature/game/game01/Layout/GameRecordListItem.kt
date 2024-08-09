@@ -23,29 +23,30 @@ import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun GameRecordListItem(
+    userPlace: Int = 0,
     userRecord: GameUserRecord,
     modifier: Modifier = Modifier,
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(vertical = 5.dp)
-            .height(height = 65.dp)
-            .background(Color.White, shape = RoundedCornerShape(16.dp))
-            .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.dp)
+                .height(height = 65.dp)
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
     ) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             Text(
-                text = stringResource(R.string.user_record_rank, userRecord.userPlace),
+                text = stringResource(R.string.user_record_rank, userPlace),
                 fontSize = 24.sp,
                 style = Typography.displayLarge,
                 color = Color.Red,

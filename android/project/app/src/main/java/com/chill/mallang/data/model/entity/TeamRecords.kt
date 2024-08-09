@@ -14,7 +14,7 @@ data class TeamRecords(
 @Immutable
 @Serializable
 data class UserRecord(
-    val userId: Int,
+    val userId: Long,
     val userName: String,
     val userPlace: Int,
     val userScore: Int,

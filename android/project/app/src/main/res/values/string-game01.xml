@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="game_title">점령전</string>
+    <string name="game_give_up_message">게임을 포기하시겠습니까?</string>
     <string name="round_title_format">라운드 %d</string>
     <string name="question_message_format">Q. %s</string>
     <string name="loading_message_default">로딩중...</string>
