@@ -17,7 +17,7 @@ class QuizRepositoryImpl
     constructor(
         private val quizApi: QuizApi,
     ) : QuizRepository {
-        override suspend fun getQuizIds(areaId: Int): Flow<ApiResponse<List<Int>>> =
+        override suspend fun getQuizIds(areaId: Long): Flow<ApiResponse<List<Long>>> =
             flow {
                 val response =
                     apiHandler {
@@ -41,7 +41,7 @@ class QuizRepositoryImpl
                 }
             }
 
-        override suspend fun getQuiz(quizId: Int): Flow<ApiResponse<Game01QuizData>> =
+        override suspend fun getQuiz(quizId: Long): Flow<ApiResponse<Game01QuizData>> =
             flow {
                 val response =
                     apiHandler {

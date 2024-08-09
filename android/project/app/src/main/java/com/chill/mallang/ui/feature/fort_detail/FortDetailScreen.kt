@@ -26,6 +26,7 @@ fun FortDetailScreen(
     areaId: Int?,
     userId: Int?,
     teamId: Int?,
+    navigateToGame: () -> Unit = {},
 ) {
     val viewModel: FortDetailViewModel = hiltViewModel()
     val occupationState by viewModel.areaDetailStateFlow.collectAsStateWithLifecycle()
@@ -46,6 +47,7 @@ fun FortDetailScreen(
         modifier = modifier,
         areaDetailState = occupationState,
         teamRecordState = teamLeadersState,
+        navigateToGame = navigateToGame,
     )
 }
 
@@ -54,6 +56,7 @@ fun AreaDetailContent(
     modifier: Modifier = Modifier,
     areaDetailState: AreaDetailState,
     teamRecordState: TeamRecordState,
+    navigateToGame: () -> Unit = {}
 ) {
     Column(
         modifier =
@@ -66,6 +69,7 @@ fun AreaDetailContent(
         )
         GameStartBody(
             modifier = Modifier.weight(2F),
+            navigateToGame = navigateToGame,
         )
         TeamRecordBody(
             teamRecordState = teamRecordState,

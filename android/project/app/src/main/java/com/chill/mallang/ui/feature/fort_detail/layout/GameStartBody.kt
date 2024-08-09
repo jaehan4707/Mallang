@@ -21,7 +21,10 @@ import com.chill.mallang.ui.theme.Typography
 
 
 @Composable
-fun GameStartBody(modifier: Modifier = Modifier) {
+fun GameStartBody(
+    navigateToGame: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier =
         modifier
@@ -35,7 +38,9 @@ fun GameStartBody(modifier: Modifier = Modifier) {
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 100.dp),
-            onClick = { },
+            onClick = {
+                navigateToGame()
+            },
             shape = RoundedCornerShape(10.dp),
             colors =
             ButtonDefaults.buttonColors(

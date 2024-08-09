@@ -147,7 +147,7 @@ fun Game01PlayContent(
                     item {
                         ButtonBody(
                             remaingTime = remainingTime,
-                            timeLimit = viewModel.ROUND_TIME_LIMIT,
+                            timeLimit = Game01ViewModel.Game01Constants.ROUND_TIME_LIMIT,
                             submitUserAnswer = submitUserAnswer,
                         )
                     }
