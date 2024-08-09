@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun WordCardDialog(
     index: Int,
-    wordCards: List<Word>,
+    wordCards: List<CorrectWord>,
     onDismiss: () -> Unit,
 ) {
     BasicAlertDialog(
@@ -58,10 +58,10 @@ fun WordCardDialog(
         content = {
             Surface(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.35f)
-                    .padding(20.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.35f)
+                        .padding(20.dp),
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(width = 2.dp, color = Gray6),
                 color = Color.White,
@@ -102,10 +102,10 @@ fun WordCardDialog(
                         // 오른쪽 닫기 아이콘
                         Box(
                             modifier =
-                            Modifier
-                                .padding(10.dp)
-                                .size(15.dp)
-                                .weight(1f),
+                                Modifier
+                                    .padding(10.dp)
+                                    .size(15.dp)
+                                    .weight(1f),
                             contentAlignment = Alignment.CenterEnd,
                         ) {
                             ImageButton(
@@ -120,9 +120,9 @@ fun WordCardDialog(
 
                     HorizontalPager(
                         modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center),
+                            Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center),
                         state = pagerState,
                         pageSpacing = pageSpacing,
                     ) { page ->
@@ -179,56 +179,54 @@ fun WordCardDialog(
 @Composable
 fun WordCardContent(
     modifier: Modifier = Modifier,
-    card: Word,
+    card: CorrectWord,
 ) {
-    if (card is Word.CorrectWord) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Column(
-            modifier = modifier,
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Row(
+                modifier = Modifier.wrapContentSize(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    modifier = Modifier.wrapContentSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = card.word,
-                        style = Typography.headlineLarge,
-                        color = Gray6,
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    PosBox(pos = card.pos)
-                }
-                Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = card.meaning,
-                    style = Typography.headlineSmall,
+                    text = card.word,
+                    style = Typography.headlineLarge,
                     color = Gray6,
                 )
+                Spacer(modifier = Modifier.width(10.dp))
+                PosBox(pos = card.pos)
             }
-
-            Spacer(modifier = Modifier.height(25.dp))
-            Spacer(
-                modifier =
-                    Modifier
-                        .height(1.dp)
-                        .fillMaxWidth()
-                        .background(Gray3),
-            )
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                modifier =
-                    Modifier
-                        .fillMaxWidth(),
-                text = card.example,
+                text = card.meaning,
                 style = Typography.headlineSmall,
-                textAlign = TextAlign.Center,
                 color = Gray6,
             )
         }
+
+        Spacer(modifier = Modifier.height(25.dp))
+        Spacer(
+            modifier =
+                Modifier
+                    .height(1.dp)
+                    .fillMaxWidth()
+                    .background(Gray3),
+        )
+        Spacer(modifier = Modifier.height(25.dp))
+        Text(
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
+            text = card.example,
+            style = Typography.headlineSmall,
+            textAlign = TextAlign.Center,
+            color = Gray6,
+        )
     }
 }
 
@@ -239,7 +237,7 @@ fun Preview() {
         index = 1,
         wordCards =
             arrayListOf(
-                Word.CorrectWord(
+                CorrectWord(
                     word = "단어",
                     pos = "명사",
                     meaning = "여기는 단어의 뜻을 나타내는 공간",
