@@ -24,15 +24,15 @@ import com.chill.mallang.ui.theme.Typography
 fun NoteChangeButton(
     context: Context,
     isWordScreen: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Button(
         modifier = Modifier.padding(12.dp),
         colors =
-        ButtonDefaults.buttonColors(
-            contentColor = White,
-            containerColor = Gray6,
-        ),
+            ButtonDefaults.buttonColors(
+                contentColor = White,
+                containerColor = Gray6,
+            ),
         shape = RoundedCornerShape(10.dp),
         onClick = onClick,
     ) {
@@ -46,13 +46,13 @@ fun NoteChangeButton(
             Spacer(modifier = Modifier.width(7.dp))
             Text(
                 text =
-                if (isWordScreen) {
-                    context.getString(R.string.change_to_incorrect_note)
-                } else {
-                    context.getString(
-                        R.string.change_to_word_note,
-                    )
-                },
+                    if (isWordScreen) {
+                        context.getString(R.string.change_to_incorrect_note)
+                    } else {
+                        context.getString(
+                            R.string.change_to_word_note,
+                        )
+                    },
                 style = Typography.displayMedium,
             )
         }
