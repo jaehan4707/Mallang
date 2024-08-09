@@ -6,4 +6,6 @@ data class User(
     val factionId: Long = 0,
     val tryCount: Int = 0,
     val nickName: String = "",
+    val level: Int = 0,
+    val exp: Float = 0f,
 )
