@@ -45,7 +45,10 @@ import com.chill.mallang.ui.theme.Typography
 import kotlinx.coroutines.delay
 
 @Composable
-fun Game01ReviewScreen(modifier: Modifier = Modifier) {
+fun Game01ReviewScreen(
+    completeReview: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
     var isExpanded by remember { mutableStateOf(false) }
     var isTransparent by remember { mutableStateOf(false) }
     var isRoundTransparent by remember { mutableStateOf(false) }
@@ -55,7 +58,7 @@ fun Game01ReviewScreen(modifier: Modifier = Modifier) {
 
     val size by animateDpAsState(
         targetValue = if (isExpanded) 250.dp else 300.dp,
-        animationSpec = tween(durationMillis = 300)
+        animationSpec = tween(durationMillis = 300),
     )
 
     val alpha by animateFloatAsState(
@@ -94,9 +97,8 @@ fun Game01ReviewScreen(modifier: Modifier = Modifier) {
 
     val gradeStampBoxSize by animateDpAsState(
         targetValue = if (isGradeStampBoxExpanded) 300.dp else 100.dp,
-        animationSpec = tween(durationMillis = 1000)
+        animationSpec = tween(durationMillis = 1000),
     )
-
 
     Box(
         modifier =
@@ -116,37 +118,38 @@ fun Game01ReviewScreen(modifier: Modifier = Modifier) {
             )
             Box(
                 modifier = Modifier.size(gradeStampBoxSize),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.img_result_a_plus),
                     contentDescription = "",
-                    modifier = Modifier
-                        .size(size)
-                        .graphicsLayer(alpha = alpha),
+                    modifier =
+                        Modifier
+                            .size(size)
+                            .graphicsLayer(alpha = alpha),
                 )
             }
 
             Row(
-                modifier = Modifier.graphicsLayer(roundAlpha)
+                modifier = Modifier.graphicsLayer(roundAlpha),
             ) {
                 RoundResultItem(
                     round = 1,
                     modifier = modifier.weight(1F),
                     score = 85,
-                    delay = 1000
+                    delay = 1000,
                 )
                 RoundResultItem(
                     round = 2,
                     modifier = modifier.weight(1F),
                     score = 94,
-                    delay = 2000
+                    delay = 2000,
                 )
                 RoundResultItem(
                     round = 3,
                     modifier = modifier.weight(1F),
                     score = 100,
-                    delay = 3000
+                    delay = 3000,
                 )
             }
             RoundResultBox(
@@ -155,16 +158,16 @@ fun Game01ReviewScreen(modifier: Modifier = Modifier) {
 
             Row(
                 modifier = Modifier.graphicsLayer(alpha = buttonAlpha),
-            ){
+            ) {
                 LongBlackButton(
                     onClick = { /*TODO*/ },
                     text = "채점 보기",
-                    modifier = Modifier.weight(1F).padding(horizontal = 10.dp, vertical = 5.dp)
+                    modifier = Modifier.weight(1F).padding(horizontal = 10.dp, vertical = 5.dp),
                 )
                 LongBlackButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { completeReview() },
                     text = "확인",
-                    modifier = Modifier.weight(1F).padding(horizontal = 10.dp, vertical = 5.dp)
+                    modifier = Modifier.weight(1F).padding(horizontal = 10.dp, vertical = 5.dp),
                 )
             }
         }
@@ -196,7 +199,7 @@ fun RoundResultItem(
             ScoreProgressIndicator(
                 score = score,
                 perfectScore = 100,
-                delay = delay
+                delay = delay,
             )
         }
     }
@@ -243,7 +246,7 @@ fun ScoreProgressIndicator(
             strokeWidth = strokeWidth.dp,
             strokeCap = StrokeCap.Round,
             color = QuokkaRealBrown,
-            trackColor = SuperLightGray
+            trackColor = SuperLightGray,
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -266,7 +269,6 @@ fun ScoreProgressIndicator(
 
 @Composable
 fun RoundResultBox(modifier: Modifier = Modifier) {
-
     var isTransparent by remember { mutableStateOf(false) }
 
     val alpha by animateFloatAsState(

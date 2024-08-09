@@ -7,8 +7,10 @@ import kotlinx.serialization.Serializable
 data class WordResponse(
     @SerialName("word")
     val word: String? = "",
+    @SerialName("pos")
+    val pos: String? = "",
     @SerialName("meaning")
     val meaning: String? = "",
     @SerialName("example")
-    val example: String? = ""
+    val example: String? = "",
 )

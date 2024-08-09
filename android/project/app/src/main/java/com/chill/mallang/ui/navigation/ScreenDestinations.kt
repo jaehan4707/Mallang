@@ -165,3 +165,19 @@ object DestinationGameLobby : ScreenDestinations {
     override val route: String
         get() = "GameLobby"
 }
+
+object DestinationGame : ScreenDestinationsWithArgument {
+    override val arg: String
+        get() = "areaId"
+    override val routeWithArgs: String
+        get() = "${this.route}/{areaId}"
+    override val arguments: List<NamedNavArgument>
+        get() =
+            listOf(
+                navArgument(name = arg) { type = NavType.LongType },
+            )
+    override val route: String
+        get() = "game"
+
+    fun createRoute(areaId: Long) = "${this.route}/$areaId"
+}

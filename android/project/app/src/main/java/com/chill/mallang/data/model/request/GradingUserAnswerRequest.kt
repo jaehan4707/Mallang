@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GradingUserAnswerRequest(
     @SerialName("quizId")
-    val quizId: Int,
+    val quizId: Long,
     @SerialName("userId")
-    val userId: Int,
+    val userId: Long,
     @SerialName("userAnswer")
     val userAnswer: String,
     @SerialName("answerTime")

@@ -189,5 +189,18 @@ fun MallangNavHost(
                 userAnswer = userAnswer ?: -1,
             )
         }
+
+        composable(
+            route = DestinationGame.routeWithArgs,
+            arguments = DestinationGame.arguments,
+        ) { navBackStackEntry ->
+            val areaId = navBackStackEntry.arguments?.getLong(DestinationAreaDetail.arg)
+
+            Game01Screen(
+                modifier = modifier,
+                areaId = areaId ?: -1,
+                popUpBackStack = navController::popBackStack,
+            )
+        }
     }
 }
