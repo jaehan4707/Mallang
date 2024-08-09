@@ -47,9 +47,9 @@ class MapViewModel
         var selectedArea by mutableStateOf<Area?>(null)
             private set
 
-        fun setLocation(latlng: LatLng) {
+        fun setLocation(latLng: LatLng) {
             _currentLocation.update {
-                LocationState.Tracking(latlng)
+                LocationState.Tracking(latLng)
             }
 
             proximityState =
@@ -58,7 +58,7 @@ class MapViewModel
                         SphericalUtil
                             .computeDistanceBetween(
                                 selectedArea!!.latLng,
-                                latlng,
+                                latLng,
                             ).toInt()
                     if (distance < 20) {
                         ProximityState.Adjacent(distance)
@@ -66,7 +66,7 @@ class MapViewModel
                         ProximityState.Distant(distance)
                     }
                 } else {
-                    ProximityState.FarAway
+                    getProximityClosestArea(latLng)
                 }
         }
 
@@ -109,23 +109,30 @@ class MapViewModel
         fun setToSelected(area: Area) {
             selectedArea = area
 
-            proximityState = if(currentLocation.value is LocationState.Tracking){
-                val distance =
-                    SphericalUtil
-                        .computeDistanceBetween(
-                            selectedArea!!.latLng,
-                            (currentLocation.value as LocationState.Tracking).latLng,
-                        ).toInt()
-                if (distance < 20) {
-                    ProximityState.Adjacent(distance)
+            proximityState =
+                if (currentLocation.value is LocationState.Tracking) {
+                    val distance =
+                        SphericalUtil
+                            .computeDistanceBetween(
+                                selectedArea!!.latLng,
+                                (currentLocation.value as LocationState.Tracking).latLng,
+                            ).toInt()
+                    if (distance < 20) {
+                        ProximityState.Adjacent(distance)
+                    } else {
+                        ProximityState.Distant(distance)
+                    }
                 } else {
-                    ProximityState.Distant(distance)
+                    ProximityState.FarAway
                 }
-            } else ProximityState.FarAway
         }
 
         fun resetSelected() {
             selectedArea = null
+            if (currentLocation.value is LocationState.Tracking) {
+                val latLng = (currentLocation.value as LocationState.Tracking).latLng
+                proximityState = getProximityClosestArea(latLng)
+            }
         }
 
         /**
@@ -133,22 +140,42 @@ class MapViewModel
          */
         fun findClosestArea() {
             viewModelScope.launch {
-                if (areaState.value is AreasState.HasValue && currentLocation.value is LocationState.Tracking) {
-                    val areas = areaState.value as AreasState.HasValue
-                    val location = currentLocation.value as LocationState.Tracking
-
+                if (currentLocation.value is LocationState.Tracking) {
                     val closest =
-                        areas.list.minByOrNull { area ->
-                            SphericalUtil.computeDistanceBetween(
-                                area.latLng,
-                                location.latLng,
-                            )
-                        }
-
+                        getClosestArea((currentLocation.value as LocationState.Tracking).latLng)
                     if (closest != null) {
                         setToSelected(closest)
                     }
                 }
+            }
+        }
+
+        private fun getClosestArea(latLng: LatLng): Area? =
+            if (areaState.value is AreasState.HasValue) {
+                val areas = areaState.value as AreasState.HasValue
+
+                areas.list.minByOrNull { area ->
+                    SphericalUtil.computeDistanceBetween(
+                        area.latLng,
+                        latLng,
+                    )
+                }
+            } else {
+                null
+            }
+
+        private fun getProximityClosestArea(latLng: LatLng) : ProximityState {
+            val closest = getClosestArea(latLng)
+            return if (closest != null) {
+                val distance =
+                    SphericalUtil.computeDistanceBetween(closest.latLng, latLng).toInt()
+                if (distance < 20) {
+                    ProximityState.Adjacent(distance)
+                } else {
+                    ProximityState.FarAway
+                }
+            } else {
+                ProximityState.FarAway
             }
         }
     }
