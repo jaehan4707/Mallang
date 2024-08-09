@@ -17,4 +17,5 @@
     <string name="game_score_format">%d점 !</string>
     <string name="game_win_message">점령에 성공했어요 !</string>
     <string name="game_win_confirm_message">아싸 !</string>
+    <string name="game_confirm">확인</string>
 </resources>
