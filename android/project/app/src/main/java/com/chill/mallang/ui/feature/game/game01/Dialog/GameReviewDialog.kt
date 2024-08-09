@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.game.game01.Layout
+package com.chill.mallang.ui.feature.game.game01.Dialog
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi

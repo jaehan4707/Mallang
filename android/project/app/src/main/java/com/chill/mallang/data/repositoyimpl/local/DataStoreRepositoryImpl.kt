@@ -86,6 +86,8 @@ class DataStoreRepositoryImpl
             dataStore.edit { prefs ->
                 prefs[USER_ID_KEY] = user.id.toString()
                 prefs[USER_FACTION_ID] = user.factionId.toString()
+                prefs[USER_LEVEL_KEY] = user.level.toString()
+                prefs[USER_EXP_KEY] = user.exp.toString()
             }
         }
 
@@ -100,6 +102,7 @@ class DataStoreRepositoryImpl
                 .map { prefs ->
                     prefs[USER_FACTION_ID].toString().toLongOrNull()
                 }.first()
+
 
         override suspend fun isUserFirstLaunched(): Flow<Boolean> =
             flow {
@@ -116,11 +119,41 @@ class DataStoreRepositoryImpl
                 emit(isFirstLaunch)
             }
 
+        override suspend fun saveLevel(level: Int) {
+            dataStore.edit { prefs ->
+                prefs[USER_LEVEL_KEY] = level.toString()
+            }
+        }
+
+        override suspend fun saveExp(exp: Float) {
+            dataStore.edit { prefs ->
+                prefs[USER_EXP_KEY] = exp.toString()
+            }
+        }
+
+        override suspend fun getLevel(): Int? =
+            dataStore.data
+                .map { prefs ->
+                    prefs[USER_LEVEL_KEY].toString().toIntOrNull()
+                }.first()
+
+        override suspend fun getExp(): Float? =
+            dataStore.data
+                .map { prefs ->
+                    prefs[USER_EXP_KEY].toString().toFloatOrNull()
+                }.first()
+
+
         companion object {
             val ACCESS_TOKEN_KEY = stringPreferencesKey("ACCESS_TOKEN_KEY")
             val USER_EMAIL_KEY = stringPreferencesKey("USER_EMAIL_KEY")
             val USER_FACTION_ID = stringPreferencesKey("USER_FACTION_ID_KEY")
             val USER_ID_KEY = stringPreferencesKey("USER_ID_KEY")
+
             val USER_LASTED_VISITED_DAY_KEY = stringPreferencesKey("USER_LASTED_VISITED_DAY_KEY")
+
+            val USER_LEVEL_KEY = stringPreferencesKey("USER_LEVEL_KEY")
+            val USER_EXP_KEY = stringPreferencesKey("USER_EXP_KEY")
+
         }
     }

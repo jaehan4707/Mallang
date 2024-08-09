@@ -33,3 +33,20 @@ sealed interface Game01FinalResultUiState {
         val errorMessage: String,
     ) : Game01FinalResultUiState
 }
+
+@Stable
+sealed interface Game01ReviewUiState {
+    @Immutable
+    data object Loading : Game01ReviewUiState
+
+    @Immutable
+    data class Success(
+        val finalResult: Game01PlayResult,
+        val userAnswerList: List<String>,
+    ) : Game01ReviewUiState
+
+    @Immutable
+    data class Error(
+        val errorMessage: String,
+    ) : Game01ReviewUiState
+}

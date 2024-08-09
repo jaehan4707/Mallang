@@ -40,6 +40,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.LoadingDialog
+import com.chill.mallang.ui.component.experiencebar.ExperienceState
+import com.chill.mallang.ui.feature.home.layout.BottomButtonHolder
+import com.chill.mallang.ui.feature.home.layout.HomeBackground
 import com.chill.mallang.ui.feature.setting.EditNickNameDialogScreen
 import com.chill.mallang.ui.feature.setting.SettingDialog
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
@@ -56,8 +59,6 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
-    navigateToQuest: () -> Unit = {},
-    navigateToRank: () -> Unit = {},
     popUpBackStack: () -> Unit = {},
     onShowErrorSnackBar: (String) -> Unit = {},
     exitApplication: () -> Unit = {},
@@ -92,17 +93,14 @@ fun HomeScreen(
 
     Box(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(horizontal = 15.dp),
+        Modifier
+            .fillMaxSize()
     ) {
         HomeContent(
             modifier = modifier,
             uiState = uiState,
             navigateToGame = navigateToGame,
             navigateToWordNote = navigateToWordNote,
-            navigateToQuest = navigateToQuest,
-            navigateToRank = navigateToRank,
             sendEvent = { viewModel.sendEvent(it) },
             onShowSettingDialog = showSettingDialog,
             onShowEditNickNameDialog = showEditNickNameDialog,
@@ -154,8 +152,6 @@ fun HomeContent(
     uiState: HomeUiState,
     navigateToWordNote: () -> Unit,
     navigateToGame: () -> Unit,
-    navigateToQuest: () -> Unit,
-    navigateToRank: () -> Unit,
     sendEvent: (HomeUiEvent) -> Unit,
     onShowSettingDialog: Boolean,
     onShowEditNickNameDialog: Boolean,
@@ -169,13 +165,10 @@ fun HomeContent(
         is HomeUiState.LoadUserInfo -> {
             HomeScreenContent(
                 modifier = modifier,
-                nickname = uiState.nickName,
-                factionId = uiState.factionId,
+                uiState = uiState,
                 navigateToGame = navigateToGame,
                 navigateToWordNote = navigateToWordNote,
                 exitApplication = exitApplication,
-                navigateToQuest = navigateToQuest,
-                navigateToRank = navigateToRank,
                 onClickSetting = { sendEvent(HomeUiEvent.ShowSettingDialog) },
             )
             if (onShowSettingDialog) {
@@ -204,13 +197,10 @@ fun HomeContent(
 @Composable
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
-    nickname: String = "",
-    factionId: Long = 0,
+    uiState: HomeUiState.LoadUserInfo,
     navigateToWordNote: () -> Unit = {},
     navigateToGame: () -> Unit = {},
     exitApplication: () -> Unit = {},
-    navigateToRank: () -> Unit = {},
-    navigateToQuest: () -> Unit = {},
     onClickSetting: () -> Unit = {},
 ) {
     val isBackPressed = remember { mutableStateOf(false) }
@@ -231,54 +221,15 @@ fun HomeScreenContent(
         isBackPressed.value = true
     })
     Column {
-        Row {
-            UserItem(
-                icon = R.drawable.ic_stars,
-                label = "15코인",
-            )
-            Spacer(modifier.width(5.dp))
-            UserItem(
-                icon = R.drawable.ic_stars,
-                label = "15코인",
-            )
-        }
-        ImageButton(
-            modifier = Modifier.align(Alignment.End),
-            icon = R.drawable.ic_setting,
-            label = stringResource(id = R.string.side_button_setting),
-            onClick = onClickSetting,
+        HomeBackground(
+            modifier = Modifier.weight(1f),
+            nickName = uiState.nickName,
+            experienceState = uiState.experienceState)
+        BottomButtonHolder(
+            onClickStudy = navigateToWordNote,
+            onClickMap = navigateToGame,
+            onClickSetting = onClickSetting,
         )
-        ImageButton(
-            modifier = Modifier.align(Alignment.End),
-            icon = R.drawable.ic_quest,
-            label = stringResource(id = R.string.side_button_quest),
-            onClick = navigateToQuest,
-        )
-        ImageButton(
-            modifier = Modifier.align(Alignment.End),
-            icon = R.drawable.ic_ranking,
-            label = stringResource(id = R.string.side_button_ranking),
-            onClick = navigateToRank,
-        )
-        UserCharacter(
-            modifier = modifier,
-            userNickName = nickname,
-            userFaction = factionId,
-        )
-        ModeButton(
-            icon = R.drawable.ic_question,
-            label = stringResource(R.string.mode_quiz),
-            modifier = Modifier.align(Alignment.End),
-            onClick = { navigateToWordNote() },
-        )
-        Spacer(modifier.weight(0.05f))
-        ModeButton(
-            icon = R.drawable.ic_location,
-            label = stringResource(R.string.mode_game),
-            modifier = Modifier.align(Alignment.End),
-            onClick = { navigateToGame() },
-        )
-        Spacer(modifier.weight(0.3f))
     }
 }
 
@@ -316,10 +267,10 @@ internal fun UserItem(
 ) {
     Row(
         modifier =
-            Modifier
-                .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
-                .padding(5.dp)
-                .height(IntrinsicSize.Min),
+        Modifier
+            .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
+            .padding(5.dp)
+            .height(IntrinsicSize.Min),
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -347,9 +298,9 @@ fun UserCharacter(
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Max),
+            Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
@@ -372,9 +323,9 @@ fun UserCharacter(
             )
             Text(
                 modifier =
-                    Modifier
-                        .padding(top = 10.dp)
-                        .align(Alignment.Center),
+                Modifier
+                    .padding(top = 10.dp)
+                    .align(Alignment.Center),
                 text = stringResource(id = R.string.character_message),
                 style = Typography.bodyLarge,
                 color = Sub1,
@@ -418,6 +369,6 @@ fun ModeButton(
 @Composable
 fun HomePreview() {
     MallangTheme {
-        HomeScreenContent(nickname = "짜이한")
+        HomeScreenContent(uiState = HomeUiState.LoadUserInfo("짜이한", 1, ExperienceState.Static(0.5f, 1)))
     }
 }

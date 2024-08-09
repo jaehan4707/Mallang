@@ -15,4 +15,6 @@
     <string name="lose_message_format">상대팀보다 %d 점 뒤지고 있습니다.</string>
     <string name="draw_message_format">상대팀과 동점 입니다.</string>
     <string name="game_score_format">%d점 !</string>
+    <string name="game_win_message">점령에 성공했어요 !</string>
+    <string name="game_win_confirm_message">아싸 !</string>
 </resources>

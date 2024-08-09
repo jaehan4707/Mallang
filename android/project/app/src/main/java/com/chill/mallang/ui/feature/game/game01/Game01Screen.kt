@@ -67,6 +67,7 @@ fun Game01Screen(
         fetchQuizIdsInfo = { viewModel.fetchQuizIds() },
         fetchQuizData = { viewModel.fetchQuiz() },
         fetchFinalResult = { viewModel.fetchFinalResult() },
+        fetchReviews = { viewModel.fetchReviews() },
         updateGame01StateToRoundLoad = { viewModel.updateGame01State(Game01State.ROUND_LOAD) },
         updateGame01StateToRoundReady = { viewModel.updateGame01State(Game01State.ROUND_READY) },
         updateGame01StateToReview = { viewModel.updateGame01State(Game01State.REVIEW) },
@@ -109,6 +110,7 @@ fun Game01Screen(
 
         Game01State.REVIEW ->
             Game01ReviewScreen(
+                viewModel = viewModel,
                 completeReview = { viewModel.updateGame01State(Game01State.FINISH) },
             )
 
@@ -129,6 +131,7 @@ fun HandleGame01Event(
     fetchQuizIdsInfo: () -> Unit,
     fetchQuizData: () -> Unit,
     fetchFinalResult: () -> Unit,
+    fetchReviews: () -> Unit,
     getCurrentRound: () -> Int,
     increaseRound: () -> Unit,
 ) {
@@ -162,6 +165,7 @@ fun HandleGame01Event(
 
                 Game01UiEvent.CompleteGameResultLoad -> {
                     updateGame01StateToReview()
+                    fetchReviews()
                 }
             }
         }
