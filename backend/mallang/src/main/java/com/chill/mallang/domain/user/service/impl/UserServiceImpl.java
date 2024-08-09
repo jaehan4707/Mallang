@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -49,14 +50,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<FindByEmailDTO> findByEmail(String email) {
-        logger.info("findByEmail" + userRepository.findByEmail(email).toString());
-        return userRepository.findByEmail(email).map(user -> new FindByEmailDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getNickname(),
-                user.getFaction().getId(), // Assuming faction is an object, and getId() returns its ID
-                user.getTry_count()
-        ));
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        User user = optionalUser.orElseThrow(() -> new RestApiException(CustomUserErrorCode.EMAIL_IS_EXISTS));
+        logger.info("findByEmail return " + user.toString());
+
+        FindByEmailDTO findByEmailDTO = FindByEmailDTO.builder()
+                .email(user.getEmail())
+                .id(user.getId())
+                .faction_id(user.getFaction().getId())
+                .nickname(user.getNickname())
+                .try_count(user.getTry_count())
+                .level(user.getLevel())
+                .exp(user.getExp())
+                .build();
+
+        return Optional.of(findByEmailDTO);
     }
     @Override
     public Map<String, Object> findByEmailFromToken(HttpServletRequest request) {
@@ -64,15 +73,19 @@ public class UserServiceImpl implements UserService {
         if (token == null || !token.startsWith("Bearer ")) {
             throw new RestApiException(CustomUserErrorCode.AUTHENTICATED_FAILED);
         }
+
         String email = jwtUtil.extractEmail(token.substring(7));
         Optional<FindByEmailDTO> userDTO = findByEmail(email);
         logger.info("userDTO: " + userDTO);
+
         Map<String, Object> response = new HashMap<>();
+
         if (userDTO.isPresent()) {
             response.put("data", userDTO.get());
         } else {
             throw new RestApiException(CustomUserErrorCode.JOIN_IS_FAILED);
         }
+
         return response;
     }
 
