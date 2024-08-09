@@ -18,4 +18,7 @@ sealed interface LoginUiState {
     data class Error(
         val errorMessage: String = "",
     ) : LoginUiState
+
+    @Immutable
+    data object FirstLaunched : LoginUiState
 }
