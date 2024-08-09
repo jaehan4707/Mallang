@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="button_search_nearby">가까운 점령지 찾아보기</string>
+    <string name="far_away">가까이에 점령지가 없어요!</string>
+    <string name="adjacent">점령지에 도착했어요!</string>
+    <string name="distant">점령지까지 %d m 남았어요!</string>
 </resources>
