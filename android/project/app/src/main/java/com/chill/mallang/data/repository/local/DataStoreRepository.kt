@@ -25,6 +25,8 @@ interface DataStoreRepository {
 
     suspend fun getFactionId(): Long?
 
+    suspend fun isUserFirstLaunched(): Flow<Boolean>
+
     suspend fun saveLevel(level: Int)
 
     suspend fun saveExp(exp: Float)
@@ -32,4 +34,5 @@ interface DataStoreRepository {
     suspend fun getLevel(): Int?
 
     suspend fun getExp(): Float?
+
 }
