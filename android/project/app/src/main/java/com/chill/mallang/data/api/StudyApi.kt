@@ -15,7 +15,7 @@ interface StudyApi {
     ): Response<ResponseBody<List<WordResponse>>>
 
     // 오답노트 목록 불러오는 api
-    @GET("study/wrong-word/all/{userId}")
+    @GET("study/wrong-word/{userId}")
     suspend fun getIncorrectList(
         @Path("userId") userId: Long,
     ): Response<ResponseBody<List<IncorrectWordResponse>>>

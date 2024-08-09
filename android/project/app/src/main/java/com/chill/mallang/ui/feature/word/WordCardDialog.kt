@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.chill.mallang.R
-import com.chill.mallang.ui.component.PosColorProvider
+import com.chill.mallang.ui.component.PosBox
 import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray4
@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun WordCardDialog(
     index: Int,
-    wordCards: List<Word>,
+    wordCards: List<CorrectWord>,
     onDismiss: () -> Unit,
 ) {
     BasicAlertDialog(
@@ -179,70 +179,54 @@ fun WordCardDialog(
 @Composable
 fun WordCardContent(
     modifier: Modifier = Modifier,
-    card: Word,
+    card: CorrectWord,
 ) {
-    if (card is Word.CorrectWord) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Column(
-            modifier = modifier,
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Row(
+                modifier = Modifier.wrapContentSize(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    modifier = Modifier.wrapContentSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = card.word,
-                        style = Typography.headlineLarge,
-                        color = Gray6,
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Box(
-                        modifier =
-                            Modifier
-                                .background(
-                                    color = PosColorProvider.getColorForPos(card.pos),
-                                    shape = RoundedCornerShape(5.dp),
-                                ).padding(horizontal = 5.dp, vertical = 2.dp),
-                    ) {
-                        Text(
-                            modifier = Modifier.align(Alignment.Center),
-                            text = card.pos,
-                            style = Typography.displaySmall,
-                            color = Color.White,
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = card.meaning,
-                    style = Typography.headlineSmall,
+                    text = card.word,
+                    style = Typography.headlineLarge,
                     color = Gray6,
                 )
+                Spacer(modifier = Modifier.width(10.dp))
+                PosBox(pos = card.pos)
             }
-
-            Spacer(modifier = Modifier.height(25.dp))
-            Spacer(
-                modifier =
-                    Modifier
-                        .height(1.dp)
-                        .fillMaxWidth()
-                        .background(Gray3),
-            )
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                modifier =
-                    Modifier
-                        .fillMaxWidth(),
-                text = card.example,
+                text = card.meaning,
                 style = Typography.headlineSmall,
-                textAlign = TextAlign.Center,
                 color = Gray6,
             )
         }
+
+        Spacer(modifier = Modifier.height(25.dp))
+        Spacer(
+            modifier =
+                Modifier
+                    .height(1.dp)
+                    .fillMaxWidth()
+                    .background(Gray3),
+        )
+        Spacer(modifier = Modifier.height(25.dp))
+        Text(
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
+            text = card.example,
+            style = Typography.headlineSmall,
+            textAlign = TextAlign.Center,
+            color = Gray6,
+        )
     }
 }
 
@@ -253,7 +237,7 @@ fun Preview() {
         index = 1,
         wordCards =
             arrayListOf(
-                Word.CorrectWord(
+                CorrectWord(
                     word = "단어",
                     pos = "명사",
                     meaning = "여기는 단어의 뜻을 나타내는 공간",
