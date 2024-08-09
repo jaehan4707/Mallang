@@ -16,7 +16,7 @@ public class WordMean {
     private Long id;
 
     @ManyToOne
-    @JsonBackReference
+//    @JsonBackReference
     private Word word;
 
     @NotNull

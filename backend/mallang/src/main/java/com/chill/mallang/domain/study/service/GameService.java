@@ -2,7 +2,6 @@ package com.chill.mallang.domain.study.service;
 
 import com.chill.mallang.domain.study.dto.StudyGameResponseDTO;
 import com.chill.mallang.domain.study.dto.UserStudyLogResponseDTO;
-import com.chill.mallang.domain.study.dto.core.WordMeanDTO;
 import com.chill.mallang.domain.study.errors.CustomStudyErrorCode;
 import com.chill.mallang.domain.study.model.*;
 import com.chill.mallang.domain.study.repository.ProblemRepository;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 public class GameService {
     private static final Logger logger = LoggerFactory.getLogger(UserSettingService.class);
     private final StudyGameLogRepository studyGameLogRepository;
-    private final GameWordService gameWordService;
     private final StudyGameRepository studyGameRepository;
     private final CreateGameService createGameService;
     private final UserRepository userRepository;
@@ -63,7 +61,6 @@ public class GameService {
     }
 
     private StudyGameResponseDTO createUserStudyLogRequestDTO(User user, StudyGame studyGame, WordMean wordMean) {
-        WordMeanDTO wordMeanDTO = gameWordService.convertToDTO(wordMean);
         List<String> wordList = new ArrayList<>();
         List<Problem> problemList = problemRepository.findWordListByStudentId(studyGame.getId());
         problemList.stream()
@@ -80,9 +77,19 @@ public class GameService {
                 .build();
     }
 
+    public WordMean getRandomUnusedWordMean(Long userId) {
+        Optional<WordMean> unusedWordMean = wordMeanRepository.findUnusedWordMeansByUserId(userId);
+        logger.info(unusedWordMean.toString());
+        if (unusedWordMean.isPresent()) {
+            WordMean wordMean = unusedWordMean.get();
+            return wordMean;
+        }
+        throw new RestApiException(CustomStudyErrorCode.WORD_IS_SOLD_OUT);
+    }
+
     public Map<String, Object> startGame(Long userId) {
         User user = getUserFromRequest(userId);
-        WordMean selectedWordMean = gameWordService.getRandomUnusedWordMean(userId);
+        WordMean selectedWordMean = getRandomUnusedWordMean(userId);
         StudyGame studyGame = getOrCreateStudyGame(selectedWordMean);
         StudyGameResponseDTO studyGameResponseDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);
         Map<String, Object> response = new HashMap<>();
@@ -148,10 +155,10 @@ public class GameService {
         Map<String, Object> response = new HashMap<>();
         Optional<StudyGameLog> existingLogOpt = studyGameLogRepository.findByStudyGameAndUserForLastResult(userId, studyId);
         logger.info("showResultGame log: "+existingLogOpt);
-        if (existingLogOpt.isPresent()) {
+        if (existingLogOpt.isEmpty()) {
             throw new RestApiException(CustomStudyErrorCode.GAMELOG_IS_NULL);
         }
-        else if (answerOpt.isPresent()){
+        else if (answerOpt.isEmpty()){
             throw new RestApiException(CustomStudyErrorCode.ANSWER_IS_NULL);
         }else{
             StudyGameLog existingLog = existingLogOpt.get();
