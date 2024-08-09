@@ -126,6 +126,11 @@ object DestinationWordNote : ScreenDestinations {
         get() = "wordNote"
 }
 
+object DestinationIncorrectNote : ScreenDestinations {
+    override val route: String
+        get() = "incorrectNote"
+}
+
 object DestinationStudy : ScreenDestinationsWithArgument {
     override val arg: String
         get() = "study"

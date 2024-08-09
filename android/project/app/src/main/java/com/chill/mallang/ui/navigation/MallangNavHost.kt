@@ -12,6 +12,7 @@ import androidx.navigation.navArgument
 import com.chill.mallang.ui.feature.fort_detail.FortDetailScreen
 import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
+import com.chill.mallang.ui.feature.incorrect_word.IncorrectNoteScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
 import com.chill.mallang.ui.feature.map.MapScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
@@ -114,7 +115,7 @@ fun MallangNavHost(
             WordNoteScreen(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
-                navigateToQuiz = {
+                navigateToStudy = {
                     navController.navigate(
                         DestinationStudy.createRoute(studyId = it),
                     ) {
@@ -123,6 +124,37 @@ fun MallangNavHost(
                         }
                     }
                 },
+                navigateToIncorrectWord = {
+                    navController.navigate(
+                        DestinationIncorrectNote.route,
+                    ) {
+                        popUpTo(DestinationWordNote.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+            )
+        }
+
+        composable(
+            route = DestinationIncorrectNote.route,
+        ) {
+            IncorrectNoteScreen(
+                popUpBackStack = navController::popBackStack,
+                navigateToWordNote = {
+                    navController.navigate(DestinationWordNote.route) {
+                        popUpTo(DestinationIncorrectNote.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                navigateToStudy = {
+                    navController.navigate(DestinationStudy.createRoute(studyId = it)) {
+                        popUpTo(DestinationIncorrectNote.route) {
+                            inclusive = false
+                        }
+                    }
+                }
             )
         }
 
@@ -153,7 +185,7 @@ fun MallangNavHost(
         ) { backStackEntry ->
             StudyScreen(
                 modifier = modifier,
-                navigateToQuizResult = {
+                navigateToStudyResult = {
                     navController.navigate(
                         DestinationStudyResult.createRoute(
                             userAnswer = it,
