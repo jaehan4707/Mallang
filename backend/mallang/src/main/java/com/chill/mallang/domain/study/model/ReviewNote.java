@@ -20,9 +20,11 @@ public class ReviewNote {
     private User user;
 
     @OneToOne
+    @NotNull
     private StudyGameLog studyGameLog;
 
     @OneToOne
+    @NotNull
     private Word word;
 
     private LocalDateTime created_at;
