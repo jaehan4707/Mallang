@@ -63,7 +63,7 @@ fun StudyScreen(
     studyViewModel: StudyViewModel = hiltViewModel(),
     studyId: Int = -1,
     popUpBackStack: () -> Unit = {},
-    navigateToQuizResult: (Int) -> Unit = {},
+    navigateToStudyResult: (Int) -> Unit = {},
 ) {
     val studyState by studyViewModel.studyState.collectAsStateWithLifecycle()
 
@@ -108,7 +108,7 @@ fun StudyScreen(
                 context = context,
                 studyViewModel = studyViewModel,
                 studyState = studyState as StudyState.Success,
-                navigateToQuizResult = navigateToQuizResult,
+                navigateToStudyResult = navigateToStudyResult,
             )
         }
 
@@ -126,7 +126,7 @@ fun StudyScreenContent(
     context: Context,
     studyViewModel: StudyViewModel,
     studyState: StudyState.Success,
-    navigateToQuizResult: (Int) -> Unit = {},
+    navigateToStudyResult: (Int) -> Unit = {},
 ) {
     // SnackBarHostState 생성
     val snackBarHostState = remember { SnackbarHostState() }
@@ -181,7 +181,7 @@ fun StudyScreenContent(
                         }
                     } else {
                         studyViewModel.submitQuiz() // 퀴즈 제출 및 채점
-                        navigateToQuizResult(studyViewModel.selectedAnswer)
+                        navigateToStudyResult(studyViewModel.selectedAnswer)
                     }
                 },
                 modifier =
