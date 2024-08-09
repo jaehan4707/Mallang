@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.chill.mallang.ui.feature.fort_detail.FortDetailScreen
+import com.chill.mallang.ui.feature.game.game01.Game01Screen
 import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
@@ -141,7 +142,14 @@ fun MallangNavHost(
             arguments = DestinationAreaDetail.arguments,
         ) { navBackStackEntry ->
             val areaId = navBackStackEntry.arguments?.getLong(DestinationAreaDetail.arg)
-            FortDetailScreen(areaId = areaId)
+            FortDetailScreen(
+                areaId = areaId,
+                onStartGame = {
+                    navController.navigate(
+                        DestinationGame.createRoute(areaId = areaId ?: -1),
+                    )
+                }
+            )
         }
 
         composable(
