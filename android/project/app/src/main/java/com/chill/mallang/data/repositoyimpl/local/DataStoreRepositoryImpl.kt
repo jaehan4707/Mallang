@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class DataStoreRepositoryImpl
@@ -98,10 +101,26 @@ class DataStoreRepositoryImpl
                     prefs[USER_FACTION_ID].toString().toLongOrNull()
                 }.first()
 
+        override suspend fun isUserFirstLaunched(): Flow<Boolean> =
+            flow {
+                val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                val isFirstLaunch =
+                    dataStore.data
+                        .map { prefs -> prefs[USER_LASTED_VISITED_DAY_KEY] }
+                        .first() != todayDate
+                if (isFirstLaunch) {
+                    dataStore.edit { prefs ->
+                        prefs[USER_LASTED_VISITED_DAY_KEY] = todayDate
+                    }
+                }
+                emit(isFirstLaunch)
+            }
+
         companion object {
             val ACCESS_TOKEN_KEY = stringPreferencesKey("ACCESS_TOKEN_KEY")
             val USER_EMAIL_KEY = stringPreferencesKey("USER_EMAIL_KEY")
             val USER_FACTION_ID = stringPreferencesKey("USER_FACTION_ID_KEY")
             val USER_ID_KEY = stringPreferencesKey("USER_ID_KEY")
+            val USER_LASTED_VISITED_DAY_KEY = stringPreferencesKey("USER_LASTED_VISITED_DAY_KEY")
         }
     }

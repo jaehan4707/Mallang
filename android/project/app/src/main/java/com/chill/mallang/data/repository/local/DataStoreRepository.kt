@@ -24,4 +24,6 @@ interface DataStoreRepository {
     suspend fun getUserId(): Long?
 
     suspend fun getFactionId(): Long?
+
+    suspend fun isUserFirstLaunched(): Flow<Boolean>
 }
