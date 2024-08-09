@@ -2,6 +2,7 @@ package com.chill.mallang.domain.study.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -18,8 +19,11 @@ public class WordMean {
     @JsonBackReference
     private Word word;
 
+    @NotNull
     private String mean;
+    @NotNull
     private String type;
+    @NotNull
     private String level;
     private String example;
 

@@ -3,6 +3,7 @@ package com.chill.mallang.domain.study.model;
 import com.chill.mallang.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ public class ReviewNote {
     private Long id;
 
     @ManyToOne
+    @NotNull
     private User user;
 
     @OneToOne

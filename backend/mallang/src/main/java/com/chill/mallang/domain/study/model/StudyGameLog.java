@@ -18,9 +18,11 @@ public class StudyGameLog {
     private Long id;
 
     @ManyToOne
+    @NotNull
     private User user;
 
     @ManyToOne
+    @NotNull
     private StudyGame studyGame;
 
     @ManyToOne
@@ -29,5 +31,6 @@ public class StudyGameLog {
     @NotNull
     private LocalDateTime created_at;
 
+    @NotNull
     private boolean result;
 }
