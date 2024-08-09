@@ -206,6 +206,6 @@ fun TeamButton(
 @Composable
 fun SelectScreenPreview() {
     MallangTheme {
-        SelectScreen()
+        SelectContent()
     }
 }
