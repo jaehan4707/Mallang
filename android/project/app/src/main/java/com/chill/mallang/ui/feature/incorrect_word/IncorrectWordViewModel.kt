@@ -33,32 +33,17 @@ class IncorrectWordViewModel
                     studyRepository.getIncorrectList(userId).collectLatest { response ->
                         when (response) {
                             is ApiResponse.Success -> {
-//                                _wordNoteState.value =
-//                                    WordNoteState.Success(
-//                                        wordList = response.body ?: emptyList(),
-//                                    )
+                                _incorrectNoteState.value =
+                                    IncorrectNoteState.Success(
+                                        wordList = response.body ?: emptyList(),
+                                    )
                             }
 
                             is ApiResponse.Error -> {
                                 // api 통신 실패
-//                                _incorrectNoteState.value =
-//                                    IncorrectNoteState.Error(
-//                                        errorMessage = response.errorMessage,
-//                                    )
-                                // 테스트를 위한 더미 데이터
                                 _incorrectNoteState.value =
-                                    IncorrectNoteState.Success(
-                                        wordList =
-                                            arrayListOf(
-                                                IncorrectWord(
-                                                    studyId = 1,
-                                                    script = "틀린 문제의 스크립트 __ 여기에 있어요 1",
-                                                ),
-                                                IncorrectWord(
-                                                    studyId = 2,
-                                                    script = "틀린 문제의 스크립트 __ 여기에 있어요 2",
-                                                ),
-                                            ),
+                                    IncorrectNoteState.Error(
+                                        errorMessage = response.errorMessage,
                                     )
                             }
 
