@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.summary
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.User
+import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.BoldColoredText
 import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.component.LongBlackButton
@@ -69,8 +73,26 @@ fun SummaryScreen(
     modifier: Modifier = Modifier,
     navigateToHome: () -> Unit = {},
     viewModel: SummaryViewModel = hiltViewModel(),
+    popUpBackStack: () -> Unit = {},
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val isBackPressed = remember { mutableStateOf(false) }
+    BackConfirmHandler(
+        isBackPressed = isBackPressed.value,
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
+        onConfirm = {
+            isBackPressed.value = false
+            popUpBackStack()
+        },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
+        onDismiss = {
+            isBackPressed.value = false
+        },
+        title = stringResource(R.string.app_exit_message),
+    )
+    BackHandler(onBack = {
+        isBackPressed.value = true
+    })
     when (uiState.value) {
         SummaryUiState.Loading -> {
             LoadingDialog(
