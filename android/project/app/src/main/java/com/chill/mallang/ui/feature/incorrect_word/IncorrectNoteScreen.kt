@@ -1,9 +1,8 @@
-package com.chill.mallang.ui.feature.word
+package com.chill.mallang.ui.feature.incorrect_word
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,10 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,23 +36,22 @@ import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.LoadingDialog
-import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.component.NoteChangeButton
-import com.chill.mallang.ui.component.PosBox
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.BackGround
+import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
-fun WordNoteScreen(
+fun IncorrectNoteScreen(
     modifier: Modifier = Modifier,
-    wordViewModel: WordNoteViewModel = hiltViewModel(),
     popUpBackStack: () -> Unit = {},
-    navigateToIncorrectWord: () -> Unit = {},
+    navigateToWordNote: () -> Unit = {},
     navigateToStudy: (Int) -> Unit = {},
+    incorrectViewModel: IncorrectWordViewModel = hiltViewModel(),
 ) {
-    val wordNoteState by wordViewModel.wordNoteState.collectAsStateWithLifecycle()
+    val incorrectState by incorrectViewModel.incorrectNoteState.collectAsStateWithLifecycle()
 
     // TopBar
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
@@ -82,28 +77,26 @@ fun WordNoteScreen(
 
     TopbarHandler(
         isVisible = true,
-        title = context.getString(R.string.word_note),
+        title = context.getString(R.string.incorrect_word_note),
         onBack = { nav ->
             setBackPressed(true)
             setNavController(nav)
         },
     )
 
-    when (wordNoteState) {
-        is WordNoteState.Success -> {
-            WordNoteScreenContent(
-                modifier = modifier,
+    when (incorrectState) {
+        is IncorrectNoteState.Success -> {
+            IncorrectContent(
                 context = context,
-                wordNoteState = wordNoteState as WordNoteState.Success,
-                navigateToQuiz = navigateToStudy,
+                incorrectState = incorrectState as IncorrectNoteState.Success,
+                navigateToStudy = navigateToStudy,
                 onClick = {
-                    navigateToIncorrectWord()
+                    navigateToWordNote()
                 },
             )
         }
 
-        is WordNoteState.Error -> {
-            // api 에러일 때
+        is IncorrectNoteState.Error -> {
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
@@ -115,100 +108,88 @@ fun WordNoteScreen(
             }
         }
 
-        WordNoteState.Loading -> LoadingDialog()
+        IncorrectNoteState.Loading -> LoadingDialog()
     }
 }
 
 @Composable
-fun WordNoteScreenContent(
-    modifier: Modifier,
+fun IncorrectContent(
     context: Context,
-    wordNoteState: WordNoteState.Success,
-    navigateToQuiz: (Int) -> Unit = {},
-    onClick: () -> Unit = {},
+    incorrectState: IncorrectNoteState.Success,
+    navigateToStudy: (Int) -> Unit,
+    onClick: () -> Unit,
 ) {
     var selectedWordIndex by remember { mutableStateOf<Int?>(null) }
 
-    Box(
+    Column(
         modifier =
-            modifier
-                .fillMaxSize()
-                .background(color = White),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            NoteChangeButton(
-                context = context,
-                isWordScreen = true,
-                onClick = onClick,
-            )
-            Box(modifier = Modifier.weight(1f)) {
-                GridWordList(
-                    wordList = wordNoteState.wordList,
-                    onWordClick = { index ->
-                        selectedWordIndex = index
-                    },
-                )
-            }
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                LongBlackButton(
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                    onClick = { navigateToQuiz(-1) },
-                    text = context.getString(R.string.go_to_study_quiz),
-                )
-            }
-            Spacer(modifier = Modifier.height(45.dp))
-        }
-    }
-
-    selectedWordIndex?.let { index ->
-        WordCardDialog(
-            index = index,
-            wordCards = wordNoteState.wordList,
-            onDismiss = { selectedWordIndex = null },
+        NoteChangeButton(
+            context = context,
+            isWordScreen = false,
+            onClick = onClick,
         )
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = context.getString(R.string.incorrect_note_script),
+                style = Typography.bodyMedium,
+                color = Gray4,
+            )
+        }
+        Spacer(modifier = Modifier.height(15.dp))
+        IncorrectList(
+            list = incorrectState.wordList,
+            onClick = { index ->
+                selectedWordIndex = index
+            },
+        )
+
+        // 오답노트일 때는 그때 풀었던 거 보여줌.
+        selectedWordIndex?.let { index ->
+            val word = incorrectState.wordList[index]
+            navigateToStudy(word.studyId)
+        }
     }
 }
 
 @Composable
-fun GridWordList(
-    wordList: List<CorrectWord>,
-    onWordClick: (Int) -> Unit,
+fun IncorrectList(
+    list: List<IncorrectWord>,
+    onClick: (Int) -> Unit,
 ) {
-    LazyVerticalGrid(
+    LazyColumn(
         modifier = Modifier.padding(horizontal = 12.dp),
-        columns = GridCells.Fixed(3),
-        state = rememberLazyGridState(),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        items(wordList.size, span = {
-            GridItemSpan(1)
-        }) { index ->
-            val word = wordList[index]
-            WordListItem(
-                word = word,
-                onClick = {
-                    onWordClick(index)
-                },
+        items(list.size) { index ->
+            val incorrectWord = list[index]
+            IncorrectListItem(
+                incorrectWord = incorrectWord,
+                onClick = { onClick(index) },
             )
         }
     }
 }
 
 @Composable
-fun WordListItem(
-    word: CorrectWord,
+fun IncorrectListItem(
+    incorrectWord: IncorrectWord,
     onClick: () -> Unit,
 ) {
     Surface(
         modifier =
             Modifier
-                .fillMaxWidth(0.3f)
-                .height(110.dp)
-                .padding(horizontal = 5.dp, vertical = 8.dp)
+                .fillMaxWidth()
+                .wrapContentSize()
                 .shadow(
                     elevation = 5.dp,
                     shape = RoundedCornerShape(15.dp),
@@ -218,33 +199,30 @@ fun WordListItem(
         color = BackGround,
         border = BorderStroke(width = 2.dp, color = Gray6),
     ) {
-        Column(
+        Box(
             modifier =
                 Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 30.dp),
+            contentAlignment = Alignment.Center,
         ) {
-            Text(text = word.word, style = Typography.labelLarge)
-            Spacer(modifier = Modifier.height(5.dp))
-            PosBox(pos = word.pos)
+            Text(
+                text = incorrectWord.script,
+                style = Typography.headlineMedium,
+            )
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showSystemUi = true)
 @Composable
-fun WordNotePreview() {
-//    WordNoteScreen()
-    WordListItem(
-        word =
-            CorrectWord(
-                word = "괄목",
-                pos = "명사",
-                meaning = "뜻",
-                example = "예시",
+fun ListItemPrivew() {
+    IncorrectListItem(
+        incorrectWord =
+            IncorrectWord(
+                studyId = 1,
+                script = "여기에 문장 문장이 들어갈 거예요 __ 여기요.",
             ),
-    ) {
-    }
+        onClick = {},
+    )
 }
