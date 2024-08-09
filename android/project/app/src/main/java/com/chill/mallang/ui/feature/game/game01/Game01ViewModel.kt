@@ -79,6 +79,11 @@ class Game01ViewModel
             MutableStateFlow<Game01QUizUiState>(Game01QUizUiState.Loading)
         val QuizUiState = _QuizUiState.asStateFlow()
 
+        // 리뷰 UiState
+        private var _reviewUiState =
+            MutableStateFlow<Game01ReviewUiState>(Game01ReviewUiState.Loading)
+        val reviewUiState = _reviewUiState.asStateFlow()
+
         // 최종 결과 UiState
         private var _resultUiState =
             MutableStateFlow<Game01FinalResultUiState>(Game01FinalResultUiState.Loading)
@@ -201,6 +206,42 @@ class Game01ViewModel
 
                             is ApiResponse.Error -> {
                                 Log.d(TAG, "postUserAnswer: ${response.errorMessage}")
+                            }
+
+                            is ApiResponse.Init -> {}
+                        }
+                    }
+            }
+        }
+
+        fun fetchReviews() {
+            viewModelScope.launch {
+                quizRepository
+                    .getResults(
+                        fetchGameResultRequest =
+                            FetchGameResultRequest(
+                                areaId = areaId,
+                                userId = userInfo.id,
+                                factionId = userInfo.factionId,
+                                quizIds = questionIdList,
+                            ),
+                    ).collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Success -> {
+                                _reviewUiState.emit(
+                                    Game01ReviewUiState.Success(
+                                        finalResult = response.body!!,
+                                        userAnswerList = userAnswerList,
+                                    ),
+                                )
+                            }
+
+                            is ApiResponse.Error -> {
+                                _resultUiState.emit(
+                                    Game01FinalResultUiState.Error(
+                                        errorMessage = response.errorMessage,
+                                    ),
+                                )
                             }
 
                             is ApiResponse.Init -> {}

@@ -11,4 +11,5 @@
     <string name="user_record_rank">%d 위</string>
     <string name="user_record_score">%d 점</string>
     <string name="invalid_entry">유효한 정보가 아닙니다</string>
+    <string name="no_record">기록이 존재하지 않습니다</string>
 </resources>

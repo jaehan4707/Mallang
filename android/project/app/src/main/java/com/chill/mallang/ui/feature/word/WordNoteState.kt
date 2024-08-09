@@ -10,7 +10,7 @@ sealed interface WordNoteState {
 
     @Immutable
     data class Success(
-        val wordList: List<Word> = emptyList(),
+        val wordList: List<CorrectWord> = emptyList(),
     ) : WordNoteState
 
     @Immutable

@@ -13,15 +13,15 @@ interface AreaRepository {
 
     suspend fun getOccupationStatus(): Flow<ApiResponse<TeamList>>
 
-    suspend fun getTryCount(areaId: Int): Flow<ApiResponse<TryCount>>
+    suspend fun getTryCount(userId: Long): Flow<ApiResponse<TryCount>>
 
     suspend fun getAreaDetail(
-        areaId: Int,
-        userTeam: Int,
+        areaId: Long,
+        userTeam: Long,
     ): Flow<ApiResponse<AreaDetail>>
 
     suspend fun getAreaRecords(
-        areaId: Int,
-        userId: Int,
+        areaId: Long,
+        userId: Long,
     ): Flow<ApiResponse<TeamRecords>>
 }

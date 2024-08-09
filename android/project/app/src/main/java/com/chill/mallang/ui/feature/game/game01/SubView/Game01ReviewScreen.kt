@@ -35,8 +35,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
+import com.chill.mallang.ui.feature.game.game01.Game01ReviewUiState
+import com.chill.mallang.ui.feature.game.game01.Game01ViewModel
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.QuokkaLightBrown
 import com.chill.mallang.ui.theme.QuokkaRealBrown
@@ -46,7 +50,52 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun Game01ReviewScreen(
+    viewModel: Game01ViewModel = viewModel(),
     completeReview: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
+    val reviewUiState by viewModel.reviewUiState.collectAsStateWithLifecycle()
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Game01ReviewContent(
+            reviewUiState = reviewUiState,
+            completeReview = completeReview,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+fun Game01ReviewContent(
+    reviewUiState: Game01ReviewUiState,
+    completeReview: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when (reviewUiState) {
+        is Game01ReviewUiState.Loading -> {
+            CircularProgressIndicator()
+        }
+
+        is Game01ReviewUiState.Success -> {
+            ReviewBody(
+                reviewUiState = reviewUiState,
+                completeReview = completeReview,
+            )
+        }
+
+        is Game01ReviewUiState.Error -> {
+            Text(text = reviewUiState.errorMessage)
+        }
+    }
+}
+
+@Composable
+fun ReviewBody(
+    reviewUiState: Game01ReviewUiState.Success,
+    completeReview: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -133,24 +182,14 @@ fun Game01ReviewScreen(
             Row(
                 modifier = Modifier.graphicsLayer(roundAlpha),
             ) {
-                RoundResultItem(
-                    round = 1,
-                    modifier = modifier.weight(1F),
-                    score = 85,
-                    delay = 1000,
-                )
-                RoundResultItem(
-                    round = 2,
-                    modifier = modifier.weight(1F),
-                    score = 94,
-                    delay = 2000,
-                )
-                RoundResultItem(
-                    round = 3,
-                    modifier = modifier.weight(1F),
-                    score = 100,
-                    delay = 3000,
-                )
+                reviewUiState.finalResult.userPlayResult.score.forEachIndexed { index, score ->
+                    RoundResultItem(
+                        round = index + 1,
+                        modifier = modifier.weight(1F),
+                        score = score.toInt(),
+                        delay = (index + 1) * 1000,
+                    )
+                }
             }
             RoundResultBox(
                 modifier = Modifier.graphicsLayer(alpha = feedbackAlpha),
@@ -162,12 +201,18 @@ fun Game01ReviewScreen(
                 LongBlackButton(
                     onClick = { /*TODO*/ },
                     text = "채점 보기",
-                    modifier = Modifier.weight(1F).padding(horizontal = 10.dp, vertical = 5.dp),
+                    modifier =
+                        Modifier
+                            .weight(1F)
+                            .padding(horizontal = 10.dp, vertical = 5.dp),
                 )
                 LongBlackButton(
                     onClick = { completeReview() },
                     text = "확인",
-                    modifier = Modifier.weight(1F).padding(horizontal = 10.dp, vertical = 5.dp),
+                    modifier =
+                        Modifier
+                            .weight(1F)
+                            .padding(horizontal = 10.dp, vertical = 5.dp),
                 )
             }
         }

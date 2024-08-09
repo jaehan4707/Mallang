@@ -7,9 +7,9 @@
     <string name="incorrect_word_note">오답노트</string>
     <string name="change_to_incorrect_note">오답노트로 변경</string>
     <string name="change_to_word_note">단어장으로 변경</string>
-    <string name="go_to_study_quiz">퀴즈 풀기</string>
+    <string name="go_to_study_quiz">학습 퀴즈 풀기</string>
     <string name="correct_message">정답!</string>
     <string name="wrong_message">오답!</string>
     <string name="study_load_error_message">"현재 데이터를 불러올 수 없습니다."</string>
-
+    <string name="incorrect_note_script">클릭하면 틀렸던 문제르 다시 풀 수 있어요</string>
 </resources>

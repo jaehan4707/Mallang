@@ -8,5 +8,5 @@ data class IncorrectWordResponse(
     @SerialName("studyId")
     val studyId: Int? = null,
     @SerialName("word")
-    val word: String? = ""
+    val script: String? = ""
 )

@@ -63,9 +63,9 @@ class AreaRepositoryImpl
                 }
             }
 
-        override suspend fun getTryCount(areaId: Int): Flow<ApiResponse<TryCount>> =
+        override suspend fun getTryCount(userId: Long): Flow<ApiResponse<TryCount>> =
             flow {
-                val response = apiHandler { areaApi.getTryCount(areaId) }
+                val response = apiHandler { areaApi.getTryCount(userId) }
                 when (response) {
                     is ApiResponse.Success -> {
                         emit(ApiResponse.Success(response.body?.data))
@@ -85,8 +85,8 @@ class AreaRepositoryImpl
             }
 
         override suspend fun getAreaDetail(
-            areaId: Int,
-            userTeam: Int,
+            areaId: Long,
+            userTeam: Long,
         ): Flow<ApiResponse<AreaDetail>> =
             flow {
                 val response = apiHandler { areaApi.getAreaDetail(areaId, userTeam) }
@@ -109,8 +109,8 @@ class AreaRepositoryImpl
             }
 
         override suspend fun getAreaRecords(
-            areaId: Int,
-            userId: Int,
+            areaId: Long,
+            userId: Long,
         ): Flow<ApiResponse<TeamRecords>> =
             flow {
                 val response = apiHandler { areaApi.getAreaRecords(areaId, userId) }

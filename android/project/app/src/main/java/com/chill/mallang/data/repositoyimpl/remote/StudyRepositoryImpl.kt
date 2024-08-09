@@ -4,7 +4,8 @@ import com.chill.mallang.data.api.StudyApi
 import com.chill.mallang.data.model.apiHandler
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.StudyRepository
-import com.chill.mallang.ui.feature.word.Word
+import com.chill.mallang.ui.feature.incorrect_word.IncorrectWord
+import com.chill.mallang.ui.feature.word.CorrectWord
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -14,7 +15,7 @@ class StudyRepositoryImpl
     constructor(
         private val studyApi: StudyApi,
     ) : StudyRepository {
-        override suspend fun getWordList(userId: Long): Flow<ApiResponse<List<Word.CorrectWord>>> =
+        override suspend fun getWordList(userId: Long): Flow<ApiResponse<List<CorrectWord>>> =
             flow {
                 val response =
                     apiHandler {
@@ -25,7 +26,7 @@ class StudyRepositoryImpl
                         emit(
                             ApiResponse.Success(
                                 response.body?.data?.map {
-                                    Word.CorrectWord(
+                                    CorrectWord(
                                         word = it.word ?: "",
                                         pos = it.pos ?: "",
                                         example = it.example ?: "",
@@ -51,7 +52,7 @@ class StudyRepositoryImpl
                 }
             }
 
-        override suspend fun getIncorrectList(userId: Long): Flow<ApiResponse<List<Word.IncorrectWord>>> =
+        override suspend fun getIncorrectList(userId: Long): Flow<ApiResponse<List<IncorrectWord>>> =
             flow {
                 val response =
                     apiHandler {
@@ -62,9 +63,9 @@ class StudyRepositoryImpl
                         emit(
                             ApiResponse.Success(
                                 response.body?.data?.map {
-                                    Word.IncorrectWord(
+                                    IncorrectWord(
                                         studyId = it.studyId ?: -1,
-                                        word = it.word ?: "",
+                                        script = it.script ?: "",
                                     )
                                 },
                             ),

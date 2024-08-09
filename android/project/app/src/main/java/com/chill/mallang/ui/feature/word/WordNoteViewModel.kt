@@ -7,7 +7,6 @@ import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.StudyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -47,7 +46,6 @@ class WordNoteViewModel
 
                                 is ApiResponse.Error -> {
                                     // api 통신 실패
-                                    delay(300)
                                     _wordNoteState.value =
                                         WordNoteState.Error(
                                             errorMessage = response.errorMessage,
@@ -57,35 +55,6 @@ class WordNoteViewModel
                                 ApiResponse.Init -> {}
                             }
                         }
-                } ?: run {
-                    _wordNoteState.value = WordNoteState.Error(errorMessage = "User Id is Null")
-                }
-            }
-        }
-
-        fun loadIncorrectWords() {
-            viewModelScope.launch {
-                dataStoreRepository.getUserId()?.let { userId ->
-                    studyRepository.getIncorrectList(userId).collectLatest { response ->
-                        when (response) {
-                            is ApiResponse.Success -> {
-                                _wordNoteState.value =
-                                    WordNoteState.Success(
-                                        wordList = response.body ?: emptyList(),
-                                    )
-                            }
-
-                            is ApiResponse.Error -> {
-                                // api 통신 실패
-                                _wordNoteState.value =
-                                    WordNoteState.Error(
-                                        errorMessage = response.errorMessage,
-                                    )
-                            }
-
-                            ApiResponse.Init -> {}
-                        }
-                    }
                 } ?: run {
                     _wordNoteState.value = WordNoteState.Error(errorMessage = "User Id is Null")
                 }
