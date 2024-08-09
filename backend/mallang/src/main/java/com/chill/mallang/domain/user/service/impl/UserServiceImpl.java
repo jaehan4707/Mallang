@@ -3,6 +3,7 @@ package com.chill.mallang.domain.user.service.impl;
 import com.chill.mallang.domain.user.dto.FindByEmailDTO;
 import com.chill.mallang.domain.user.errors.CustomUserErrorCode;
 import com.chill.mallang.domain.user.jwt.JWTUtil;
+import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.user.service.UserService;
 import com.chill.mallang.errors.exception.RestApiException;
@@ -73,6 +74,18 @@ public class UserServiceImpl implements UserService {
             throw new RestApiException(CustomUserErrorCode.JOIN_IS_FAILED);
         }
         return response;
+    }
+
+    public void addExp(Long userID, float exp) {
+        float nowExp = userRepository.findExpById(userID);
+        User user = userRepository.getUserById(userID);
+        float nextExp = user.getExp() + exp;
+
+        if(nextExp >= user.getLevel() * 200) {
+            nextExp -= user.getLevel() * 200;
+            userRepository.updateUserLevel(user.getId(), user.getLevel()+1);
+        }
+        userRepository.updateUserExp(user.getId(), nextExp);
     }
 }
 

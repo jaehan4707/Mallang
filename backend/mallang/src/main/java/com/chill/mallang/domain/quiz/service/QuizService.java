@@ -12,7 +12,9 @@ import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.chill.mallang.domain.quiz.repository.TotalScoreRepository;
 import com.chill.mallang.domain.quiz.service.core.CoreService;
 import com.chill.mallang.domain.quiz.service.core.OpenAIService;
+import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
+import com.chill.mallang.domain.user.service.impl.UserServiceImpl;
 import com.chill.mallang.errors.exception.RestApiException;
 
 import jakarta.persistence.EntityManager;
@@ -33,15 +35,16 @@ import static com.chill.mallang.util.ValidationUtils.requireNonNull;
 @RequiredArgsConstructor
 public class QuizService {
     private final Logger logger = LoggerFactory.getLogger(QuizService.class);
-    @PersistenceContext
-    private EntityManager entityManager;
 
     private final CoreService coreService;
+    private final OpenAIService openAIService;
+
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
     private final TotalScoreRepository totalScoreRepository;
-    private final OpenAIService openAIService;
+    private final UserServiceImpl userServiceImpl;
+
 
     public Map<String, Object> getById(Long quizID) {
         Optional<Quiz> quiz = quizRepository.findById(quizID);
@@ -126,9 +129,12 @@ public class QuizService {
 
         user.put("Score", responseScore);
         user.put("Total Score", sum);
+
+
         logger.info("라운드 최종 점수 저장 시작");
 
         coreService.storeTotalScore(userID, areaID, sum, factionID);
+        userServiceImpl.addExp(userID, sum);
 
         List<Float> teamScoreList = totalScoreRepository.findTotalScoreByAreaID(areaID);
         team.put("My Team Total Score", teamScoreList.get(0));
@@ -148,7 +154,7 @@ public class QuizService {
         return response;
     }
 
-    public List<Map<String, Object>> teamRankTop3(Long areaID, Long factionID){
+    public List<Map<String, Object>> teamRankTop3(Long areaID, Long factionID) {
         List<Map<String, Object>> teamRankList = new ArrayList<>();
         List<TeamRankResponse> top3Ranks = totalScoreRepository.findTop3Results(areaID, factionID);
 
@@ -160,4 +166,6 @@ public class QuizService {
         }
         return teamRankList;
     }
+
+
 }

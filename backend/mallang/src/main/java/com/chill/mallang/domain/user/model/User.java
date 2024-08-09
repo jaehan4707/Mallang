@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Entity
 @Getter
@@ -29,4 +30,11 @@ public class User {
     private Integer try_count;
     private String role;
 
+    private int level;
+    private int exp;
+
+    @PrePersist
+    protected void onCreate() {
+        if(this.level == 0) level = 1;
+    }
 }
