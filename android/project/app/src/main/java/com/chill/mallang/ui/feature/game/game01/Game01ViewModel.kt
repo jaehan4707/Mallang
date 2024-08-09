@@ -214,6 +214,42 @@ class Game01ViewModel
             }
         }
 
+        fun fetchReviews() {
+            viewModelScope.launch {
+                quizRepository
+                    .getResults(
+                        fetchGameResultRequest =
+                            FetchGameResultRequest(
+                                areaId = areaId,
+                                userId = userInfo.id,
+                                factionId = userInfo.factionId,
+                                quizIds = questionIdList,
+                            ),
+                    ).collectLatest { response ->
+                        when (response) {
+                            is ApiResponse.Success -> {
+                                _reviewUiState.emit(
+                                    Game01ReviewUiState.Success(
+                                        finalResult = response.body!!,
+                                        userAnswerList = userAnswerList,
+                                    ),
+                                )
+                            }
+
+                            is ApiResponse.Error -> {
+                                _resultUiState.emit(
+                                    Game01FinalResultUiState.Error(
+                                        errorMessage = response.errorMessage,
+                                    ),
+                                )
+                            }
+
+                            is ApiResponse.Init -> {}
+                        }
+                    }
+            }
+        }
+
         fun fetchFinalResult() {
             viewModelScope.launch {
                 quizRepository
