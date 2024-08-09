@@ -100,6 +100,18 @@ class DataStoreRepositoryImpl
                     prefs[USER_FACTION_ID].toString().toLongOrNull()
                 }.first()
 
+        override suspend fun saveLevel(level: Int) {
+            dataStore.edit { prefs ->
+                prefs[USER_LEVEL_KEY] = level.toString()
+            }
+        }
+
+        override suspend fun saveExp(exp: Float) {
+            dataStore.edit { prefs ->
+                prefs[USER_EXP_KEY] = exp.toString()
+            }
+        }
+
         override suspend fun getLevel(): Int? =
             dataStore.data
                 .map { prefs ->
