@@ -24,7 +24,7 @@ interface StudyApi {
     ): Response<ResponseBody<List<IncorrectWordResponse>>>
 
     // 틀렸던 문제 하나 요청
-    @GET("study/wrong-word/{userID}/{studyId}")
+    @GET("study/wrong-word/{userId}/{studyId}")
     suspend fun getIncorrectQuiz(
         @Path("userId") userId: Long,
         @Path("studyId") studyId: Long,
