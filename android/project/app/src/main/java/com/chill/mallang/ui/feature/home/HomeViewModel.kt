@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.UserRepository
+import com.chill.mallang.ui.component.experiencebar.ExperienceState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,10 +51,19 @@ class HomeViewModel
                         }
 
                         is ApiResponse.Success -> {
+                            val percentage =
+                                response.body?.exp?.div(200 * (if (response.body.level == 0) 1 else response.body.level))
+                                    ?: 0f
+
                             _uiState.value =
                                 HomeUiState.LoadUserInfo(
                                     nickName = response.body?.nickName ?: "",
                                     factionId = response.body?.factionId ?: 0,
+                                    experienceState =
+                                        ExperienceState.Static(
+                                            value = percentage,
+                                            level = response.body?.level ?: 0,
+                                        ),
                                 )
                         }
 

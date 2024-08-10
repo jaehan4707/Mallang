@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.summary
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -19,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,9 +32,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.User
+import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.BoldColoredText
+import com.chill.mallang.ui.component.LoadingDialog
+import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.component.PercentageBar
 import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.theme.MallangTheme
@@ -60,30 +69,72 @@ val SampleData =
     )
 
 @Composable
-fun SummaryScreen(modifier: Modifier = Modifier) {
-    SummaryContent(modifier = modifier)
+fun SummaryScreen(
+    modifier: Modifier = Modifier,
+    navigateToHome: () -> Unit = {},
+    viewModel: SummaryViewModel = hiltViewModel(),
+    popUpBackStack: () -> Unit = {},
+) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val isBackPressed = remember { mutableStateOf(false) }
+    BackConfirmHandler(
+        isBackPressed = isBackPressed.value,
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
+        onConfirm = {
+            isBackPressed.value = false
+            popUpBackStack()
+        },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
+        onDismiss = {
+            isBackPressed.value = false
+        },
+        title = stringResource(R.string.app_exit_message),
+    )
+    BackHandler(onBack = {
+        isBackPressed.value = true
+    })
+    when (uiState.value) {
+        SummaryUiState.Loading -> {
+            LoadingDialog(
+                lottieRes = R.raw.loading_summary,
+                loadingMessage = "결산 로딩중... ",
+            )
+        }
+
+        SummaryUiState.Success -> {
+            SummaryContent(modifier = modifier, navigateToHome)
+        }
+    }
 }
 
 @Composable
-fun SummaryContent(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.padding(10.dp)) {
+fun SummaryContent(
+    modifier: Modifier = Modifier,
+    navigateToHome: () -> Unit = {},
+) {
+    Box(modifier = modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement =
-                Arrangement.spacedBy(15.dp),
+                Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
+                modifier =
+                    Modifier
+                        .weight(0.07f)
+                        .wrapContentWidth(),
                 text = stringResource(R.string.summary_title),
                 style = Typography.headlineLarge,
             )
             // TODO 결산 화면 용 이미지 리소스 하나 -> 말 vs 랑 대치하는 이미지
             Image(
-                modifier = Modifier.size(100.dp),
+                modifier = Modifier.weight(0.2f),
                 painter = painterResource(id = R.mipmap.yellow),
                 contentDescription = "",
             )
             PercentageBar(
+                modifier = Modifier.wrapContentWidth(),
                 leftPercentage = 10,
                 rightPercentage = 90,
                 leftLabel = stringResource(id = R.string.team_mal),
@@ -93,6 +144,7 @@ fun SummaryContent(modifier: Modifier = Modifier) {
             )
 
             LazyVerticalGrid(
+                modifier = Modifier.weight(1f),
                 columns = GridCells.Fixed(2),
                 state = rememberLazyGridState(),
                 contentPadding = PaddingValues(5.dp),
@@ -110,7 +162,8 @@ fun SummaryContent(modifier: Modifier = Modifier) {
                     )
                 }
             }
-            SummaryItem()
+
+            LongBlackButton(modifier = Modifier.weight(0.1f), onClick = navigateToHome, text = "확인")
         }
     }
 }
@@ -204,6 +257,6 @@ fun SummaryItem(
 @Preview(showSystemUi = true, showBackground = true)
 fun SummaryPreview() {
     MallangTheme {
-        SummaryScreen()
+        SummaryContent()
     }
 }

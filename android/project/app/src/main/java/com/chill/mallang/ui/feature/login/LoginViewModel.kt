@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -74,11 +75,22 @@ class LoginViewModel
         private fun loadUserInfo() {
             viewModelScope.launch {
                 dataStoreRepository.getUserEmail()?.let { email ->
-                    userRepository.checkUserEmail(email).collectLatest { response ->
+                    combine(
+                        userRepository.checkUserEmail(email),
+                        dataStoreRepository.isUserFirstLaunched(),
+                    ) { response, isFirstLaunched ->
+                        Pair(response, isFirstLaunched)
+                    }.collectLatest { (response, isFirstLaunched) ->
                         when (response) {
                             is ApiResponse.Error -> {
                                 when (response.errorCode) {
-                                    409 -> _uiEvent.emit(LoginUiEvent.AuthLogin)
+                                    409 ->
+                                        if (isFirstLaunched) {
+                                            _loginUiState.value = LoginUiState.FirstLaunched
+                                        } else {
+                                            _uiEvent.emit(LoginUiEvent.AuthLogin)
+                                        }
+
                                     else -> _loginUiState.value = LoginUiState.Loading
                                 }
                             }
@@ -257,12 +269,21 @@ class LoginViewModel
             profileImageUrl: String,
         ) {
             viewModelScope.launch {
-                userRepository.login(idToken, userEmail).collectLatest { response ->
+                combine(
+                    userRepository.login(idToken, userEmail),
+                    dataStoreRepository.isUserFirstLaunched(),
+                ) { isLoginSuccess, isFirstLaunched ->
+                    Pair(isLoginSuccess, isFirstLaunched)
+                }.collectLatest { (response, isFirstLaunched) ->
                     when (response) {
                         is ApiResponse.Success -> {
                             when (response.body ?: false) {
                                 true -> {
-                                    _uiEvent.emit(LoginUiEvent.AuthLogin)
+                                    if (isFirstLaunched) {
+                                        _loginUiState.value = LoginUiState.FirstLaunched
+                                    } else {
+                                        _uiEvent.emit(LoginUiEvent.AuthLogin)
+                                    }
                                 }
 
                                 false -> {

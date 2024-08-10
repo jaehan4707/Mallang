@@ -51,6 +51,7 @@ import java.nio.charset.StandardCharsets
 fun LoginScreen(
     onLoginSuccess: (String, String) -> Unit,
     onAuthLoginSuccess: () -> Unit,
+    onFirstLaunched: () -> Unit,
 ) {
     val context = LocalContext.current
     val viewModel: LoginViewModel = hiltViewModel()
@@ -107,6 +108,7 @@ fun LoginScreen(
                 )
             }
         },
+        firstLaunched = onFirstLaunched,
     )
 
     Surface(
@@ -182,6 +184,7 @@ fun HandleLoginEvent(
     authLogin: () -> Unit,
     loginSuccess: (String, String) -> Unit,
     showSnackBar: (String) -> Unit,
+    firstLaunched: () -> Unit,
 ) {
     LaunchedEffect(loginUiEvent) {
         loginUiEvent.collectLatest { event ->
@@ -209,6 +212,8 @@ fun HandleLoginEvent(
             is LoginUiState.Error -> {
                 showSnackBar(loginUiState.errorMessage)
             }
+
+            LoginUiState.FirstLaunched -> firstLaunched()
         }
     }
 }

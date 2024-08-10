@@ -18,6 +18,7 @@ import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
 import com.chill.mallang.ui.feature.study.StudyScreen
 import com.chill.mallang.ui.feature.study_result.StudyResultScreen
+import com.chill.mallang.ui.feature.summary.SummaryScreen
 import com.chill.mallang.ui.feature.word.WordNoteScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -52,8 +53,25 @@ fun MallangNavHost(
                         inclusive = false
                     }
                 }
+            }, onFirstLaunched = {
+                navController.navigate(DestinationSummary.route) {
+                    popUpTo(DestinationLogin.route) {
+                        inclusive = true
+                    }
+                }
             })
         }
+
+        composable(
+            route = DestinationSummary.route,
+        ) {
+            SummaryScreen(
+                modifier = modifier,
+                navigateToHome = { navController.navigate(DestinationMain.route) },
+                popUpBackStack = navController::popBackStack,
+            )
+        }
+
         composable(
             route = DestinationNickName.routeWithArgs,
             arguments = DestinationNickName.arguments,
