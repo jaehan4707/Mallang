@@ -245,7 +245,7 @@ fun AnswerResultListItem(
         label = "expandedHeight",
         transitionSpec = { tween(durationMillis = 200) },
     ) { expanded ->
-        if (expanded == index + 1) 40.dp else 0.dp
+        if (expanded == index + 1) 70.dp else 0.dp
     }
 
     val alpha by expandTransition.animateFloat(
