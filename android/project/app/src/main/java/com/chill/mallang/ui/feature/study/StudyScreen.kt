@@ -122,7 +122,7 @@ fun StudyScreen(
             )
         }
 
-        StudyState.Loading -> LoadingDialog()
+        StudyState.Loading -> LoadingDialog(lottieRes = R.raw.loading_study)
     }
 }
 
