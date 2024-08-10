@@ -28,10 +28,9 @@ class WordNoteViewModel
         }
 
         // 처음 단어장 정보 불러오기 api
-        fun loadWords() {
+        private fun loadWords() {
             viewModelScope.launch {
                 dataStoreRepository.getUserId()?.let { userId ->
-                    Log.d("nakyung", "userId: $userId")
                     studyRepository
                         .getWordList(userId)
                         .collectLatest { response ->
