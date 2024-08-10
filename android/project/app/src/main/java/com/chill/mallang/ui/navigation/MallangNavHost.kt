@@ -5,8 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.chill.mallang.ui.feature.fort_detail.FortDetailScreen
 import com.chill.mallang.ui.feature.game.game01.Game01Screen
 import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
@@ -18,6 +20,7 @@ import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
 import com.chill.mallang.ui.feature.study.StudyScreen
 import com.chill.mallang.ui.feature.study_result.StudyResultScreen
+import com.chill.mallang.ui.feature.summary.SummaryScreen
 import com.chill.mallang.ui.feature.word.WordNoteScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -52,8 +55,25 @@ fun MallangNavHost(
                         inclusive = false
                     }
                 }
+            }, onFirstLaunched = {
+                navController.navigate(DestinationSummary.route) {
+                    popUpTo(DestinationLogin.route) {
+                        inclusive = true
+                    }
+                }
             })
         }
+
+        composable(
+            route = DestinationSummary.route,
+        ) {
+            SummaryScreen(
+                modifier = modifier,
+                navigateToHome = { navController.navigate(DestinationMain.route) },
+                popUpBackStack = navController::popBackStack,
+            )
+        }
+
         composable(
             route = DestinationNickName.routeWithArgs,
             arguments = DestinationNickName.arguments,
@@ -214,14 +234,6 @@ fun MallangNavHost(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 userAnswer = userAnswer ?: -1,
-            )
-        }
-
-        composable(
-            route = DestinationGameLobby.route,
-        ) {
-            GameLobbyScreen(
-                modifier = modifier,
             )
         }
 

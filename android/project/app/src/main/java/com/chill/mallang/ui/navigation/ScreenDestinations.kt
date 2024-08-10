@@ -190,3 +190,7 @@ object DestinationGame : ScreenDestinationsWithArgument {
 
     fun createRoute(areaId: Long) = "${this.route}/$areaId"
 }
+
+object DestinationSummary : ScreenDestinations {
+    override val route: String get() = "Summary"
+}
