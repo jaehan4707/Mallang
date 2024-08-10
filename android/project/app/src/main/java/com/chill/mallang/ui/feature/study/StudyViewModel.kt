@@ -34,7 +34,7 @@ class StudyViewModel
         }
 
         // 퀴즈 데이터 로드
-        fun loadQuizData(studyId: Long) {
+        private fun loadQuizData(studyId: Long) {
             viewModelScope.launch {
                 if (studyId != -1L) {
                     dataStoreRepository.getUserId()?.let { userId ->
