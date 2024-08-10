@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,23 +40,34 @@ fun ExperienceBar(
     experienceState: ExperienceState,
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
-        when(experienceState){
-            is ExperienceState.Animate -> AnimatedGaugeBar(
-                modifier = Modifier.align(Alignment.CenterStart)
-                    .padding(start = 40.dp),
-                initialValue = experienceState.prevValue,
-                targetValue = experienceState.currentValue
-            )
-            is ExperienceState.Static -> GaugeBar(
-                modifier = Modifier.align(Alignment.CenterStart)
-                    .padding(start = 40.dp),
-                percentage = experienceState.value
-            )
-            else -> GaugeBar(
-                modifier = Modifier.align(Alignment.CenterStart)
-                    .padding(start = 40.dp),
-                percentage = 0f
-            )
+        when (experienceState) {
+            is ExperienceState.Animate ->
+                AnimatedGaugeBar(
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 40.dp),
+                    initialValue = experienceState.prevValue,
+                    targetValue = experienceState.currentValue,
+                )
+
+            is ExperienceState.Static ->
+                GaugeBar(
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 40.dp),
+                    percentage = experienceState.value,
+                )
+
+            else ->
+                GaugeBar(
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 40.dp),
+                    percentage = 0f,
+                )
         }
         Badge(
             modifier = Modifier.align(Alignment.CenterStart),
@@ -120,19 +132,12 @@ fun Badge(
     }
 
     Surface(
-        modifier = modifier.size(width = 60.dp, height = 64.dp),
+        modifier = modifier.size(width = 60.dp, height = 64.dp).shadow(5.dp, shape = BadgeShape),
         color = Color.White,
         contentColor = Gray6,
-        shape =
-            RoundedCornerShape(
-                topStart = 8.dp,
-                topEnd = 8.dp,
-                bottomStart = 100.dp,
-                bottomEnd = 100.dp,
-            ),
+        shape = BadgeShape,
     ) {
-        Box(
-        ) {
+        Box {
             Image(
                 modifier =
                     Modifier
@@ -142,10 +147,21 @@ fun Badge(
                 painter = painterResource(id = badge),
                 contentDescription = null,
             )
-            Text(level.toString(), modifier = Modifier.padding(bottom = 8.dp).align(Alignment.BottomCenter))
+            Text(
+                level.toString(),
+                modifier = Modifier.padding(bottom = 8.dp).align(Alignment.BottomCenter),
+            )
         }
     }
 }
+
+val BadgeShape =
+    RoundedCornerShape(
+        topStart = 8.dp,
+        topEnd = 8.dp,
+        bottomStart = 100.dp,
+        bottomEnd = 100.dp,
+    )
 
 @Preview
 @Composable

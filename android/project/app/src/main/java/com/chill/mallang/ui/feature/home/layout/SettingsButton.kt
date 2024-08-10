@@ -8,6 +8,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,6 +26,7 @@ fun SettingsButton(
     IconButton(
         modifier =
             modifier
+                .shadow(elevation = 5.dp, shape = CircleShape)
                 .border(width = 4.dp, color = Gray4, shape = CircleShape),
         colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White),
         onClick = onClick,
