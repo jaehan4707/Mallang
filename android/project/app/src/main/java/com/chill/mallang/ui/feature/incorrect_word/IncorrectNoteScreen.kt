@@ -48,7 +48,7 @@ fun IncorrectNoteScreen(
     modifier: Modifier = Modifier,
     popUpBackStack: () -> Unit = {},
     navigateToWordNote: () -> Unit = {},
-    navigateToStudy: (Int) -> Unit = {},
+    navigateToStudy: (Long) -> Unit = {},
     incorrectViewModel: IncorrectWordViewModel = hiltViewModel(),
 ) {
     val incorrectState by incorrectViewModel.incorrectNoteState.collectAsStateWithLifecycle()
@@ -116,7 +116,7 @@ fun IncorrectNoteScreen(
 fun IncorrectContent(
     context: Context,
     incorrectState: IncorrectNoteState.Success,
-    navigateToStudy: (Int) -> Unit,
+    navigateToStudy: (Long) -> Unit,
     onClick: () -> Unit,
 ) {
     var selectedWordIndex by remember { mutableStateOf<Int?>(null) }

@@ -144,7 +144,7 @@ object DestinationStudy : ScreenDestinationsWithArgument {
     override val route: String
         get() = "study"
 
-    fun createRoute(studyId: Int) = "${this.route}/$studyId"
+    fun createRoute(studyId: Long) = "${this.route}/$studyId"
 }
 
 object DestinationStudyResult : ScreenDestinationsWithArgument {

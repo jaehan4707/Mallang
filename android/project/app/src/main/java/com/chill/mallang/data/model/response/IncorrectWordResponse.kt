@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class IncorrectWordResponse(
     @SerialName("studyId")
-    val studyId: Int? = null,
+    val studyId: Long? = null,
     @SerialName("word")
     val script: String? = ""
 )
