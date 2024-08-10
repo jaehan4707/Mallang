@@ -139,12 +139,12 @@ object DestinationStudy : ScreenDestinationsWithArgument {
     override val arguments: List<NamedNavArgument>
         get() =
             listOf(
-                navArgument(name = "studyId") { type = NavType.IntType },
+                navArgument(name = "studyId") { type = NavType.LongType },
             )
     override val route: String
         get() = "study"
 
-    fun createRoute(studyId: Int) = "${this.route}/$studyId"
+    fun createRoute(studyId: Long) = "${this.route}/$studyId"
 }
 
 object DestinationStudyResult : ScreenDestinationsWithArgument {
@@ -152,18 +152,22 @@ object DestinationStudyResult : ScreenDestinationsWithArgument {
         get() = "study_result"
 
     override val routeWithArgs: String
-        get() = "${this.route}/{userAnswer}"
+        get() = "${this.route}/{studyId}/{userAnswer}"
 
     override val arguments: List<NamedNavArgument>
         get() =
             listOf(
+                navArgument(name = "studyId") { type = NavType.LongType },
                 navArgument(name = "userAnswer") { type = NavType.IntType },
             )
 
     override val route: String
         get() = "study_result"
 
-    fun createRoute(userAnswer: Int) = "${this.route}/$userAnswer"
+    fun createRoute(
+        studyId: Long,
+        userAnswer: Int,
+    ) = "${this.route}/$studyId/$userAnswer"
 }
 
 object DestinationGameLobby : ScreenDestinations {
