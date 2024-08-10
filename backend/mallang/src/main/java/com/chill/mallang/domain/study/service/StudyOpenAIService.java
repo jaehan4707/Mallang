@@ -81,10 +81,6 @@ public class StudyOpenAIService {
                         "}", word, meaning);
         String answer = openAiChatModel.call(prompt);
 
-        // 응답 로그 출력
-        logger.info("OpenAI 응답: {}", answer);
-
-        // 응답이 JSON 형식인지 확인
         if (isValidJson(answer)) {
             try {
                 JSONObject response = new JSONObject(answer);

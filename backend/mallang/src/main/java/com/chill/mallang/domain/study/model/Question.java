@@ -2,6 +2,7 @@ package com.chill.mallang.domain.study.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -17,22 +18,7 @@ public class Question {
 
     @OneToOne
     @JsonBackReference
+    @NotNull
     private StudyGame studyGame;
-
-//    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonManagedReference
-//    private List<Problem> problems = new ArrayList<>();
-//
-//    public void addProblem(Problem problem) {
-//        problems.add(problem);
-//        problem.setQuestion(this);
-//    }
-//
-//    public void setProblems(List<Problem> problems) {
-//        this.problems.clear();
-//        if (problems != null) {
-//            problems.forEach(this::addProblem);
-//        }
-//    }
 
 }
