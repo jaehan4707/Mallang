@@ -45,6 +45,8 @@ class StudyResultViewModel
                                             quizTitle = data.quizTitle,
                                             quizScript = data.quizScript,
                                             wordList = data.wordList,
+                                            result = data.result,
+                                            systemAnswer = data.systemAnswer
                                         )
                                 }
 
