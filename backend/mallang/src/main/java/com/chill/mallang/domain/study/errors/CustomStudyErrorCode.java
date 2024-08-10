@@ -16,6 +16,8 @@ public enum CustomStudyErrorCode implements ErrorCode {
     GAMELOG_IS_NULL(HttpStatus.NOT_FOUND, "Game log is null"),
     ANSWER_IS_NULL(HttpStatus.NOT_FOUND, "Answer is null"),
     ANSWER_IS_NOT_VALID(HttpStatus.NOT_FOUND, "Answer is not valid"),
+    AI_JSONPARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI JSON parsing error"),
+    AI_RESPONSE_NOT_JSONFORM(HttpStatus.INTERNAL_SERVER_ERROR, "AI JSON response not json form"),
     ;
 
     private final HttpStatus httpStatus;

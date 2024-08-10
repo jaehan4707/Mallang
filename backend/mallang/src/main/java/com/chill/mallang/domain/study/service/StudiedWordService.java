@@ -31,7 +31,7 @@ public class StudiedWordService {
                     .word(studyGameLog.getStudyGame().getWordMean().getWord().getWord())
                     .meaning(studyGameLog.getStudyGame().getWordMean().getMean())
                     .pos(studyGameLog.getStudyGame().getWordMean().getType())
-                    .example(studyGameLog.getStudyGame().getWordMean().getExample()) // 아직 예문 데이터가 없음
+                    .example(studyGameLog.getStudyGame().getWordMean().getExample()) // 예문 데이터 추가
                     .build();
 
             wordCards.add(wordCardDto);
