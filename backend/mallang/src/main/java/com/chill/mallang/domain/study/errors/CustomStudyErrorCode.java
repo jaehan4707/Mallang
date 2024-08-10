@@ -13,6 +13,11 @@ public enum CustomStudyErrorCode implements ErrorCode {
     NOT_WRONG_WORD(HttpStatus.NOT_FOUND,"This user didn't get that wrong."),
     WRONG_STUDYID(HttpStatus.NOT_FOUND, "Wrong studyId"),
     STUDYID_IS_NULL(HttpStatus.NOT_FOUND, "Study id is null"),
+    GAMELOG_IS_NULL(HttpStatus.NOT_FOUND, "Game log is null"),
+    ANSWER_IS_NULL(HttpStatus.NOT_FOUND, "Answer is null"),
+    ANSWER_IS_NOT_VALID(HttpStatus.NOT_FOUND, "Answer is not valid"),
+    AI_JSONPARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI JSON parsing error"),
+    AI_RESPONSE_NOT_JSONFORM(HttpStatus.INTERNAL_SERVER_ERROR, "AI JSON response not json form"),
     ;
 
     private final HttpStatus httpStatus;

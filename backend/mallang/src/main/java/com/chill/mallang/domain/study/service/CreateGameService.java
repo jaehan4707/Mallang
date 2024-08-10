@@ -7,7 +7,6 @@ import com.chill.mallang.domain.study.model.WordMean;
 import com.chill.mallang.domain.study.repository.ProblemRepository;
 import com.chill.mallang.domain.study.repository.QuestionRepository;
 import com.chill.mallang.domain.study.repository.StudyGameRepository;
-import com.chill.mallang.domain.study.repository.WordMeanRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,10 +42,8 @@ public class CreateGameService {
 
     public void addProblemsToQuestion(Question question, JSONObject result) {
         JSONArray jsonArray = result.getJSONArray("options");
-        // JSONArray의 각 JSONObject를 처리
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-
+        jsonArray.forEach(item->{
+            JSONObject jsonObject = (JSONObject) item;
             String basic_type = jsonObject.getString("basic_type");
             String option = jsonObject.getString("word");
             String mean = jsonObject.getString("meaning");
@@ -59,6 +56,6 @@ public class CreateGameService {
                     .idx(idx)
                     .build();
             problemRepository.save(problem);
-        }
+                });
     }
 }

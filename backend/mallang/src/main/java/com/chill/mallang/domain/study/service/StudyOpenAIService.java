@@ -1,5 +1,7 @@
 package com.chill.mallang.domain.study.service;
 
+import com.chill.mallang.domain.study.errors.CustomStudyErrorCode;
+import com.chill.mallang.errors.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -81,21 +83,17 @@ public class StudyOpenAIService {
                         "}", word, meaning);
         String answer = openAiChatModel.call(prompt);
 
-        // 응답 로그 출력
-        logger.info("OpenAI 응답: {}", answer);
-
-        // 응답이 JSON 형식인지 확인
         if (isValidJson(answer)) {
             try {
                 JSONObject response = new JSONObject(answer);
                 return response;
             } catch (JSONException e) {
                 logger.error("JSON 파싱 오류: {}", answer, e);
-                throw new RuntimeException("JSON 파싱 중 오류가 발생했습니다.", e);
+                throw new RestApiException(CustomStudyErrorCode.AI_JSONPARSING_ERROR);
             }
         } else {
             logger.error("응답이 JSON 형식이 아님: {}", answer);
-            throw new RuntimeException("응답이 JSON 형식이 아닙니다.");
+            throw new RestApiException(CustomStudyErrorCode.AI_RESPONSE_NOT_JSONFORM);
         }
     }
 
