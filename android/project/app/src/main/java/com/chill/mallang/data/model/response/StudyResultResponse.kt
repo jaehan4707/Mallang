@@ -10,7 +10,7 @@ data class StudyResultResponse(
     @SerialName("quizScript")
     val quizScript: String? = null,
     @SerialName("wordList")
-    val wordList: List<StudyWordResponse>,
+    val wordList: List<StudyWordResponse>? = null,
     @SerialName("result")
     val result: Boolean? = null,
     @SerialName("systemAnswer")
