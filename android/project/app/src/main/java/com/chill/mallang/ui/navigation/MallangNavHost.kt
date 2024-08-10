@@ -5,10 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.chill.mallang.ui.feature.fort_detail.FortDetailScreen
 import com.chill.mallang.ui.feature.game.game01.Game01Screen
 import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
@@ -19,7 +17,7 @@ import com.chill.mallang.ui.feature.map.MapScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
 import com.chill.mallang.ui.feature.study.StudyScreen
-import com.chill.mallang.ui.feature.study_result.QuizResultScreen
+import com.chill.mallang.ui.feature.study_result.StudyResultScreen
 import com.chill.mallang.ui.feature.word.WordNoteScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -155,7 +153,7 @@ fun MallangNavHost(
                             inclusive = false
                         }
                     }
-                }
+                },
             )
         }
 
@@ -180,23 +178,21 @@ fun MallangNavHost(
                     navController.navigate(
                         DestinationGame.createRoute(areaId = areaId ?: -1),
                     )
-                }
+                },
             )
         }
 
         composable(
             route = DestinationStudy.routeWithArgs,
-            arguments =
-                listOf(
-                    navArgument("studyId") { type = NavType.IntType },
-                ),
-        ) { backStackEntry ->
+            arguments = DestinationStudy.arguments,
+        ) {
             StudyScreen(
                 modifier = modifier,
-                navigateToStudyResult = {
+                navigateToStudyResult = { studyId, userAnswer ->
                     navController.navigate(
                         DestinationStudyResult.createRoute(
-                            userAnswer = it,
+                            studyId = studyId,
+                            userAnswer = userAnswer,
                         ),
                     ) {
                         popUpTo(DestinationWordNote.route) {
@@ -205,15 +201,6 @@ fun MallangNavHost(
                     }
                 },
                 popUpBackStack = navController::popBackStack,
-                studyId = backStackEntry.arguments?.getInt("studyId") ?: -1,
-            )
-        }
-
-        composable(
-            route = DestinationGameLobby.route,
-        ) {
-            GameLobbyScreen(
-                modifier = modifier,
             )
         }
 
@@ -223,10 +210,18 @@ fun MallangNavHost(
         ) { navBackStackEntry ->
             val userAnswer = navBackStackEntry.arguments?.getInt("userAnswer")
 
-            QuizResultScreen(
+            StudyResultScreen(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 userAnswer = userAnswer ?: -1,
+            )
+        }
+
+        composable(
+            route = DestinationGameLobby.route,
+        ) {
+            GameLobbyScreen(
+                modifier = modifier,
             )
         }
 
