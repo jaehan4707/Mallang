@@ -21,5 +21,8 @@
     <string name="show_game_result_detail_message">채점 보기</string>
     <string name="game_result_title">게임 결과</string>
     <string name="round_result_title_foramt">%d 라운드 결과</string>
+    <string name="leader_board_title">팀 기여도 순위</string>
     <string name="game_end_message">게임 종료...</string>
+    <string name="success_message">Success !</string>
+    <string name="nice_try_message">Nice Try !</string>
 </resources>

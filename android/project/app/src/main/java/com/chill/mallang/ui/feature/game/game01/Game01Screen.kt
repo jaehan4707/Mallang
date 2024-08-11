@@ -16,12 +16,12 @@ import com.chill.mallang.ui.feature.game.game01.Game01ViewModel.Game01Constants.
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01CurtainCallScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01LoadingScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01PlayScreen
-import com.chill.mallang.ui.feature.game.game01.SubView.Game01ResultScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01ReviewScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RewardScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundDoneScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01SplashScreen
+import com.chill.mallang.ui.feature.game.game01.SubView.ResultScreen.Game01ResultScreen
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 import kotlinx.coroutines.flow.SharedFlow
@@ -125,7 +125,6 @@ fun Game01Screen(
             Game01RewardScreen(
                 completeReward = { viewModel.updateGame01State(Game01State.CURTAIN_CALL) },
             )
-
 
         Game01State.CURTAIN_CALL ->
             Game01CurtainCallScreen(
