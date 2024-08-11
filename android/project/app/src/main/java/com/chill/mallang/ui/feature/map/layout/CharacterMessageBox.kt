@@ -3,6 +3,7 @@ package com.chill.mallang.ui.feature.map.layout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -32,7 +33,7 @@ fun CharacterMessageBox(
             )
         }
         Image(
-            modifier = Modifier,
+            modifier = Modifier.size(80.dp),
             painter = painterResource(id = messageWithCharacter.character),
             contentDescription = "",
         )
