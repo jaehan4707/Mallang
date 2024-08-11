@@ -102,6 +102,7 @@ class Game01ViewModel
 
         fun fetchUserInfo() {
             viewModelScope.launch {
+                delay(3000L)
                 userRepository.getUserInfo().collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
@@ -143,6 +144,7 @@ class Game01ViewModel
 
         fun fetchQuizIds() {
             viewModelScope.launch {
+                delay(2000L)
                 quizRepository.getQuizIds(areaId).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
@@ -159,6 +161,7 @@ class Game01ViewModel
 
         fun fetchQuiz() {
             viewModelScope.launch {
+                delay(2000L)
                 quizRepository.getQuiz(questionIdList[gameRound - 1]).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
@@ -188,6 +191,7 @@ class Game01ViewModel
             val currentTimestamp = getCurrentTimestamp()
 
             viewModelScope.launch {
+                delay(1500L)
                 quizRepository
                     .postUserAnswer(
                         gradingUserAnswerRequest =
@@ -216,6 +220,7 @@ class Game01ViewModel
 
         fun fetchReviews() {
             viewModelScope.launch {
+                delay(2500L)
                 quizRepository
                     .getResults(
                         fetchGameResultRequest =
@@ -252,6 +257,7 @@ class Game01ViewModel
 
         fun fetchFinalResult() {
             viewModelScope.launch {
+                delay(1000L)
                 quizRepository
                     .getResults(
                         fetchGameResultRequest =
@@ -333,4 +339,6 @@ enum class Game01State {
     ROUND_DONE, // 라운드 완료 상태       (답안 제출 및 채점이 완료된 단계)
     REVIEW, // 게임 결과 리뷰 상태       (게임 결과를 사용자가 확인하고, 채점 결과를 리뷰하는 단계)
     FINISH, // 게임 완료 상태         (사용자가 게임을 완료하고, 사용자에게 결과를 알리는 단계)
+    REWARD, // 리워드 지급 및 랭크 확인 상태     (사용자가 획득한 경험치를 확인하고, 랭크를 확인하는 단계)
+    CURTAIN_CALL, // 커튼콜 상태
 }

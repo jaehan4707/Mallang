@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
+import com.chill.mallang.ui.feature.game.game01.Dialog.GameReviewDialog
+import com.chill.mallang.ui.feature.game.game01.Dialog.RoundResult
 import com.chill.mallang.ui.feature.game.game01.Game01ReviewUiState
 import com.chill.mallang.ui.feature.game.game01.Game01ViewModel
 import com.chill.mallang.ui.theme.MallangTheme
@@ -55,6 +58,7 @@ fun Game01ReviewScreen(
     modifier: Modifier = Modifier,
 ) {
     val reviewUiState by viewModel.reviewUiState.collectAsStateWithLifecycle()
+    var DialogVisibility by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -62,8 +66,26 @@ fun Game01ReviewScreen(
     ) {
         Game01ReviewContent(
             reviewUiState = reviewUiState,
+            showDialog = { DialogVisibility = true },
             completeReview = completeReview,
             modifier = modifier,
+        )
+    }
+
+    val roundResultList = (1..3).map { i ->
+        RoundResult(
+            round = i,
+            quizDataSet = viewModel.questionDataSetList[i - 1],
+            userAnswer = viewModel.userAnswerList[i],
+            userScore = 100
+        )
+    }
+
+    if(DialogVisibility) {
+        GameReviewDialog(
+            index = 1,
+            roundResults = roundResultList,
+            onDismiss = { DialogVisibility = false },
         )
     }
 }
@@ -71,6 +93,7 @@ fun Game01ReviewScreen(
 @Composable
 fun Game01ReviewContent(
     reviewUiState: Game01ReviewUiState,
+    showDialog: () -> Unit,
     completeReview: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -82,6 +105,7 @@ fun Game01ReviewContent(
         is Game01ReviewUiState.Success -> {
             ReviewBody(
                 reviewUiState = reviewUiState,
+                showDialog = showDialog,
                 completeReview = completeReview,
             )
         }
@@ -96,6 +120,7 @@ fun Game01ReviewContent(
 fun ReviewBody(
     reviewUiState: Game01ReviewUiState.Success,
     completeReview: () -> Unit,
+    showDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -151,16 +176,16 @@ fun ReviewBody(
 
     Box(
         modifier =
-            modifier
-                .fillMaxSize()
-                .padding(10.dp),
+        modifier
+            .fillMaxSize()
+            .padding(10.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "게임 결과",
+                text = stringResource(id = R.string.game_result_title),
                 style = Typography.displayLarge,
                 fontSize = 40.sp,
                 modifier = modifier.padding(vertical = 10.dp),
@@ -173,9 +198,9 @@ fun ReviewBody(
                     painter = painterResource(id = R.drawable.img_result_a_plus),
                     contentDescription = "",
                     modifier =
-                        Modifier
-                            .size(size)
-                            .graphicsLayer(alpha = alpha),
+                    Modifier
+                        .size(size)
+                        .graphicsLayer(alpha = alpha),
                 )
             }
 
@@ -199,20 +224,20 @@ fun ReviewBody(
                 modifier = Modifier.graphicsLayer(alpha = buttonAlpha),
             ) {
                 LongBlackButton(
-                    onClick = { /*TODO*/ },
-                    text = "채점 보기",
+                    onClick = { showDialog() },
+                    text = stringResource(id = R.string.show_game_result_detail_message),
                     modifier =
-                        Modifier
-                            .weight(1F)
-                            .padding(horizontal = 10.dp, vertical = 5.dp),
+                    Modifier
+                        .weight(1F)
+                        .padding(horizontal = 10.dp, vertical = 5.dp),
                 )
                 LongBlackButton(
                     onClick = { completeReview() },
-                    text = "확인",
+                    text = stringResource(id = R.string.game_confirm),
                     modifier =
-                        Modifier
-                            .weight(1F)
-                            .padding(horizontal = 10.dp, vertical = 5.dp),
+                    Modifier
+                        .weight(1F)
+                        .padding(horizontal = 10.dp, vertical = 5.dp),
                 )
             }
         }
@@ -228,16 +253,16 @@ fun RoundResultItem(
 ) {
     Box(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp, horizontal = 10.dp),
+        modifier
+            .fillMaxWidth()
+            .padding(vertical = 20.dp, horizontal = 10.dp),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(
-                text = "라운드 $round",
+                text = stringResource(id = R.string.round_title_format, round),
                 style = Typography.displayLarge,
                 fontSize = 30.sp,
             )
@@ -280,10 +305,10 @@ fun ScoreProgressIndicator(
     Box(
         contentAlignment = Alignment.Center,
         modifier =
-            modifier
-                .size(100.dp)
-                .padding(10.dp)
-                .graphicsLayer(alpha = alpha),
+        modifier
+            .size(100.dp)
+            .padding(10.dp)
+            .graphicsLayer(alpha = alpha),
     ) {
         CircularProgressIndicator(
             progress = { animatedProgress.value },
@@ -329,11 +354,11 @@ fun RoundResultBox(modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(vertical = 5.dp)
-                .background(color = QuokkaLightBrown, shape = RoundedCornerShape(16.dp))
-                .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
+        modifier
+            .fillMaxWidth()
+            .padding(vertical = 5.dp)
+            .background(color = QuokkaLightBrown, shape = RoundedCornerShape(16.dp))
+            .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),

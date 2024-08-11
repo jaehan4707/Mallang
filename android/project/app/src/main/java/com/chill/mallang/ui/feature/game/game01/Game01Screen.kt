@@ -13,12 +13,15 @@ import androidx.navigation.NavController
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.feature.game.game01.Game01ViewModel.Game01Constants.ROUND_COUNT
+import com.chill.mallang.ui.feature.game.game01.SubView.Game01CurtainCallScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01LoadingScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01PlayScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01ResultScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01ReviewScreen
+import com.chill.mallang.ui.feature.game.game01.SubView.Game01RewardScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundDoneScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundScreen
+import com.chill.mallang.ui.feature.game.game01.SubView.Game01SplashScreen
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 import kotlinx.coroutines.flow.SharedFlow
@@ -77,9 +80,7 @@ fun Game01Screen(
 
     when (viewModel.game01State) {
         Game01State.INIT ->
-            Game01LoadingScreen(
-                loadingMessage = stringResource(id = R.string.loading_message_init),
-            )
+            Game01SplashScreen()
 
         Game01State.ROUND_LOAD ->
             Game01LoadingScreen(
@@ -117,6 +118,17 @@ fun Game01Screen(
         Game01State.FINISH ->
             Game01ResultScreen(
                 viewModel = viewModel,
+                completeCheckResult = { viewModel.updateGame01State(Game01State.REWARD)},
+            )
+
+        Game01State.REWARD ->
+            Game01RewardScreen(
+                completeReward = { viewModel.updateGame01State(Game01State.CURTAIN_CALL) },
+            )
+
+
+        Game01State.CURTAIN_CALL ->
+            Game01CurtainCallScreen(
                 finishGame = popUpBackStack,
             )
     }
