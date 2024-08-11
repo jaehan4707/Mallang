@@ -3,6 +3,7 @@ package com.chill.mallang.domain.area.controller.v1;
 import com.chill.mallang.domain.area.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ public class AreaController {
     private final ChallengeRecordService challengeRecordService;
     private final AllAreaService allAreaService;
     private final AreaStatusService areaStatusService;
+    private final DailyService dailyService;
 
     @Operation(summary = "전체 점령지 단순 조회", description = "전체 점령지의 정보를 조회합니다.")
     @GetMapping()
@@ -59,4 +61,8 @@ public class AreaController {
         return new ResponseEntity<>(challengeRecordService.getChallengeRecord(areaId, userId), HttpStatus.OK);
     }
 
+    @GetMapping("/daily")
+    public ResponseEntity<?> test(){
+        return ResponseEntity.ok().body(dailyService.dailyTopUser());
+    }
 }
