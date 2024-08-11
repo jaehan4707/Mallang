@@ -224,6 +224,7 @@ fun HomeScreenContent(
         HomeBackground(
             modifier = Modifier.weight(1f),
             nickName = uiState.nickName,
+            factionId = uiState.factionId,
             experienceState = uiState.experienceState)
         BottomButtonHolder(
             onClickStudy = navigateToWordNote,
