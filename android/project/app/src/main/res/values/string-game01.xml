@@ -18,4 +18,8 @@
     <string name="game_win_message">점령에 성공했어요 !</string>
     <string name="game_win_confirm_message">아싸 !</string>
     <string name="game_confirm">확인</string>
+    <string name="show_game_result_detail_message">게임 종료...</string>
+    <string name="game_result_title">게임 결과</string>
+    <string name="round_result_title_foramt">%d 라운드 결과</string>
+    <string name="game_end_message">게임 종료...</string>
 </resources>
