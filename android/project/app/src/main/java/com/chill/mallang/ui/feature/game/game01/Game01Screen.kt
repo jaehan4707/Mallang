@@ -117,6 +117,15 @@ fun Game01Screen(
         Game01State.FINISH ->
             Game01ResultScreen(
                 viewModel = viewModel,
+
+        Game01State.REWARD ->
+            Game01RewardScreen(
+                completeReward = { viewModel.updateGame01State(Game01State.CURTAIN_CALL) },
+            )
+
+
+        Game01State.CURTAIN_CALL ->
+            Game01CurtainCallScreen(
                 finishGame = popUpBackStack,
             )
     }
