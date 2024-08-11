@@ -34,7 +34,7 @@ import com.chill.mallang.ui.theme.Typography
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameWinDialog(
-    teamId: Long = 1L,
+    teamId: Long,
     onDismiss: () -> Unit = {},
 ) {
     BasicAlertDialog(
@@ -91,8 +91,20 @@ fun GameWinDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun GameWinDialogPreview() {
+fun RedGameWinDialogPreview() {
     MallangTheme {
-        GameWinDialog()
+        GameWinDialog(
+            teamId = 1L,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BlueGameWinDialogPreview() {
+    MallangTheme {
+        GameWinDialog(
+            teamId = 2L,
+        )
     }
 }
