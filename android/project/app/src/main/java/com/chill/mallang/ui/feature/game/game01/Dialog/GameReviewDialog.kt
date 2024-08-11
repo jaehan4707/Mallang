@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,7 +50,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun GameReviewCardDialog(
+fun GameReviewDialog(
     index: Int,
     roundResults: List<RoundResult>,
     onDismiss: () -> Unit,
@@ -89,10 +90,8 @@ fun GameReviewCardDialog(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-                        // 왼쪽 빈 공간
                         Spacer(modifier = Modifier.weight(1f))
 
-                        // 중앙 텍스트
                         Box(
                             modifier = Modifier.weight(1f),
                             contentAlignment = Alignment.Center,
@@ -104,7 +103,6 @@ fun GameReviewCardDialog(
                             )
                         }
 
-                        // 오른쪽 닫기 아이콘
                         Box(
                             modifier =
                             Modifier
@@ -195,7 +193,7 @@ fun GameReviewCardContent(
             verticalAlignment = Alignment.CenterVertically,
         ){
             Text(
-                text = "1 라운드 결과",
+                text = stringResource(id = R.string.round_result_title_foramt, reviewContent.round),
                 style = Typography.displaySmall,
                 fontSize = 40.sp,
                 modifier = Modifier.padding(vertical = 10.dp),
@@ -207,7 +205,7 @@ fun GameReviewCardContent(
                     .size(80.dp)
             ) {
                 CircularProgressIndicator(
-                    progress = { 0.75F },
+                    progress = { reviewContent.userScore / 100F },
                     modifier = modifier.size(70.dp),
                     strokeWidth = 4.dp,
                     strokeCap = StrokeCap.Round,
@@ -219,7 +217,7 @@ fun GameReviewCardContent(
                     modifier = Modifier.align(Alignment.Center),
                 ) {
                     Text(
-                        text = "${75}점",
+                        text = "${reviewContent.userScore}점",
                         color = QuokkaRealBrown,
                         style = Typography.displayLarge,
                         fontSize = 30.sp,
@@ -235,34 +233,23 @@ fun GameReviewCardContent(
         LazyColumn {
             item {
                 QuestionBody(
-                    systemMessage = "노래제목이 무엇일까요?",
-                    quizScript = "나빠요 참 그대란 사람\n" +
-                            "허락도 없이 왜 내 맘 가져요\n" +
-                            "그대 때문에 난 힘겹게 살고만 있는데\n" +
-                            "그댄 모르잖아요"
+                    systemMessage = stringResource(id = R.string.question_message),
+                    quizScript = reviewContent.quizDataSet.question
                 )
             }
             item {
                 AnswerBody(
-                    userAnswer = "Tim - 사랑합니다.",
+                    userAnswer = reviewContent.userAnswer,
                     onUserAnswerChanged = {}
                 )
             }
             item {
                 AnswerBody(
-                    userAnswer = "GPT 정답\n : Tim - 사랑합니다.",
+                    userAnswer = reviewContent.quizDataSet.answer,
                     onUserAnswerChanged = {}
                 )
             }
         }
-        AnswerBody(
-            userAnswer = "Tim - 사랑합니다.",
-            onUserAnswerChanged = {}
-        )
-        AnswerBody(
-            userAnswer = "GPT 정답\n : Tim - 사랑합니다.",
-            onUserAnswerChanged = {}
-        )
     }
 }
 
@@ -277,7 +264,7 @@ data class RoundResult(
 @Composable
 fun GameReviewDialogPreview() {
     MallangTheme {
-        GameReviewCardDialog(
+        GameReviewDialog(
             index = 3,
             roundResults =
                 listOf(
