@@ -34,20 +34,28 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.GameUserRecord
 import com.chill.mallang.ui.component.LongBlackButton
+import com.chill.mallang.ui.feature.game.game01.Dialog.GameWinDialog
 import com.chill.mallang.ui.feature.game.game01.Game01FinalResultUiState
 import com.chill.mallang.ui.feature.game.game01.Game01ViewModel
 import com.chill.mallang.ui.feature.game.game01.Layout.GameRecordListItem
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
+import kotlinx.coroutines.delay
 
 @Composable
 fun Game01ResultScreen(
     viewModel: Game01ViewModel = viewModel(),
-    finishGame: () -> Unit = {},
+    completeCheckResult: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val resultUiState by viewModel.resultUiState.collectAsStateWithLifecycle()
+    var DialogVisibility by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(3000L)
+        DialogVisibility = true
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -55,8 +63,14 @@ fun Game01ResultScreen(
     ) {
         Game01ResultContent(
             resultUiState = resultUiState,
-            finishGame = finishGame,
+            completeCheckResult = completeCheckResult,
             modifier = modifier,
+        )
+    }
+
+    if(DialogVisibility) {
+        GameWinDialog(
+            onDismiss = { DialogVisibility = false },
         )
     }
 }
@@ -64,7 +78,7 @@ fun Game01ResultScreen(
 @Composable
 fun Game01ResultContent(
     resultUiState: Game01FinalResultUiState,
-    finishGame: () -> Unit = {},
+    completeCheckResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (resultUiState) {
@@ -88,13 +102,13 @@ fun Game01ResultContent(
                 )
                 LongBlackButton(
                     modifier =
-                        modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp),
+                    modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
                     onClick = {
-                        finishGame()
+                        completeCheckResult()
                     },
-                    text = "확인",
+                    text = stringResource(id = R.string.game_confirm),
                 )
             }
         }
@@ -135,9 +149,9 @@ fun ResultImageBody(modifier: Modifier = Modifier) {
 
     Box(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .size(size),
+        modifier
+            .fillMaxWidth()
+            .size(size),
         contentAlignment = Alignment.Center,
     ) {
         Image(
@@ -200,11 +214,11 @@ fun LeaderBoardBody(
 ) {
     Column(
         modifier =
-            modifier
-                .padding(10.dp)
-                .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(20.dp))
-                .fillMaxWidth()
-                .height(300.dp),
+        modifier
+            .padding(10.dp)
+            .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(20.dp))
+            .fillMaxWidth()
+            .height(300.dp),
     ) {
         Box(
             modifier =
