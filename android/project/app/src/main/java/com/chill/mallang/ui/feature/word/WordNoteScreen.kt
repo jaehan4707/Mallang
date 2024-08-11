@@ -54,7 +54,7 @@ fun WordNoteScreen(
     wordViewModel: WordNoteViewModel = hiltViewModel(),
     popUpBackStack: () -> Unit = {},
     navigateToIncorrectWord: () -> Unit = {},
-    navigateToStudy: (Int) -> Unit = {},
+    navigateToStudy: (Long) -> Unit = {},
 ) {
     val wordNoteState by wordViewModel.wordNoteState.collectAsStateWithLifecycle()
 
@@ -124,7 +124,7 @@ fun WordNoteScreenContent(
     modifier: Modifier,
     context: Context,
     wordNoteState: WordNoteState.Success,
-    navigateToQuiz: (Int) -> Unit = {},
+    navigateToQuiz: (Long) -> Unit = {},
     onClick: () -> Unit = {},
 ) {
     var selectedWordIndex by remember { mutableStateOf<Int?>(null) }

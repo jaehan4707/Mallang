@@ -10,7 +10,7 @@ sealed interface StudyState {
 
     @Immutable
     data class Success(
-        val studyId: Int = -1,
+        val studyId: Long = -1,
         val quizTitle: String = "",
         val quizScript: String = "",
         val wordList: List<String> = emptyList(),
@@ -20,5 +20,10 @@ sealed interface StudyState {
     @Immutable
     data class Error(
         val errorMessage: String = "",
+    ) : StudyState
+
+    @Immutable
+    data class SubmitSuccess(
+        val studyId: Long
     ) : StudyState
 }

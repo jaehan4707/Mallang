@@ -61,13 +61,10 @@ import kotlinx.coroutines.launch
 fun StudyScreen(
     modifier: Modifier = Modifier,
     studyViewModel: StudyViewModel = hiltViewModel(),
-    studyId: Int = -1,
     popUpBackStack: () -> Unit = {},
-    navigateToStudyResult: (Int) -> Unit = {},
+    navigateToStudyResult: (Long, Int) -> Unit = { _, _ -> },
 ) {
     val studyState by studyViewModel.studyState.collectAsStateWithLifecycle()
-
-    studyViewModel.loadQuizData(studyId)
 
     // TopBar
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
@@ -103,6 +100,7 @@ fun StudyScreen(
 
     when (studyState) {
         is StudyState.Success -> {
+            // studyId = studyId
             StudyScreenContent(
                 modifier = modifier,
                 context = context,
@@ -116,7 +114,15 @@ fun StudyScreen(
             // 에러났을 때 처리
         }
 
-        StudyState.Loading -> LoadingDialog()
+        // 결과 화면으로
+        is StudyState.SubmitSuccess -> {
+            navigateToStudyResult(
+                (studyState as StudyState.SubmitSuccess).studyId,
+                studyViewModel.selectedAnswer,
+            )
+        }
+
+        StudyState.Loading -> LoadingDialog(lottieRes = R.raw.loading_study)
     }
 }
 
@@ -126,7 +132,7 @@ fun StudyScreenContent(
     context: Context,
     studyViewModel: StudyViewModel,
     studyState: StudyState.Success,
-    navigateToStudyResult: (Int) -> Unit = {},
+    navigateToStudyResult: (Long, Int) -> Unit,
 ) {
     // SnackBarHostState 생성
     val snackBarHostState = remember { SnackbarHostState() }
@@ -180,8 +186,11 @@ fun StudyScreenContent(
                             )
                         }
                     } else {
-                        studyViewModel.submitQuiz() // 퀴즈 제출 및 채점
-                        navigateToStudyResult(studyViewModel.selectedAnswer)
+                        // 퀴즈 제출 및 채점
+                        studyViewModel.submitQuiz(
+                            studyId = studyState.studyId,
+                            answer = studyViewModel.selectedAnswer,
+                        )
                     }
                 },
                 modifier =

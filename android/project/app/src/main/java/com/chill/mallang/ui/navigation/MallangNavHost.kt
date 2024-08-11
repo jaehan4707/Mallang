@@ -19,7 +19,7 @@ import com.chill.mallang.ui.feature.map.MapScreen
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.select.SelectScreen
 import com.chill.mallang.ui.feature.study.StudyScreen
-import com.chill.mallang.ui.feature.study_result.QuizResultScreen
+import com.chill.mallang.ui.feature.study_result.StudyResultScreen
 import com.chill.mallang.ui.feature.summary.SummaryScreen
 import com.chill.mallang.ui.feature.word.WordNoteScreen
 import java.net.URLEncoder
@@ -204,17 +204,15 @@ fun MallangNavHost(
 
         composable(
             route = DestinationStudy.routeWithArgs,
-            arguments =
-                listOf(
-                    navArgument("studyId") { type = NavType.IntType },
-                ),
-        ) { backStackEntry ->
+            arguments = DestinationStudy.arguments,
+        ) {
             StudyScreen(
                 modifier = modifier,
-                navigateToStudyResult = {
+                navigateToStudyResult = { studyId, userAnswer ->
                     navController.navigate(
                         DestinationStudyResult.createRoute(
-                            userAnswer = it,
+                            studyId = studyId,
+                            userAnswer = userAnswer,
                         ),
                     ) {
                         popUpTo(DestinationWordNote.route) {
@@ -223,15 +221,6 @@ fun MallangNavHost(
                     }
                 },
                 popUpBackStack = navController::popBackStack,
-                studyId = backStackEntry.arguments?.getInt("studyId") ?: -1,
-            )
-        }
-
-        composable(
-            route = DestinationGameLobby.route,
-        ) {
-            GameLobbyScreen(
-                modifier = modifier,
             )
         }
 
@@ -241,7 +230,7 @@ fun MallangNavHost(
         ) { navBackStackEntry ->
             val userAnswer = navBackStackEntry.arguments?.getInt("userAnswer")
 
-            QuizResultScreen(
+            StudyResultScreen(
                 modifier = modifier,
                 popUpBackStack = navController::popBackStack,
                 userAnswer = userAnswer ?: -1,

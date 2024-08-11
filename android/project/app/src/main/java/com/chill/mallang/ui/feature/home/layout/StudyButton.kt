@@ -3,6 +3,7 @@ package com.chill.mallang.ui.feature.home.layout
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -11,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,9 +29,10 @@ fun StudyButton(
 ) {
     Button(
         modifier =
-            modifier.width(180.dp),
+            modifier.width(150.dp).shadow(elevation = 5.dp, shape = leftRoundedShape),
         onClick = onClick,
         shape = leftRoundedShape,
+        // elevation = ButtonDefaults.buttonElevation(10.dp),
         colors =
             ButtonDefaults.buttonColors(
                 containerColor = Yellow01,
@@ -40,7 +44,12 @@ fun StudyButton(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text("?", style = Typography.headlineLarge.copy(fontSize = 64.sp))
+            Text(
+                modifier = Modifier.size(48.dp),
+                text = "?",
+                textAlign = TextAlign.Center,
+                style = Typography.headlineLarge.copy(fontSize = 48.sp),
+            )
             Text("학습 퀴즈", style = Typography.displayMedium.copy(fontSize = 32.sp))
         }
     }

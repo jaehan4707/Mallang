@@ -42,7 +42,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,13 +56,12 @@ import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Green1
 import com.chill.mallang.ui.theme.Green2
-import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Sub2
 import com.chill.mallang.ui.theme.Typography
 
 @Composable
-fun QuizResultScreen(
+fun StudyResultScreen(
     modifier: Modifier = Modifier,
     studyResultViewModel: StudyResultViewModel = hiltViewModel(),
     userAnswer: Int,
@@ -164,7 +162,7 @@ fun StudyResultScreenContent(
                 QuizBoxWithUnderline(
                     systemMessage = studyResultState.quizTitle,
                     quizScript = studyResultState.quizScript,
-                    underline = studyResultState.wordList[studyResultState.systemAnswer - 1].first,
+                    underline = studyResultState.wordList[studyResultState.systemAnswer - 1].word,
                 )
             }
             ResultAnswerList(
@@ -247,7 +245,7 @@ fun AnswerResultListItem(
         label = "expandedHeight",
         transitionSpec = { tween(durationMillis = 200) },
     ) { expanded ->
-        if (expanded == index + 1) 40.dp else 0.dp
+        if (expanded == index + 1) 70.dp else 0.dp
     }
 
     val alpha by expandTransition.animateFloat(
@@ -294,7 +292,7 @@ fun AnswerResultListItem(
                 }
                 Spacer(modifier = Modifier.width(30.dp))
                 Text(
-                    text = studyResultState.wordList[index].first,
+                    text = studyResultState.wordList[index].word,
                     modifier = Modifier.weight(1f),
                     style = Typography.headlineLarge,
                 )
@@ -326,7 +324,7 @@ fun AnswerResultListItem(
                         .background(color = Color.Unspecified),
             ) {
                 Text(
-                    text = studyResultState.wordList[index].second,
+                    text = studyResultState.wordList[index].meaning,
                     modifier =
                         Modifier
                             .fillMaxWidth()
@@ -398,13 +396,5 @@ fun QuizBoxWithUnderline(
                 style = Typography.headlineSmall,
             )
         }
-    }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun ResultPreview() {
-    MallangTheme {
-        QuizResultScreen(userAnswer = 2)
     }
 }
