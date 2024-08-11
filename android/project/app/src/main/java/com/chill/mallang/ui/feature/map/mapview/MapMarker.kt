@@ -4,17 +4,17 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,7 +26,6 @@ import com.chill.mallang.ui.feature.map.CustomMarkerState
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
-import com.chill.mallang.ui.theme.Red01
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.Circle
@@ -48,7 +47,7 @@ fun CustomMarkerWithArea(
             false
         },
     ) {
-        CustomMarker(distance = state.distance, color = state.color)
+        CustomMarker(distance = state.distance, occupyingTeamId = state.occupyingTeamId)
     }
     Circle(
         center = state.marker.position,
@@ -59,7 +58,7 @@ fun CustomMarkerWithArea(
 @Composable
 fun CustomMarker(
     distance: Int,
-    color: Color,
+    occupyingTeamId: Long,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -75,11 +74,10 @@ fun CustomMarker(
                 color = BackGround,
             )
         }
-        Icon(
-            modifier = Modifier.size(56.dp),
-            painter = painterResource(id = R.drawable.ic_location),
+        Image(
+            modifier = Modifier.padding(top = 8.dp).size(56.dp).offset(x = 10.dp),
+            painter = painterResource(id = if(occupyingTeamId == 1L) R.drawable.img_mal_mark else R.drawable.img_lang_mark),
             contentDescription = "",
-            tint = color,
         )
     }
 }
@@ -134,6 +132,6 @@ fun bitmapDescriptor(
 @Composable
 fun CustomMarkerPreview() {
     MallangTheme {
-        CustomMarker(distance = 100, color = Red01)
+        CustomMarker(distance = 100, occupyingTeamId = 1L)
     }
 }

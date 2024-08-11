@@ -68,19 +68,19 @@ fun MapScaffold(
                 is ProximityState.Adjacent -> {
                     MessageWithCharacter(
                         message = context.getString(R.string.adjacent),
-                        character = R.drawable.ic_logo,
+                        character = R.drawable.img_happy,
                     )
                 }
                 is ProximityState.Distant -> {
                     MessageWithCharacter(
                         message = context.getString(R.string.distant, proximityState.distance),
-                        character = R.drawable.ic_logo,
+                        character = R.drawable.img_running,
                     )
                 }
                 is ProximityState.FarAway -> {
                     MessageWithCharacter(
                         message = context.getString(R.string.far_away),
-                        character = R.drawable.ic_logo,
+                        character = R.drawable.img_lost_map,
                     )
                 }
             }
