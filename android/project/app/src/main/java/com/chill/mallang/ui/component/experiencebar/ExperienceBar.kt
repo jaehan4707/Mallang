@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,11 +29,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.chill.mallang.ui.theme.Gray2
+import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Green04
 import com.chill.mallang.ui.theme.Green1
 import com.chill.mallang.ui.theme.Green2
 import com.chill.mallang.ui.theme.MallangTheme
+import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun ExperienceBar(
@@ -132,7 +137,11 @@ fun Badge(
     }
 
     Surface(
-        modifier = modifier.size(width = 60.dp, height = 64.dp).shadow(5.dp, shape = BadgeShape),
+        modifier =
+            modifier
+                .size(width = 60.dp, height = 64.dp)
+                .border(width = 4.dp, color = Gray2, shape = BadgeShape)
+                .shadow(5.dp, shape = BadgeShape),
         color = Color.White,
         contentColor = Gray6,
         shape = BadgeShape,
@@ -143,13 +152,14 @@ fun Badge(
                     Modifier
                         .padding(horizontal = 8.dp)
                         .size(48.dp)
-                        .align(Alignment.TopCenter),
+                        .align(Alignment.BottomCenter),
                 painter = painterResource(id = badge),
                 contentDescription = null,
             )
             Text(
                 level.toString(),
-                modifier = Modifier.padding(bottom = 8.dp).align(Alignment.BottomCenter),
+                style = Typography.displaySmall.copy(fontSize = 16.sp),
+                modifier = Modifier.background(color = Gray3, shape = CircleShape).padding(top = 4.dp, start = 4.dp, end = 3.dp).align(Alignment.TopCenter),
             )
         }
     }
