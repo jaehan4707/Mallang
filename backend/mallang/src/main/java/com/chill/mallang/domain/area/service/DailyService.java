@@ -35,13 +35,13 @@ public class DailyService {
             int result = checkVictory(malSumScore.get(i), rangSumScore.get(i));
             mal.put("area", malSumScore.get(i)[1]);
             // 최고 득점자
-            mal.put("victory team ", result);
+            mal.put("victory team", result);
             mal.put("team mal totalScore", sliceDouble((Double)malSumScore.get(i)[2]));
             mal.put("team rang totalScore", sliceDouble((Double)rangSumScore.get(i)[2]));
             // 말 승
             if(result == 1){
                 mal.put("top score", sliceFloat((float)(malTeamTopUser.get(i)[2])));
-                mal.put("top score user ", userRepository.getUserById((Long) malTeamTopUser.get(i)[4]).getNickname());
+                mal.put("top score user", userRepository.getUserById((Long) malTeamTopUser.get(i)[4]).getNickname());
             }else if(result == 2){
                 mal.put("top score", sliceFloat((float)(rangTeamTopUser.get(i)[2])));
                 mal.put("top score user", userRepository.getUserById((Long) rangTeamTopUser.get(i)[4]).getNickname());
