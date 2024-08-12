@@ -33,8 +33,8 @@ public class AllAreaService {
             // 오늘치 + fin=1인 answer 다 불러와
             List<Answer> answers = answerRepository.findByAreaId(areaId);
             // 각 팀 총점 구하고
-            int mal = 0;
-            int lang = 0;
+            float mal = 0;
+            float lang = 0;
             for (Answer answer : answers) {
                 if (answer.getUser().getFaction().getId() == 1) {
                     mal += answer.getScore();
