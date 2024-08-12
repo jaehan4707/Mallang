@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "answer")
@@ -42,16 +43,5 @@ public class Answer {
     protected void onCreate() {
         this.created_at = LocalDateTime.now();
         this.check_fin = 0;
-    }
-
-
-    @Builder
-    public Answer(User user, Quiz quiz, String answer, float score, int answerTime, int check_fin) {
-        this.user = user;
-        this.quiz = quiz;
-        this.answer = answer;
-        this.score = score;
-        this.answerTime = answerTime;
-        this.check_fin = check_fin;
     }
 }
