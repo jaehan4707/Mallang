@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +40,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.CustomSnackBar
 import com.chill.mallang.ui.component.LongBlackButton
@@ -131,46 +137,66 @@ fun NickNameContent(
     uiState: NicknameState = NicknameState(),
     checkNickName: () -> Unit = { },
 ) {
-    Column(
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.login_background))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = LottieConstants.IterateForever,
+    )
+
+    Box(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        contentAlignment = Alignment.Center,
     ) {
-        Spacer(modifier = Modifier.height(80.dp))
-        Image(
-            painter = painterResource(id = R.drawable.ic_title_small),
-            contentDescription = null,
-            modifier = Modifier.height(120.dp),
+        LottieAnimation(
+            composition = composition,
+            progress = progress,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
         )
-        Spacer(modifier = Modifier.weight(0.2f))
-        TextWithIcon(text = stringResource(R.string.login_info_message), icon = R.drawable.ic_mage)
-        Spacer(modifier = Modifier.height(30.dp))
         Column(
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(bottom = 4.dp),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CustomTextField(
-                onValueChange = {
-                    uiState.updateNickname(it)
-                },
-                focusManager = focusManager,
-                nickName = uiState.nickname,
-                errorMessage = uiState.errorMessage,
-                onClearPressed = {
-                    uiState.clearNickname()
-                },
+            Spacer(modifier = Modifier.height(80.dp))
+            Image(
+                painter = painterResource(id = R.drawable.ic_title),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth(0.6f),
             )
+            Spacer(modifier = Modifier.weight(0.2f))
+            TextWithIcon(
+                text = stringResource(R.string.login_info_message),
+                icon = R.drawable.ic_mage,
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                CustomTextField(
+                    onValueChange = {
+                        uiState.updateNickname(it)
+                    },
+                    focusManager = focusManager,
+                    nickName = uiState.nickname,
+                    errorMessage = uiState.errorMessage,
+                    onClearPressed = {
+                        uiState.clearNickname()
+                    },
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            LongBlackButton(
+                onClick = {
+                    checkNickName()
+                },
+                text = stringResource(R.string.button_decide_message),
+            )
+            Spacer(modifier = Modifier.weight(1f))
         }
-        Spacer(modifier = Modifier.height(20.dp))
-        LongBlackButton(
-            onClick = {
-                checkNickName()
-            },
-            text = stringResource(R.string.button_decide_message),
-        )
-        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
@@ -204,9 +230,9 @@ fun CustomTextField(
                 }
             },
             modifier =
-            modifier
-                .fillMaxWidth()
-                .height(48.dp),
+                modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
             shape = RoundedCornerShape(10.dp),
             singleLine = true,
             keyboardActions =
@@ -242,9 +268,9 @@ fun CustomTextField(
         Text(
             text = errorMessage,
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp, start = 4.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, start = 4.dp),
             color = Sub1,
             style = Typography.displayMedium,
         )

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -30,14 +30,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.chill.mallang.R
-import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
@@ -58,6 +63,13 @@ fun LoginScreen(
     val uiState by viewModel.loginUiState.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.game_splash_background))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = LottieConstants.IterateForever,
+    )
+
     LaunchedEffect(Unit) {
         viewModel.initCredentialManager(context)
         viewModel.initCredentialRequest()
@@ -81,7 +93,7 @@ fun LoginScreen(
             }
         }
 
-// Google Sign-In 방식
+    // Google Sign-In 방식
     val googleSignInLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
@@ -111,17 +123,23 @@ fun LoginScreen(
         firstLaunched = onFirstLaunched,
     )
 
-    Surface(
-        color = BackGround,
+    Box(
         modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
+        LottieAnimation(
+            composition = composition,
+            progress = progress,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
+        )
         Column(
             modifier =
                 Modifier
                     .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.weight(0.1f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.14f))
             Image(
                 painter = painterResource(id = R.drawable.ic_title),
                 contentDescription = null,
@@ -129,11 +147,11 @@ fun LoginScreen(
                     Modifier
                         .fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.weight(0.4f))
+            Spacer(modifier = Modifier.weight(1f))
             GoogleLoginButton(onClick = {
                 viewModel.initializeLogin(context, credentialLauncher)
             }, text = stringResource(R.string.login_button_message))
-            Spacer(modifier = Modifier.weight(0.7f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.35f))
         }
     }
 }
@@ -152,7 +170,7 @@ fun GoogleLoginButton(
                 containerColor = Color.White,
             ),
         shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(1.dp, Gray4),
+        border = BorderStroke(2.dp, Gray4),
         modifier =
             modifier
                 .fillMaxWidth(0.8f)
