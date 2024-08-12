@@ -2,6 +2,7 @@ package com.chill.mallang.domain.quiz.repository;
 
 import com.chill.mallang.domain.quiz.dto.response.TeamRankResponse;
 import com.chill.mallang.domain.quiz.model.TotalScore;
+import com.chill.mallang.domain.user.model.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,5 +39,15 @@ public interface TotalScoreRepository extends JpaRepository<TotalScore, Long> {
         Pageable pageable = PageRequest.of(0, 3); // 첫 번째 페이지, 3개의 결과
         return findTop3(areaID, factionID, pageable);
     }
+
+    // areaId와 factionId를 주면 최고 득점자 id를 뱉어내는 쿼리
+    @Query(value = "SELECT t.user FROM total_score t " +
+            "WHERE t.area = :areaId AND DATE(t.created_at) = CURDATE() " +
+            "AND t.faction = :factionId " +
+            "ORDER BY t.total_score DESC LIMIT 1", nativeQuery = true)
+    Long findTopUserByAreaIdAndFactionId(Long areaId, Long factionId);
+
+
+
 
 }

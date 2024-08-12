@@ -10,6 +10,6 @@ import lombok.Setter;
 @Builder
 public class FactionDTO {
     private Long teamId;
-    private int teamPoint;
+    private Float teamPoint;
     private TopUserDTO topUser;
 }
