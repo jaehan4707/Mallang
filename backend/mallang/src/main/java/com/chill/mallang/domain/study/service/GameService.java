@@ -144,7 +144,7 @@ public class GameService {
         List<Map<String, String>> wordList = problemRepository.findWordListByStudentId(studyId).stream()
                 .sorted(Comparator.comparingInt(Problem::getIdx))
                 .map(problem -> Map.of(
-                        "word", problem.getBasic_type(),
+                        "word", problem.getOption(),
                         "meaning", problem.getMean()
                 ))
                 .collect(Collectors.toList());

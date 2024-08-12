@@ -40,8 +40,8 @@ public class QuizController {
 
     // 점령지에 포함된 퀴즈 PK 불러오기
     @Operation(summary ="점령 시작을 위한 Quiz 호출", description = "해당 점령지가 가지고 있는 Quiz PK 3개 조회")
-    @GetMapping("/start/{areaID}")
-    public ResponseEntity<?> startQuiz(@PathVariable Long areaID) {
-        return new ResponseEntity<>(quizService.getAreaQuiz(areaID), HttpStatus.OK);
+    @GetMapping("/start/{areaID}/{userID}")
+    public ResponseEntity<?> startQuiz(@PathVariable Long areaID, @PathVariable Long userID) {
+        return new ResponseEntity<>(quizService.getAreaQuiz(areaID, userID), HttpStatus.OK);
     }
 }
