@@ -11,7 +11,6 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Before
@@ -29,13 +28,28 @@ internal class NickNameViewModelTest {
     }
 
     @Test
-    fun `닉네임이_중복되었는지_조회한다`() = runTest {
+    fun `닉네임이_중복되지않았다면_UiState를_Success로_업데이트_한다`() = runTest {
         val nickName = "짜이한한한"
         coEvery { userRepository.checkNickName(nickName) } returns flowOf(ApiResponse.Success(Unit)) // 반환 flow는 ApiResponse.Success로 고정
         viewModel.nicknameState.updateNickname(nickName)
         viewModel.checkNickName()
-        advanceUntilIdle() //비동기 작업 끝날떄 까지 대기!
         assertEquals(NickNameUiState.Success(nickName), viewModel.uiState.value)
+    }
+
+    @Test
+    fun `닉네임이_중복되었다면_UiState를_Error로_업데이트_한다`() = runTest {
+        val nickName = "짜이한"
+        coEvery { userRepository.checkNickName(nickName) } returns flowOf(
+            ApiResponse.Error(
+                errorMessage = ErrorMessage.DUPLICATED_NICKNAME
+            )
+        )
+        viewModel.nicknameState.updateNickname(nickName)
+        viewModel.checkNickName()
+        assertEquals(
+            NickNameUiState.Error(errorMessage = ErrorMessage.DUPLICATED_NICKNAME),
+            viewModel.uiState.value
+        )
     }
 
     @Test
