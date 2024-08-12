@@ -10,6 +10,7 @@ import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.AreaRepository
+import com.chill.mallang.ui.feature.map.MapDistance.inArea
 import com.chill.mallang.ui.feature.map.state.ProximityState
 import com.chill.mallang.ui.feature.map.state.TryCountState
 import com.google.android.gms.maps.model.LatLng
@@ -60,7 +61,7 @@ class MapViewModel
                                 selectedArea!!.latLng,
                                 latLng,
                             ).toInt()
-                    if (distance < 20) {
+                    if (distance < inArea) {
                         ProximityState.Adjacent(distance)
                     } else {
                         ProximityState.Distant(distance)
@@ -117,7 +118,7 @@ class MapViewModel
                                 selectedArea!!.latLng,
                                 (currentLocation.value as LocationState.Tracking).latLng,
                             ).toInt()
-                    if (distance < 20) {
+                    if (distance < inArea) {
                         ProximityState.Adjacent(distance)
                     } else {
                         ProximityState.Distant(distance)
@@ -164,12 +165,12 @@ class MapViewModel
                 null
             }
 
-        private fun getProximityClosestArea(latLng: LatLng) : ProximityState {
+        private fun getProximityClosestArea(latLng: LatLng): ProximityState {
             val closest = getClosestArea(latLng)
             return if (closest != null) {
                 val distance =
                     SphericalUtil.computeDistanceBetween(closest.latLng, latLng).toInt()
-                if (distance < 20) {
+                if (distance < inArea) {
                     ProximityState.Adjacent(distance)
                 } else {
                     ProximityState.FarAway
@@ -179,3 +180,7 @@ class MapViewModel
             }
         }
     }
+
+object MapDistance {
+    final val inArea = 50
+}
