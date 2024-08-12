@@ -15,12 +15,12 @@ import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.feature.game.game01.Game01ViewModel.Game01Constants.ROUND_COUNT
 import com.chill.mallang.ui.feature.game.game01.SubView.CurtainCallScreen.Game01CurtainCallScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.LoadingScreen.Game01LoadingScreen
-import com.chill.mallang.ui.feature.game.game01.SubView.RewardScreen.Game01RewardScreen
-import com.chill.mallang.ui.feature.game.game01.SubView.RoundScreen.Game01RoundScreen
-import com.chill.mallang.ui.feature.game.game01.SubView.SplashScreen.Game01SplashScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.PlayScreen.Game01PlayScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.ResultScreen.Game01ResultScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.ReviewScreen.Game01ReviewScreen
+import com.chill.mallang.ui.feature.game.game01.SubView.RewardScreen.Game01RewardScreen
+import com.chill.mallang.ui.feature.game.game01.SubView.RoundScreen.Game01RoundScreen
+import com.chill.mallang.ui.feature.game.game01.SubView.SplashScreen.Game01SplashScreen
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 import kotlinx.coroutines.flow.SharedFlow
@@ -56,7 +56,7 @@ fun Game01Screen(
     BackHandler(onBack = { setBackPressed(true) })
 
     TopbarHandler(
-        isVisible = true,
+        isVisible = false,
         title = stringResource(id = R.string.game_title),
         onBack = { nav ->
             setBackPressed(true)
