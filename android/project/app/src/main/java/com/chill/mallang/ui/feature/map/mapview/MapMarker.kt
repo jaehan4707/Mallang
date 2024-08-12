@@ -13,6 +13,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -60,6 +63,17 @@ fun CustomMarker(
     distance: Int,
     occupyingTeamId: Long,
 ) {
+    val flagResId by
+        remember {
+            mutableIntStateOf(
+                when (occupyingTeamId) {
+                    1L -> R.drawable.img_mal_mark
+                    2L -> R.drawable.img_lang_mark
+                    else -> R.drawable.img_no_mark
+                },
+            )
+        }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -75,8 +89,12 @@ fun CustomMarker(
             )
         }
         Image(
-            modifier = Modifier.padding(top = 8.dp).size(56.dp).offset(x = 10.dp),
-            painter = painterResource(id = if(occupyingTeamId == 1L) R.drawable.img_mal_mark else R.drawable.img_lang_mark),
+            modifier =
+                Modifier
+                    .padding(top = 8.dp)
+                    .size(56.dp)
+                    .offset(x = 10.dp),
+            painter = painterResource(id = flagResId),
             contentDescription = "",
         )
     }
@@ -133,5 +151,13 @@ fun bitmapDescriptor(
 fun CustomMarkerPreview() {
     MallangTheme {
         CustomMarker(distance = 100, occupyingTeamId = 1L)
+    }
+}
+
+@Preview
+@Composable
+fun CustomMarkerPreviewWithNoMark() {
+    MallangTheme {
+        CustomMarker(distance = 100, occupyingTeamId = 0L)
     }
 }
