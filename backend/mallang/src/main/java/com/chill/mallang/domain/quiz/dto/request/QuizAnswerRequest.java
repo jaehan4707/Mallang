@@ -16,8 +16,11 @@ public class QuizAnswerRequest {
     @NotNull
     private Long userId;
     @NotNull
+    private Long areaId;
+    @NotNull
     private String userAnswer;
     @NotNull
     private int answerTime;
+
     private final LocalDateTime created_at = now();
 }

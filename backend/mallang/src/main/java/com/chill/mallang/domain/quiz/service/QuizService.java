@@ -1,5 +1,6 @@
 package com.chill.mallang.domain.quiz.service;
 
+import com.chill.mallang.domain.area.repository.AreaRepository;
 import com.chill.mallang.domain.quiz.dto.request.QuizAnswerRequest;
 import com.chill.mallang.domain.quiz.dto.request.QuizResultRequest;
 import com.chill.mallang.domain.quiz.dto.response.QuizResponse;
@@ -12,13 +13,10 @@ import com.chill.mallang.domain.quiz.repository.QuizRepository;
 import com.chill.mallang.domain.quiz.repository.TotalScoreRepository;
 import com.chill.mallang.domain.quiz.service.core.CoreService;
 import com.chill.mallang.domain.quiz.service.core.OpenAIService;
-import com.chill.mallang.domain.user.model.User;
 import com.chill.mallang.domain.user.repository.UserRepository;
 import com.chill.mallang.domain.user.service.impl.UserServiceImpl;
 import com.chill.mallang.errors.exception.RestApiException;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -41,6 +39,7 @@ public class QuizService {
 
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
+    private final AreaRepository areaRepository;
     private final AnswerRepository answerRepository;
     private final TotalScoreRepository totalScoreRepository;
     private final UserServiceImpl userServiceImpl;
@@ -85,6 +84,7 @@ public class QuizService {
         Answer answer = Answer.builder()
                 .user(userRepository.findById(requestQuizAnswer.getUserId()).orElseThrow(() -> new RestApiException(QuizErrorCode.USER_NOT_FOUND)))
                 .quiz(quizRepository.findById(requestQuizAnswer.getQuizId()).orElseThrow(() -> new RestApiException(QuizErrorCode.QUIZ_NOT_FOUND)))
+                .area(areaRepository.findById(requestQuizAnswer.getAreaId()).orElseThrow(() -> new RestApiException(QuizErrorCode.AREA_NOT_FOUND)))
                 .answer(requestQuizAnswer.getUserAnswer())
                 .answerTime(requestQuizAnswer.getAnswerTime())
                 .score(score)
