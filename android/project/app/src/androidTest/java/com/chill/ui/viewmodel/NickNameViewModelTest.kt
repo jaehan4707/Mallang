@@ -4,6 +4,7 @@ import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.UserRepository
 import com.chill.mallang.ui.feature.nickname.NickNameUiState
 import com.chill.mallang.ui.feature.nickname.NicknameViewModel
+import com.chill.mallang.ui.util.ErrorMessage
 import io.mockk.coEvery
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
@@ -35,5 +36,15 @@ internal class NickNameViewModelTest {
         viewModel.checkNickName()
         advanceUntilIdle() //비동기 작업 끝날떄 까지 대기!
         assertEquals(NickNameUiState.Success(nickName), viewModel.uiState.value)
+    }
+
+    @Test
+    fun `닉네임은_숫자를_포함하면_안된다`() = runTest {
+        val nickName = "짜이한1"
+        viewModel.nicknameState.updateNickname(nickName)
+        assertEquals(
+            viewModel.nicknameState.errorMessage,
+            ErrorMessage.INVALID_CHAR,
+        )
     }
 }
