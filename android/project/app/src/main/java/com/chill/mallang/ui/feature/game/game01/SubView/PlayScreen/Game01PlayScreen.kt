@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.game.game01.SubView
+package com.chill.mallang.ui.feature.game.game01.SubView.PlayScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,14 +23,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chill.mallang.R
@@ -51,14 +48,8 @@ fun Game01PlayScreen(
     viewModel: Game01ViewModel = viewModel(),
     modifier: Modifier = Modifier,
 ) {
-    val scrollState = rememberScrollState()
     val quizUiState by viewModel.QuizUiState.collectAsStateWithLifecycle()
     val remainingTime by viewModel.remainingTime.collectAsStateWithLifecycle()
-
-    val view = LocalView.current
-    ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-        insets
-    }
 
     if (remainingTime == 0) {
         submitUserAnswer()
@@ -88,7 +79,6 @@ fun Game01PlayContent(
     userAnswer: String = "",
     submitUserAnswer: () -> Unit = {},
     onUserAnswerChanged: (String) -> Unit = {},
-    viewModel: Game01ViewModel = viewModel(),
     remainingTime: Int,
     modifier: Modifier = Modifier,
 ) {
@@ -147,7 +137,7 @@ fun Game01PlayContent(
                     item {
                         ButtonBody(
                             remaingTime = remainingTime,
-                            timeLimit = Game01ViewModel.Game01Constants.ROUND_TIME_LIMIT,
+                            timeLimit = Game01ViewModel.ROUND_TIME_LIMIT,
                             submitUserAnswer = submitUserAnswer,
                         )
                     }
