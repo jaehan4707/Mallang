@@ -50,9 +50,13 @@ public class AreaStatusService {
             areaStatusInfo.add(team);
         }
 
+        Map<String,Object> teams = new HashMap<>(){{
+            put("teams",areaStatusInfo);
+        }};
+
         //data Map에 넣기
         return new HashMap<>(){{
-            put("data",areaStatusInfo);
+            put("data",teams);
         }};
     }
 }
