@@ -5,13 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.chill.mallang.ui.feature.fort_detail.FortDetailScreen
 import com.chill.mallang.ui.feature.game.game01.Game01Screen
-import com.chill.mallang.ui.feature.game_lobby.GameLobbyScreen
 import com.chill.mallang.ui.feature.home.HomeScreen
 import com.chill.mallang.ui.feature.incorrect_word.IncorrectNoteScreen
 import com.chill.mallang.ui.feature.login.LoginScreen
@@ -71,6 +68,7 @@ fun MallangNavHost(
                 modifier = modifier,
                 navigateToHome = { navController.navigate(DestinationMain.route) },
                 popUpBackStack = navController::popBackStack,
+                onShowErrorSnackBar = onShowErrorSnackBar,
             )
         }
 
