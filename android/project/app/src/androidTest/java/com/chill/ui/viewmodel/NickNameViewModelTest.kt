@@ -57,4 +57,24 @@ internal class NickNameViewModelTest {
             ErrorMessage.INVALID_CHAR,
         )
     }
+
+    @Test
+    fun `닉네임의_글자수는_2글자보다_작으면_안된다`() = runTest {
+        val nickName = "짱"
+        viewModel.nicknameState.updateNickname(nickName)
+        assertEquals(
+            viewModel.nicknameState.errorMessage,
+            ErrorMessage.TOO_SHORT,
+        )
+    }
+
+    @Test
+    fun `닉네임의_글자수는_10글자보다_많으면_안된다`() = runTest {
+        val nickName = "가나다라마바사아자카타파하라"
+        viewModel.nicknameState.updateNickname(nickName)
+        assertEquals(
+            viewModel.nicknameState.errorMessage,
+            ErrorMessage.TOO_LONG,
+        )
+    }
 }
