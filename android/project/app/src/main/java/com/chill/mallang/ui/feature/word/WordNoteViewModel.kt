@@ -1,6 +1,9 @@
 package com.chill.mallang.ui.feature.word
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chill.mallang.data.model.response.ApiResponse
@@ -23,12 +26,18 @@ class WordNoteViewModel
         private val _wordNoteState = MutableStateFlow<WordNoteState>(WordNoteState.Loading)
         val wordNoteState = _wordNoteState.asStateFlow()
 
+        var isClose by mutableStateOf(false)
+
         init {
             loadWords()
         }
 
+        fun closeView() {
+            if (!isClose) isClose = true
+        }
+
         // 처음 단어장 정보 불러오기 api
-        private fun loadWords() {
+        fun loadWords() {
             viewModelScope.launch {
                 dataStoreRepository.getUserId()?.let { userId ->
                     studyRepository

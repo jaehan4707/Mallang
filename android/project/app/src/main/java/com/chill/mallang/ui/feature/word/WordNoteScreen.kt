@@ -21,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +66,19 @@ fun WordNoteScreen(
 
     // context
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        if (wordViewModel.isClose) {
+            wordViewModel.isClose = false
+            wordViewModel.loadWords()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            wordViewModel.closeView()
+        }
+    }
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
