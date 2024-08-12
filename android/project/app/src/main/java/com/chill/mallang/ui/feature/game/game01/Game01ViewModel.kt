@@ -198,6 +198,7 @@ class Game01ViewModel
                             GradingUserAnswerRequest(
                                 quizId = quizId,
                                 userId = userInfo.id,
+                                areaId = areaId,
                                 userAnswer = userAnswer,
                                 answerTime = roundPlayingTime,
                                 created_at = currentTimestamp,
