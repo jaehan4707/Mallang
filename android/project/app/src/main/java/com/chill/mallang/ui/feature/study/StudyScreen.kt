@@ -112,6 +112,15 @@ fun StudyScreen(
 
         is StudyState.Error -> {
             // 에러났을 때 처리
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = context.getString(R.string.study_load_error_message),
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
 
         // 결과 화면으로

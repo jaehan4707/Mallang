@@ -125,7 +125,7 @@ fun IncorrectContent(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical =15.dp),
+                .padding(horizontal = 12.dp, vertical = 15.dp),
     ) {
         NoteChangeButton(
             context = context,
@@ -193,7 +193,7 @@ fun IncorrectListItem(
                 .shadow(
                     elevation = 3.dp,
                     shape = RoundedCornerShape(15.dp),
-                    clip = false
+                    clip = false,
                 ).clickable(onClick = onClick),
         shape = RoundedCornerShape(15.dp),
         color = BackGround,
@@ -210,6 +210,7 @@ fun IncorrectListItem(
                 modifier = Modifier.padding(3.dp),
                 text = incorrectWord.script,
                 style = Typography.headlineSmall,
+                textAlign = TextAlign.Center,
             )
         }
     }

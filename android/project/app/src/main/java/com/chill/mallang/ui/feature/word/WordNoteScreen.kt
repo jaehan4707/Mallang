@@ -241,7 +241,7 @@ fun WordListItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Text(text = word.word, style = Typography.labelLarge)
+            Text(text = word.word, style = Typography.headlineSmall)
             Spacer(modifier = Modifier.height(5.dp))
             PosBox(pos = word.pos)
         }
