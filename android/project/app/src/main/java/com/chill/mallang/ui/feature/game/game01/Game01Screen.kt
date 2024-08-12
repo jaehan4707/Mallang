@@ -16,7 +16,7 @@ import com.chill.mallang.ui.feature.game.game01.Game01ViewModel.Game01Constants.
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01CurtainCallScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01LoadingScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01PlayScreen
-import com.chill.mallang.ui.feature.game.game01.SubView.Game01ReviewScreen
+import com.chill.mallang.ui.feature.game.game01.SubView.ReviewScreen.Game01ReviewScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RewardScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundDoneScreen
 import com.chill.mallang.ui.feature.game.game01.SubView.Game01RoundScreen

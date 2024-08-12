@@ -170,7 +170,7 @@ fun QuestionBody(
         modifier =
             Modifier
                 .padding(12.dp)
-                .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
+                .border(width = 1.5.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
                 .fillMaxWidth(),
     ) {
         Column(
@@ -199,8 +199,8 @@ fun QuestionBody(
             Text(
                 text = quizScript,
                 style = Typography.titleSmall,
-                fontSize = 20.sp,
-                lineHeight = 30.sp,
+                fontSize = 15.sp,
+                lineHeight = 25.sp,
             )
         }
     }
@@ -215,7 +215,7 @@ fun AnswerBody(
         modifier =
             Modifier
                 .padding(12.dp)
-                .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
+                .border(width = 1.5.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
                 .fillMaxWidth(),
     ) {
         Column(
@@ -256,7 +256,7 @@ fun AnswerBody(
                         .padding(8.dp),
                 textStyle =
                     TextStyle(
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         color = Color.Black,
                     ),
             )
