@@ -3,6 +3,7 @@ package com.chill.ui.screen
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.chill.data.NickNameTestData.NO_DUPLICATED_NICKNAME
 import com.chill.mallang.data.repository.remote.UserRepository
 import com.chill.mallang.ui.feature.nickname.NicknameScreen
 import com.chill.mallang.ui.feature.nickname.NicknameViewModel
@@ -21,7 +22,7 @@ class NicknameScreenTest {
     val composeTestRule = createComposeRule()
 
     private lateinit var viewModel: NicknameViewModel
-    private val userRepository: UserRepository = mockk() // 가짜 객체 추가
+    private val userRepository: UserRepository = mockk()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -35,7 +36,7 @@ class NicknameScreenTest {
         composeTestRule.setContent {
             NicknameScreen(viewModel = viewModel)
         }
-        viewModel.nicknameState.updateNickname("짜이한")
+        viewModel.nicknameState.updateNickname(NO_DUPLICATED_NICKNAME)
         composeTestRule.onNodeWithTag("clear_button").performClick()
         assertEquals(
             viewModel.nicknameState.nickname,

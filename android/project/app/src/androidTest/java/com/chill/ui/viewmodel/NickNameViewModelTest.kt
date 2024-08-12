@@ -1,5 +1,11 @@
 package com.chill.ui.viewmodel
 
+import com.chill.data.NickNameTestData.DUPLICATED_NICKNAME
+import com.chill.data.NickNameTestData.INCLUDE_NUMBER_NICKNAME
+import com.chill.data.NickNameTestData.INCLUDE_SPACE_NICKNAME
+import com.chill.data.NickNameTestData.NO_DUPLICATED_NICKNAME
+import com.chill.data.NickNameTestData.TOO_LONG_NICKNAME
+import com.chill.data.NickNameTestData.TOO_SHORT_NICKNAME
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.UserRepository
 import com.chill.mallang.ui.feature.nickname.NickNameUiState
@@ -19,7 +25,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class NickNameViewModelTest {
     private lateinit var viewModel: NicknameViewModel
-    private val userRepository: UserRepository = mockk() // 가짜 객체 추가
+    private val userRepository: UserRepository = mockk()
 
     @Before
     fun setUp() {
@@ -29,7 +35,7 @@ internal class NickNameViewModelTest {
 
     @Test
     fun `닉네임이_중복되지않았다면_UiState를_Success로_업데이트_한다`() = runTest {
-        val nickName = "짜이한한한"
+        val nickName = NO_DUPLICATED_NICKNAME
         coEvery { userRepository.checkNickName(nickName) } returns flowOf(ApiResponse.Success(Unit)) // 반환 flow는 ApiResponse.Success로 고정
         viewModel.nicknameState.updateNickname(nickName)
         viewModel.checkNickName()
@@ -38,7 +44,7 @@ internal class NickNameViewModelTest {
 
     @Test
     fun `닉네임이_중복되었다면_UiState를_Error로_업데이트_한다`() = runTest {
-        val nickName = "짜이한"
+        val nickName = DUPLICATED_NICKNAME
         coEvery { userRepository.checkNickName(nickName) } returns flowOf(
             ApiResponse.Error(
                 errorMessage = ErrorMessage.DUPLICATED_NICKNAME
@@ -54,7 +60,7 @@ internal class NickNameViewModelTest {
 
     @Test
     fun `닉네임은_숫자를_포함하면_안된다`() = runTest {
-        val nickName = "짜이한1"
+        val nickName = INCLUDE_NUMBER_NICKNAME
         viewModel.nicknameState.updateNickname(nickName)
         assertEquals(
             viewModel.nicknameState.errorMessage,
@@ -64,7 +70,7 @@ internal class NickNameViewModelTest {
 
     @Test
     fun `닉네임은_공백을_포함하면_안된다`() = runTest {
-        val nickName = "짜이한 "
+        val nickName = INCLUDE_SPACE_NICKNAME
         viewModel.nicknameState.updateNickname(nickName)
         assertEquals(
             viewModel.nicknameState.errorMessage,
@@ -74,7 +80,7 @@ internal class NickNameViewModelTest {
 
     @Test
     fun `닉네임의_글자수는_2글자보다_작으면_안된다`() = runTest {
-        val nickName = "짱"
+        val nickName = TOO_SHORT_NICKNAME
         viewModel.nicknameState.updateNickname(nickName)
         assertEquals(
             viewModel.nicknameState.errorMessage,
@@ -84,7 +90,7 @@ internal class NickNameViewModelTest {
 
     @Test
     fun `닉네임의_글자수는_10글자보다_많으면_안된다`() = runTest {
-        val nickName = "가나다라마바사아자카타파하라"
+        val nickName = TOO_LONG_NICKNAME
         viewModel.nicknameState.updateNickname(nickName)
         assertEquals(
             viewModel.nicknameState.errorMessage,
