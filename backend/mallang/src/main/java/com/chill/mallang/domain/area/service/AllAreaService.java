@@ -5,6 +5,7 @@ import com.chill.mallang.domain.area.model.Area;
 import com.chill.mallang.domain.area.repository.AreaRepository;
 import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.quiz.repository.AnswerRepository;
+import com.chill.mallang.domain.quiz.repository.TotalScoreRepository;
 import com.chill.mallang.errors.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class AllAreaService {
 
     private final AreaRepository areaRepository;
     private final AnswerRepository answerRepository;
+    private final TotalScoreRepository totalScoreRepository;
 
     private Logger logger = LoggerFactory.getLogger(AllAreaService.class);
 
@@ -29,20 +31,24 @@ public class AllAreaService {
     public Map<String, Object> getAreaById(Long areaId) {
         Optional<Area> area = areaRepository.findById(areaId);
         if (area.isPresent()) {
-            // 오늘치 + fin=1인 answer 다 불러와
-            List<Answer> answers = answerRepository.findByAreaId(areaId);
-            // 각 팀 총점 구하고
-            float mal = 0;
-            float lang = 0;
-            for (Answer answer : answers) {
-                if (answer.getUser().getFaction().getId() == 1) {
-                    mal += answer.getScore();
-                } else {
-                    lang += answer.getScore();
-                }
+
+            Float mal = 0F;
+            Float lang = 0F;
+
+            List<Float> malTotalScore = totalScoreRepository.findTotalScoreByAreaIDAndFactionID(areaId,1L);
+            logger.info("scoreList : " + malTotalScore.size());
+            if (malTotalScore.getFirst() != null) {
+                mal += malTotalScore.get(0);
             }
+
+            List<Float> langTotalScore = totalScoreRepository.findTotalScoreByAreaIDAndFactionID(areaId,2L);
+            logger.info("scoreList : " + langTotalScore.size());
+            if (langTotalScore.getFirst() != null) {
+                lang += langTotalScore.get(0);
+            }
+
             // 비교
-            int winTeam = 0;// 기본 점령 안된 상태
+            int winTeam = 0; // 기본 점령 안된 상태
             if (mal > lang) {
                 winTeam = 1;
             }
@@ -78,18 +84,22 @@ public class AllAreaService {
         for (int i = 0; i < areas.size(); i++) {
             Area area = areas.get(i);
             Long areaId = area.getId();
-            // 오늘치 + fin=1인 answer 다 불러와
-            List<Answer> answers = answerRepository.findByAreaId(areaId);
-            // 각 팀 총점 구하고
-            int mal = 0;
-            int lang = 0;
-            for (Answer answer : answers) {
-                if (answer.getUser().getFaction().getId() == 1) {
-                    mal += answer.getScore();
-                } else {
-                    lang += answer.getScore();
-                }
+
+            Float mal = 0F;
+            Float lang = 0F;
+
+            List<Float> malTotalScore = totalScoreRepository.findTotalScoreByAreaIDAndFactionID(areaId,1L);
+            logger.info("scoreList : " + malTotalScore.size());
+            if (malTotalScore.getFirst() != null) {
+                mal += malTotalScore.get(0);
             }
+
+            List<Float> langTotalScore = totalScoreRepository.findTotalScoreByAreaIDAndFactionID(areaId,2L);
+            logger.info("scoreList : " + langTotalScore.size());
+            if (langTotalScore.getFirst() != null) {
+                lang += langTotalScore.get(0);
+            }
+
             // 비교
             int winTeam = 0;// 기본 점령 안된 상태
             if (mal > lang) {

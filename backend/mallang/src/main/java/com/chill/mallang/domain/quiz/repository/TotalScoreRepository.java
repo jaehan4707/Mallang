@@ -17,6 +17,10 @@ public interface TotalScoreRepository extends JpaRepository<TotalScore, Long> {
             "GROUP BY t.faction ", nativeQuery = true)
     List<Float> findTotalScoreByAreaID(@Param("areaID") Long areaID);
 
+    @Query(value = "SELECT SUM(t.total_score) FROM total_score t " +
+            "WHERE t.area = :areaID AND DATE(t.created_at) = CURDATE() " +
+            "AND t.faction = :factionID ", nativeQuery = true)
+    List<Float> findTotalScoreByAreaIDAndFactionID(@Param("areaID") Long areaID, @Param("factionID") Long factionID);
     //    @Query(value = "SELECT u.nickname AS nickName, t.total_score AS totalScore " +
 //            "FROM total_score t " +
 //            "JOIN user u ON t.user = u.id " +
