@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -37,8 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.Game01QuizData
-import com.chill.mallang.ui.feature.game.game01.SubView.AnswerBody
-import com.chill.mallang.ui.feature.game.game01.SubView.QuestionBody
+import com.chill.mallang.ui.component.TextBoxWithTitle
 import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
@@ -198,6 +198,7 @@ fun GameReviewCardContent(
                 fontSize = 40.sp,
                 modifier = Modifier.padding(vertical = 10.dp),
             )
+            Spacer(modifier = Modifier.width(30.dp))
             Box(
                 contentAlignment = Alignment.Center,
                 modifier =
@@ -232,21 +233,21 @@ fun GameReviewCardContent(
         }
         LazyColumn {
             item {
-                QuestionBody(
-                    systemMessage = stringResource(id = R.string.question_message),
-                    quizScript = reviewContent.quizDataSet.question
+                TextBoxWithTitle(
+                    title = "문제",
+                    content = reviewContent.quizDataSet.question,
                 )
             }
             item {
-                AnswerBody(
-                    userAnswer = reviewContent.userAnswer,
-                    onUserAnswerChanged = {}
+                TextBoxWithTitle(
+                    title = "사용자 답안",
+                    content = reviewContent.userAnswer,
                 )
             }
             item {
-                AnswerBody(
-                    userAnswer = reviewContent.quizDataSet.answer,
-                    onUserAnswerChanged = {}
+                TextBoxWithTitle(
+                    title = "AI 답안",
+                    content = reviewContent.quizDataSet.answer,
                 )
             }
         }

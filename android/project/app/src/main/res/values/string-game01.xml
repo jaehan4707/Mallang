@@ -25,4 +25,10 @@
     <string name="game_end_message">게임 종료...</string>
     <string name="success_message">Success !</string>
     <string name="nice_try_message">Nice Try !</string>
+
+    <string name="a_feedback_message">"\"용사비등(龍蛇飛騰)\" 이시옵니다!"</string>`
+    <string name="b_feedback_message">"\"우공이산(愚公移山)\" \n\n지금의 성실함을 유지하며 더 큰 목표를 향해 나아가길 응원합니다."</string>
+    <string name="c_feedback_message">"\"중용지덕(中庸之德)\" \n\n균형과 절제 속에서 더욱 큰 성장을 이룰 수 있습니다."</string>
+    <string name="d_feedback_message">"\"중용지덕(中庸之德)\" \n\n균형과 절제 속에서 더욱 큰 성장을 이룰 수 있습니다."</string>
+    <string name="f_feedback_message">"\"대기만성(大器晩成)\" \n\n지금의 작은 시작이 언젠가는 큰 성과로 이어질 것입니다."</string>
 </resources>
