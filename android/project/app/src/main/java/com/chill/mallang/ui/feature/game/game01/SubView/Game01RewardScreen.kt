@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,12 +23,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieAnimatable
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.component.experiencebar.AnimatedGaugeBar
@@ -38,7 +44,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun Game01RewardScreen(
     completeReward: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var isBadgeSlide by remember { mutableStateOf(false) }
     var isBadgeTransparent by remember { mutableStateOf(false) }
@@ -59,6 +65,17 @@ fun Game01RewardScreen(
         animationSpec = tween(durationMillis = 1000),
     )
 
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.celebration))
+    val animationState = rememberLottieAnimatable()
+
+    LaunchedEffect(composition) {
+        delay(2000)
+        animationState.animate(
+            composition = composition,
+            iterations = 1,
+        )
+    }
+
     LaunchedEffect(Unit) {
         delay(2000L)
         isBadgeSlide = true
@@ -68,35 +85,48 @@ fun Game01RewardScreen(
     }
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(vertical = 20.dp)
-    ){
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(vertical = 20.dp),
+    ) {
         Column(
-            modifier = modifier.fillMaxSize()
-                .align(Alignment.Center),
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = "승급 !",
                 style = Typography.displayLarge,
                 fontSize = 40.sp,
-                modifier = modifier
-                    .padding(top = 100.dp)
-                    .graphicsLayer(alpha = messageAlpha)
+                modifier =
+                    modifier
+                        .padding(top = 100.dp)
+                        .graphicsLayer(alpha = messageAlpha),
             )
             Box(
-                modifier = modifier
-                    .size(350.dp)
-            ){
+                modifier =
+                    Modifier
+                        .size(350.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                LottieAnimation(
+                    composition = composition,
+                    progress = animationState.progress,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Box(modifier = Modifier.size(100.dp).background(Color.White))
                 Image(
-                    modifier = Modifier
-                        .size(250.dp)
-                        .padding(top = badgePaddingSize)
-                        .align(Alignment.Center)
-                        .graphicsLayer(alpha = badgeAlpha),
+                    modifier =
+                        Modifier
+                            .size(250.dp)
+                            .padding(top = badgePaddingSize)
+                            .align(Alignment.Center)
+                            .graphicsLayer(alpha = badgeAlpha),
                     painter =
-                    painterResource(id = R.drawable.img_badge_5),
+                        painterResource(id = R.drawable.img_badge_5),
                     contentDescription = "",
                 )
             }
@@ -104,15 +134,16 @@ fun Game01RewardScreen(
                 "골드 1",
                 style = Typography.titleLarge,
                 fontSize = 30.sp,
-                modifier = modifier.graphicsLayer(alpha = badgeAlpha)
+                modifier = modifier.graphicsLayer(alpha = badgeAlpha),
             )
             Spacer(modifier = Modifier.size(80.dp))
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier
-                .padding(horizontal = 40.dp, vertical = 80.dp)
-                .align(Alignment.BottomCenter)
+            modifier =
+                modifier
+                    .padding(horizontal = 40.dp, vertical = 80.dp)
+                    .align(Alignment.BottomCenter),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -122,25 +153,25 @@ fun Game01RewardScreen(
                 Text(
                     text = "21",
                     style = Typography.displayLarge,
-                    fontSize = 40.sp
+                    fontSize = 40.sp,
                 )
                 Text("EXP+135")
                 Text(
                     text = "22",
                     style = Typography.displayLarge,
-                    fontSize = 40.sp
+                    fontSize = 40.sp,
                 )
             }
             AnimatedGaugeBar(
                 modifier = modifier.padding(top = 10.dp),
                 initialValue = 0f,
-                targetValue = 0.7f
+                targetValue = 0.7f,
             )
         }
         LongBlackButton(
             onClick = { completeReward() },
             text = stringResource(id = R.string.game_confirm),
-            modifier = modifier.align(Alignment.BottomCenter)
+            modifier = modifier.align(Alignment.BottomCenter),
         )
     }
 }
