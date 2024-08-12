@@ -161,7 +161,7 @@ class Game01ViewModel
 
         fun fetchQuiz() {
             viewModelScope.launch {
-                delay(2000L)
+                delay(1000L)
                 quizRepository.getQuiz(questionIdList[gameRound - 1]).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
