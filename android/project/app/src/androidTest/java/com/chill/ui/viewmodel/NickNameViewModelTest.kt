@@ -47,4 +47,14 @@ internal class NickNameViewModelTest {
             ErrorMessage.INVALID_CHAR,
         )
     }
+
+    @Test
+    fun `닉네임은_공백을_포함하면_안된다`() = runTest {
+        val nickName = "짜이한 "
+        viewModel.nicknameState.updateNickname(nickName)
+        assertEquals(
+            viewModel.nicknameState.errorMessage,
+            ErrorMessage.INVALID_CHAR,
+        )
+    }
 }
