@@ -33,7 +33,7 @@ public class DailyService {
             Map<String, Object> mal = new HashMap<>();
 
             int result = checkVictory(malSumScore.get(i), rangSumScore.get(i));
-
+            mal.put("area", malSumScore.get(i)[1]);
             // 최고 득점자
             mal.put("victory team ", result);
             mal.put("team mal totalScore", sliceDouble((Double)malSumScore.get(i)[2]));
