@@ -46,6 +46,7 @@ import com.chill.mallang.ui.navigation.DestinationMain
  */
 @Composable
 fun TopbarHandler(
+    key: Any? = null,
     isVisible: Boolean = false,
     title: String = "",
     titleContent: (@Composable () -> Unit)? = null,
@@ -59,11 +60,11 @@ fun TopbarHandler(
 ) {
     val viewModel: TopbarViewModel = hiltViewModel()
 
-    LaunchedEffect(isVisible) {
+    LaunchedEffect(key, isVisible) {
         viewModel.updateVisibility(isVisible)
     }
 
-    LaunchedEffect(title, titleContent) {
+    LaunchedEffect(key, title, titleContent) {
         if (titleContent == null) {
             viewModel.updateTitle(title)
         } else {
@@ -71,11 +72,11 @@ fun TopbarHandler(
         }
     }
 
-    LaunchedEffect(onBack) {
+    LaunchedEffect(key, onBack) {
         viewModel.updateOnBack(onBack)
     }
 
-    LaunchedEffect(onHome) {
+    LaunchedEffect(key, onHome) {
         viewModel.updateOnHome(onHome)
     }
 }

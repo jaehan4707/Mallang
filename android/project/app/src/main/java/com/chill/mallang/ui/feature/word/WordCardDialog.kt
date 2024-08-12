@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -53,119 +53,124 @@ fun WordCardDialog(
 ) {
     BasicAlertDialog(
         onDismissRequest = onDismiss,
-        modifier = Modifier.fillMaxWidth(0.95f),
+        modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight(),
         properties = DialogProperties(usePlatformDefaultWidth = false),
         content = {
             Surface(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.35f)
+                        .heightIn(min = 250.dp)
                         .padding(20.dp),
                 shape = RoundedCornerShape(15.dp),
                 border = BorderStroke(width = 2.dp, color = Gray6),
                 color = Color.White,
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    val pagerState =
-                        rememberPagerState(
-                            initialPage = index,
-                            pageCount = { wordCards.size },
-                        )
-                    val pageSpacing = 15.dp
-                    val scope = rememberCoroutineScope()
-
-                    val currentPage by remember { derivedStateOf { pagerState.currentPage } }
-
-                    Row(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        // 왼쪽 빈 공간
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        // 중앙 텍스트
-                        Box(
-                            modifier = Modifier.weight(1f),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = "${currentPage + 1} / ${wordCards.size}",
-                                style = Typography.displaySmall,
-                                color = Gray4,
+                Box(modifier = Modifier.padding(bottom = 20.dp)) {
+                    Column {
+                        val pagerState =
+                            rememberPagerState(
+                                initialPage = index,
+                                pageCount = { wordCards.size },
                             )
-                        }
+                        val pageSpacing = 15.dp
+                        val scope = rememberCoroutineScope()
 
-                        // 오른쪽 닫기 아이콘
-                        Box(
-                            modifier =
-                                Modifier
-                                    .padding(10.dp)
-                                    .size(15.dp)
-                                    .weight(1f),
-                            contentAlignment = Alignment.CenterEnd,
-                        ) {
-                            ImageButton(
-                                icon = R.drawable.ic_close,
-                                label = "",
-                                onClick = onDismiss,
-                            )
-                        }
-                    }
+                        val currentPage by remember { derivedStateOf { pagerState.currentPage } }
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    HorizontalPager(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.Center),
-                        state = pagerState,
-                        pageSpacing = pageSpacing,
-                    ) { page ->
-                        val word = wordCards[page]
                         Row(
                             modifier =
                                 Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 5.dp),
+                                    .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
+                            // 왼쪽 빈 공간
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            // 중앙 텍스트
                             Box(
                                 modifier = Modifier.weight(1f),
-                                contentAlignment = Alignment.CenterStart,
+                                contentAlignment = Alignment.Center,
                             ) {
-                                if (page > 0) {
-                                    ImageButton(
-                                        icon = R.drawable.ic_prev,
-                                        label = "",
-                                        onClick = {
-                                            scope.launch {
-                                                pagerState.animateScrollToPage(page - 1)
-                                            }
-                                        },
-                                    )
-                                }
+                                Text(
+                                    text = "${currentPage + 1} / ${wordCards.size}",
+                                    style = Typography.displaySmall,
+                                    color = Gray4,
+                                )
                             }
-                            WordCardContent(
-                                modifier = Modifier.weight(8f),
-                                card = word,
-                            )
+
+                            // 오른쪽 닫기 아이콘
                             Box(
-                                modifier = Modifier.weight(1f),
+                                modifier =
+                                    Modifier
+                                        .padding(10.dp)
+                                        .size(15.dp)
+                                        .weight(1f),
                                 contentAlignment = Alignment.CenterEnd,
                             ) {
-                                if (page < wordCards.size - 1) {
-                                    ImageButton(icon = R.drawable.ic_next, label = "", onClick = {
-                                        scope.launch {
-                                            pagerState.animateScrollToPage(
-                                                page + 1,
-                                            )
-                                        }
-                                    })
+                                ImageButton(
+                                    icon = R.drawable.ic_close,
+                                    label = "",
+                                    onClick = onDismiss,
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        HorizontalPager(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth(),
+                            state = pagerState,
+                            pageSpacing = pageSpacing,
+                        ) { page ->
+                            val word = wordCards[page]
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 5.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.CenterStart,
+                                ) {
+                                    if (page > 0) {
+                                        ImageButton(
+                                            icon = R.drawable.ic_prev,
+                                            label = "",
+                                            onClick = {
+                                                scope.launch {
+                                                    pagerState.animateScrollToPage(page - 1)
+                                                }
+                                            },
+                                        )
+                                    }
+                                }
+                                WordCardContent(
+                                    modifier = Modifier.weight(8f),
+                                    card = word,
+                                )
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.CenterEnd,
+                                ) {
+                                    if (page < wordCards.size - 1) {
+                                        ImageButton(
+                                            icon = R.drawable.ic_next,
+                                            label = "",
+                                            onClick = {
+                                                scope.launch {
+                                                    pagerState.animateScrollToPage(
+                                                        page + 1,
+                                                    )
+                                                }
+                                            },
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -240,8 +245,8 @@ fun Preview() {
                 CorrectWord(
                     word = "단어",
                     pos = "명사",
-                    meaning = "여기는 단어의 뜻을 나타내는 공간",
-                    example = "여기는 단어를 사용한 예시를 나타내는 공간",
+                    meaning = "여기는 단어의 뜻을 나타내는 공간12312312312311231232131231231",
+                    example = "여기는 단어를 사용한 예시를 나타내는 공간12312312312312312312312312312312312312123123",
                 ),
             ),
     ) {}

@@ -2,6 +2,7 @@ package com.chill.mallang.core.di
 
 import com.chill.mallang.BuildConfig
 import com.chill.mallang.data.network.AccessTokenInterceptor
+import com.chill.mallang.data.network.RetryInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -42,9 +43,10 @@ object NetworkModule {
         OkHttpClient.Builder().run {
             addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             addNetworkInterceptor(accessTokenInterceptor)
-            connectTimeout(10, TimeUnit.SECONDS)
-            readTimeout(10, TimeUnit.SECONDS)
-            writeTimeout(10, TimeUnit.SECONDS)
+            addInterceptor(RetryInterceptor(maxRetryCount = 3, retryStatus = 503))
+            connectTimeout(20, TimeUnit.SECONDS)
+            readTimeout(20, TimeUnit.SECONDS)
+            writeTimeout(20, TimeUnit.SECONDS)
             build()
         }
 }
