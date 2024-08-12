@@ -12,4 +12,5 @@ public class AllAreaDTO {
     private String areaName;
     private double latitude;
     private double longitude;
+    private int teamId;
 }
