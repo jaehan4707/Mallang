@@ -4,6 +4,7 @@ import com.chill.mallang.data.api.AreaApi
 import com.chill.mallang.data.model.apiHandler
 import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.AreaDetail
+import com.chill.mallang.data.model.entity.Summary
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.data.model.entity.TeamRecords
 import com.chill.mallang.data.model.entity.TryCount
@@ -119,14 +120,53 @@ class AreaRepositoryImpl
                     is ApiResponse.Success -> {
                         emit(ApiResponse.Success(response.body?.data))
                     }
+
                     is ApiResponse.Error -> {
                         emit(
                             ApiResponse.Error(
                                 errorCode = response.errorCode,
                                 errorMessage = response.errorMessage,
-                            )
+                            ),
                         )
                     }
+
+                    ApiResponse.Init -> {}
+                }
+            }
+
+        override suspend fun getDailySummary(): Flow<ApiResponse<List<Summary>>> =
+            flow {
+                val response =
+                    apiHandler {
+                        areaApi.getDailySummary()
+                    }
+                when (response) {
+                    is ApiResponse.Success -> {
+                        emit(
+                            ApiResponse.Success(
+                                response.body?.data?.map {
+                                    Summary(
+                                        areaName = it.areaName ?: "",
+                                        malScore = it.malScore ?: 0.0,
+                                        langScore = it.langScore ?: 0.0,
+                                        topUserNickName = it.topUserNickName ?: "",
+                                        topScore = it.topScore ?: 0.0,
+                                        victoryFactionId = it.victoryFactionId ?: -1,
+                                    )
+                                },
+                            ),
+                        )
+                    }
+
+                    is ApiResponse.Error -> {
+                        emit(
+                            ApiResponse.Error(
+                                errorMessage = response.errorMessage,
+                                errorCode = response.errorCode,
+                            ),
+                        )
+                    }
+
                     ApiResponse.Init -> {}
                 }
             }

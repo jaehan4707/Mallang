@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -21,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,13 +38,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
-import com.chill.mallang.data.model.entity.User
+import com.chill.mallang.data.model.entity.Summary
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.BoldColoredText
 import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.component.LongBlackButton
-import com.chill.mallang.ui.component.PercentageBar
-import com.chill.mallang.ui.feature.home.ImageButton
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.SkyBlue
 import com.chill.mallang.ui.theme.Sub1
@@ -49,24 +50,8 @@ import com.chill.mallang.ui.theme.Sub3
 import com.chill.mallang.ui.theme.Sub4
 import com.chill.mallang.ui.theme.Typography
 import com.chill.mallang.ui.util.noRippleClickable
-
-val SampleData =
-    listOf(
-        User(
-            nickName = "닉네임111111111111111111111111111111111111111111111111",
-            factionId = 1L,
-        ) to listOf(10, 20),
-        User(nickName = "이나갱", factionId = 1L) to listOf(20, 30),
-        User(nickName = "코리안캉", factionId = 1L) to listOf(30, 40),
-        User(nickName = "성수킴", factionId = 1L) to listOf(1, 9),
-        User(nickName = "정인킴", factionId = 2L) to listOf(20, 3),
-        User(nickName = "혜림나", factionId = 2L) to listOf(32, 13),
-        User(nickName = "서원변", factionId = 2L) to listOf(21, 10),
-        User(nickName = "서원변", factionId = 2L) to listOf(21, 10),
-        User(nickName = "서원변", factionId = 2L) to listOf(21, 10),
-        User(nickName = "서원변", factionId = 2L) to listOf(21, 10),
-        User(nickName = "서원변", factionId = 2L) to listOf(21, 10),
-    )
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun SummaryScreen(
@@ -74,8 +59,9 @@ fun SummaryScreen(
     navigateToHome: () -> Unit = {},
     viewModel: SummaryViewModel = hiltViewModel(),
     popUpBackStack: () -> Unit = {},
+    onShowErrorSnackBar: (String) -> Unit = {},
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isBackPressed = remember { mutableStateOf(false) }
     BackConfirmHandler(
         isBackPressed = isBackPressed.value,
@@ -93,7 +79,32 @@ fun SummaryScreen(
     BackHandler(onBack = {
         isBackPressed.value = true
     })
-    when (uiState.value) {
+
+    HandleSummaryUi(
+        uiState = uiState,
+        navigateToHome = navigateToHome,
+        modifier = modifier,
+        onShowErrorSnackBar = onShowErrorSnackBar,
+    )
+}
+
+@Composable
+fun HandleSummaryUi(
+    modifier: Modifier = Modifier,
+    navigateToHome: () -> Unit = {},
+    uiState: SummaryUiState,
+    onShowErrorSnackBar: (String) -> Unit,
+) {
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is SummaryUiState.Error -> {
+                onShowErrorSnackBar(uiState.errorMessage)
+            }
+
+            else -> {}
+        }
+    }
+    when (uiState) {
         SummaryUiState.Loading -> {
             LoadingDialog(
                 lottieRes = R.raw.loading_summary,
@@ -101,9 +112,15 @@ fun SummaryScreen(
             )
         }
 
-        SummaryUiState.Success -> {
-            SummaryContent(modifier = modifier, navigateToHome)
+        is SummaryUiState.Success -> {
+            SummaryContent(
+                modifier = modifier,
+                navigateToHome,
+                summaryRecords = uiState.summaryRecords,
+            )
         }
+
+        else -> {}
     }
 }
 
@@ -111,6 +128,7 @@ fun SummaryScreen(
 fun SummaryContent(
     modifier: Modifier = Modifier,
     navigateToHome: () -> Unit = {},
+    summaryRecords: PersistentList<Summary> = persistentListOf(),
 ) {
     Box(modifier = modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
         Column(
@@ -122,26 +140,57 @@ fun SummaryContent(
             Text(
                 modifier =
                     Modifier
-                        .weight(0.07f)
                         .wrapContentWidth(),
                 text = stringResource(R.string.summary_title),
                 style = Typography.headlineLarge,
             )
-            // TODO 결산 화면 용 이미지 리소스 하나 -> 말 vs 랑 대치하는 이미지
-            Image(
-                modifier = Modifier.weight(0.2f),
-                painter = painterResource(id = R.mipmap.yellow),
-                contentDescription = "",
-            )
-            PercentageBar(
-                modifier = Modifier.wrapContentWidth(),
-                leftPercentage = 10,
-                rightPercentage = 90,
-                leftLabel = stringResource(id = R.string.team_mal),
-                rightLabel = stringResource(id = R.string.team_rang),
-                leftColor = Sub1,
-                rightColor = SkyBlue,
-            )
+            Box(modifier = modifier.wrapContentWidth(), contentAlignment = Alignment.Center) {
+                Image(
+                    painter = painterResource(id = R.drawable.img_summary_background),
+                    contentDescription = "",
+                )
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    ) {
+                        Image(
+                            modifier = Modifier.size(150.dp),
+                            alignment = Alignment.CenterStart,
+                            painter = painterResource(id = R.drawable.img_lang_fighting),
+                            contentDescription = "",
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Image(
+                            modifier = Modifier.size(150.dp),
+                            painter = painterResource(id = R.drawable.img_mal_fighting),
+                            contentDescription = "",
+                        )
+                    }
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text =
+                                "🏰 " +
+                                    summaryRecords
+                                        .count { it.victoryFactionId == 2 }
+                                        .toString(),
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Center,
+                            style = Typography.headlineLarge,
+                        )
+                        Text(
+                            text =
+                                "\uD83C\uDFF0 " +
+                                    summaryRecords
+                                        .count { it.victoryFactionId == 1 }
+                                        .toString(),
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Center,
+                            style = Typography.headlineLarge,
+                        )
+                    }
+                }
+            }
 
             LazyVerticalGrid(
                 modifier = Modifier.weight(1f),
@@ -151,14 +200,15 @@ fun SummaryContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(SampleData.size, span = { index ->
+                items(summaryRecords.size, span = { index ->
                     GridItemSpan(1)
                 }) { index ->
-                    val data = SampleData[index]
+                    val data = summaryRecords[index]
                     SummaryItem(
-                        areaName = "점령지112312312312312312312312",
-                        score = data.second,
-                        topUser = data.first,
+                        areaName = data.areaName,
+                        score = listOf(data.malScore.toInt(), data.langScore.toInt()),
+                        victoryFactionId = data.victoryFactionId,
+                        userNickName = data.topUserNickName,
                     )
                 }
             }
@@ -169,23 +219,34 @@ fun SummaryContent(
 }
 
 @Composable
+fun SummaryItems() {
+}
+
+@Composable
 fun SummaryItem(
     modifier: Modifier = Modifier,
-    areaName: String = "111111111111111111111111111111111111111111111111",
+    areaName: String = "점령지1",
     score: List<Int> = listOf(10, 20),
-    topUser: User = User(nickName = "짜이한", factionId = 1L),
+    userNickName: String = "짜이한",
+    victoryFactionId: Int = 1,
     onClick: () -> Unit = {},
 ) {
     val color =
-        if (topUser.factionId == 1L) {
+        if (victoryFactionId == 1) {
             Sub3
         } else {
             Sub4
         }
+    val malImage =
+        if (victoryFactionId == 1) {
+            R.drawable.img_mal_default_character
+        } else {
+            R.drawable.img_lang_default_character
+        }
     Card(
         modifier =
             modifier
-                .size(180.dp)
+                .wrapContentSize()
                 .noRippleClickable {
                     onClick()
                 },
@@ -231,23 +292,17 @@ fun SummaryItem(
 
             Image(
                 modifier = Modifier.size(100.dp),
-                painter = painterResource(id = R.mipmap.yellow),
+                painter = painterResource(id = malImage),
                 contentDescription = "",
             )
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = topUser.nickName,
+                text = "👑 $userNickName",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
                 style = Typography.headlineSmall,
-            )
-            ImageButton(
-                modifier = Modifier.align(Alignment.End),
-                icon = R.drawable.ic_search,
-                label = "",
-                onClick = {},
             )
         }
     }
@@ -257,6 +312,24 @@ fun SummaryItem(
 @Preview(showSystemUi = true, showBackground = true)
 fun SummaryPreview() {
     MallangTheme {
-        SummaryContent()
+        SummaryContent(
+            summaryRecords =
+                persistentListOf(
+                    Summary(
+                        areaName = "점령지1",
+                        malScore = 101.0,
+                        langScore = 100.0,
+                        topUserNickName = "이나갱",
+                        victoryFactionId = 1,
+                    ),
+                    Summary(
+                        areaName = "점령지2",
+                        malScore = 100.0,
+                        topUserNickName = "짜이한",
+                        langScore = 101.0,
+                        victoryFactionId = 2,
+                    ),
+                ),
+        )
     }
 }

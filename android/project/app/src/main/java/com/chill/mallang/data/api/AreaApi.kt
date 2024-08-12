@@ -6,6 +6,7 @@ import com.chill.mallang.data.model.entity.AreaDetail
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.data.model.entity.TeamRecords
 import com.chill.mallang.data.model.entity.TryCount
+import com.chill.mallang.data.model.response.GetSummaryResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -33,4 +34,7 @@ interface AreaApi {
         @Path("areaId") areaId: Long,
         @Path("userId") userId: Long,
     ): Response<ResponseBody<TeamRecords>>
+
+    @GET("areas/daily")
+    suspend fun getDailySummary(): Response<ResponseBody<List<GetSummaryResponse>>>
 }
