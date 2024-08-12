@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -80,12 +81,12 @@ fun DetailBody(
             Box(
                 modifier =
                     modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 10.dp),
+                        .fillMaxSize(),
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.img_fighting_background),
+                    painter = painterResource(id = R.drawable.img_vs_background_reverse),
                     contentDescription = null,
+                    contentScale = ContentScale.FillWidth,
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -145,7 +146,7 @@ fun TeamScoreAndTopUser(
     val teamTopUserTitle =
         if (teamInfo.teamId == 1) stringResource(R.string.team_mal_title) else stringResource(R.string.team_rang_title)
     val teamImage by remember {
-        mutableIntStateOf(if (teamInfo.teamId == 1) R.drawable.img_mal_fighting else R.drawable.img_lang_fighting)
+        mutableIntStateOf(if (teamInfo.teamId == 1) R.drawable.img_mal_char_oppo else R.drawable.img_lang_char_oppo)
     }
 
     Column(
