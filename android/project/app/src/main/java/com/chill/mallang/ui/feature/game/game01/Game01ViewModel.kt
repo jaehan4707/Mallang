@@ -7,7 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chill.mallang.data.model.entity.Game01PlayResult
 import com.chill.mallang.data.model.entity.Game01QuizData
+import com.chill.mallang.data.model.entity.Game01TeamPlayResult
+import com.chill.mallang.data.model.entity.Game01UserPlayResult
 import com.chill.mallang.data.model.entity.User
 import com.chill.mallang.data.model.request.FetchGameResultRequest
 import com.chill.mallang.data.model.request.GradingUserAnswerRequest
@@ -58,6 +61,10 @@ class Game01ViewModel
         // 게임01 문제 데이터셋 List
         private var _questionDataSetList = mutableListOf<Game01QuizData>()
         val questionDataSetList: List<Game01QuizData> get() = _questionDataSetList
+
+        // 게임 최종 결과
+        private var _playResult = mutableStateOf<Game01PlayResult>(Game01PlayResult(userPlayResult = Game01UserPlayResult(score = listOf(), totalScore = 0F), teamPlayResult = Game01TeamPlayResult(myTeamTotalScore = 0F, oppoTeamTotalScore = 0F, myTeamRankList = listOf())))
+        val playResult: Game01PlayResult get() = _playResult.value
 
         // 게임01 문제 사용자 답변 List
         private var _userAnswerList =
@@ -185,7 +192,7 @@ class Game01ViewModel
             pauseTimer()
             updateGame01State(Game01State.ROUND_SUBMIT)
 
-            val quizId = questionIdList[gameRound - 1].toLong()
+            val quizId = questionIdList[gameRound - 1]
             val roundPlayingTime = getRoundPlayingTime()
             val userAnswer = userAnswerList[gameRound]
             val currentTimestamp = getCurrentTimestamp()
@@ -240,6 +247,7 @@ class Game01ViewModel
                                         userAnswerList = userAnswerList,
                                     ),
                                 )
+                                _playResult.value = response.body!!
                             }
 
                             is ApiResponse.Error -> {
@@ -259,37 +267,7 @@ class Game01ViewModel
         fun fetchFinalResult() {
             viewModelScope.launch {
                 delay(1000L)
-                quizRepository
-                    .getResults(
-                        fetchGameResultRequest =
-                            FetchGameResultRequest(
-                                areaId = areaId,
-                                userId = userInfo.id,
-                                factionId = userInfo.factionId,
-                                quizIds = questionIdList,
-                            ),
-                    ).collectLatest { response ->
-                        when (response) {
-                            is ApiResponse.Success -> {
-                                _resultUiState.emit(
-                                    Game01FinalResultUiState.Success(
-                                        finalResult = response.body!!,
-                                    ),
-                                )
-                                _game01UiEvent.emit(Game01UiEvent.CompleteGameResultLoad)
-                            }
-
-                            is ApiResponse.Error -> {
-                                _resultUiState.emit(
-                                    Game01FinalResultUiState.Error(
-                                        errorMessage = response.errorMessage,
-                                    ),
-                                )
-                            }
-
-                            is ApiResponse.Init -> {}
-                        }
-                    }
+                _game01UiEvent.emit(Game01UiEvent.CompleteGameResultLoad)
             }
         }
 

@@ -26,7 +26,6 @@ import com.chill.mallang.data.model.entity.Game01UserPlayResult
 import com.chill.mallang.data.model.entity.GameUserRecord
 import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.feature.game.game01.Dialog.GameWinDialog
-import com.chill.mallang.ui.feature.game.game01.Game01FinalResultUiState
 import com.chill.mallang.ui.feature.game.game01.SubView.ResultScreen.Layout.LeaderBoardBody
 import com.chill.mallang.ui.feature.game.game01.SubView.ResultScreen.Layout.ResultDetailBody
 import com.chill.mallang.ui.feature.game.game01.SubView.ResultScreen.Layout.ResultImageBody
@@ -39,7 +38,7 @@ import kotlinx.coroutines.delay
 fun Game01ResultContent(
     userName: String,
     userTeamId: Long,
-    resultUiState: Game01FinalResultUiState.Success,
+    finalResult: Game01PlayResult,
     completeCheckResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -58,7 +57,7 @@ fun Game01ResultContent(
     )
 
     val isVictory =
-        if (resultUiState.finalResult.teamPlayResult.myTeamTotalScore > resultUiState.finalResult.teamPlayResult.oppoTeamTotalScore) {
+        if (finalResult.teamPlayResult.myTeamTotalScore > finalResult.teamPlayResult.oppoTeamTotalScore) {
             true
         } else {
             false
@@ -70,9 +69,9 @@ fun Game01ResultContent(
         delay(1000L)
         showTeamResult = true
         delay(3500L)
-        if (resultUiState.finalResult.teamPlayResult.myTeamTotalScore > resultUiState.finalResult.teamPlayResult.oppoTeamTotalScore) {
-            if ((resultUiState.finalResult.teamPlayResult.myTeamTotalScore - resultUiState.finalResult.userPlayResult.totalScore) <=
-                resultUiState.finalResult.teamPlayResult.oppoTeamTotalScore
+        if (finalResult.teamPlayResult.myTeamTotalScore > finalResult.teamPlayResult.oppoTeamTotalScore) {
+            if ((finalResult.teamPlayResult.myTeamTotalScore - finalResult.userPlayResult.totalScore) <=
+                finalResult.teamPlayResult.oppoTeamTotalScore
             ) {
                 DialogVisibility = true
             }
@@ -96,7 +95,7 @@ fun Game01ResultContent(
     ) {
         if (!showTeamResult) {
             ScoreBody(
-                totalScore = resultUiState.finalResult.userPlayResult.totalScore,
+                totalScore = finalResult.userPlayResult.totalScore,
                 modifier.graphicsLayer(alpha = scoreBodyAlpha),
             )
         } else {
@@ -105,8 +104,8 @@ fun Game01ResultContent(
                     isVictory = isVictory,
                 )
                 ResultDetailBody(
-                    myTeamScore = resultUiState.finalResult.teamPlayResult.myTeamTotalScore,
-                    oppoTeamScore = resultUiState.finalResult.teamPlayResult.oppoTeamTotalScore,
+                    myTeamScore = finalResult.teamPlayResult.myTeamTotalScore,
+                    oppoTeamScore = finalResult.teamPlayResult.oppoTeamTotalScore,
                 )
                 ResultImageBody(
                     isVictory = isVictory,
@@ -114,8 +113,8 @@ fun Game01ResultContent(
                 )
                 LeaderBoardBody(
                     userName = userName,
-                    userScore = resultUiState.finalResult.userPlayResult.totalScore,
-                    leaderList = resultUiState.finalResult.teamPlayResult.myTeamRankList,
+                    userScore = finalResult.userPlayResult.totalScore,
+                    leaderList = finalResult.teamPlayResult.myTeamRankList,
                     userTeamId = userTeamId,
                 )
             }
@@ -141,37 +140,34 @@ fun Game01ResultContent(
 fun Game01ResultContentPreview() {
     MallangTheme {
         Game01ResultContent(
-            resultUiState =
-                Game01FinalResultUiState.Success(
-                    finalResult =
-                        Game01PlayResult(
-                            userPlayResult =
-                                Game01UserPlayResult(
-                                    score = listOf(),
-                                    totalScore = 40F,
-                                ),
-                            teamPlayResult =
-                                Game01TeamPlayResult(
-                                    myTeamRankList =
-                                        listOf(
-                                            GameUserRecord("사람01", 100F),
-                                            GameUserRecord("사람01", 90F),
-                                            GameUserRecord("사람01", 80F),
-                                            GameUserRecord("사람01", 70F),
-                                            GameUserRecord("사람01", 60F),
-                                            GameUserRecord("사람01", 50F),
-                                            GameUserRecord("사람01", 40F),
-                                            GameUserRecord("사람01", 30F),
-                                            GameUserRecord("사람01", 20F),
-                                        ),
-                                    myTeamTotalScore = 200F,
-                                    oppoTeamTotalScore = 170F,
-                                ),
-                        ),
-                ),
             userName = "사람01",
             completeCheckResult = {},
             userTeamId = 2L,
+            finalResult =
+                Game01PlayResult(
+                    userPlayResult =
+                        Game01UserPlayResult(
+                            score = listOf(),
+                            totalScore = 40F,
+                        ),
+                    teamPlayResult =
+                        Game01TeamPlayResult(
+                            myTeamRankList =
+                                listOf(
+                                    GameUserRecord("사람01", 100F),
+                                    GameUserRecord("사람01", 90F),
+                                    GameUserRecord("사람01", 80F),
+                                    GameUserRecord("사람01", 70F),
+                                    GameUserRecord("사람01", 60F),
+                                    GameUserRecord("사람01", 50F),
+                                    GameUserRecord("사람01", 40F),
+                                    GameUserRecord("사람01", 30F),
+                                    GameUserRecord("사람01", 20F),
+                                ),
+                            myTeamTotalScore = 200F,
+                            oppoTeamTotalScore = 170F,
+                        ),
+                ),
         )
     }
 }
