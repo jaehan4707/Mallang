@@ -96,7 +96,8 @@ public class QuizService {
     }
 
     @Transactional
-    public Map<String, Object> getAreaQuiz(Long areaID) {
+    public Map<String, Object> getAreaQuiz(Long areaID, Long userID) {
+        userRepository.minusTryCount(userID);
         requireNonNull(areaID, QuizErrorCode.AREA_ID_NULL);
         Map<String, Object> response = new HashMap<>();
         response.put("data", quizRepository.getQuizByArea(areaID));
