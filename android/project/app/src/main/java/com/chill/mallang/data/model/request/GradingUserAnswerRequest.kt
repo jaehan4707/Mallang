@@ -9,6 +9,8 @@ data class GradingUserAnswerRequest(
     val quizId: Long,
     @SerialName("userId")
     val userId: Long,
+    @SerialName("areaId")
+    val areaId: Long,
     @SerialName("userAnswer")
     val userAnswer: String,
     @SerialName("answerTime")
