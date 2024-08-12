@@ -30,7 +30,7 @@ public class AllAreaService {
         Optional<Area> area = areaRepository.findById(areaId);
         if (area.isPresent()) {
             // 오늘치 + fin=1인 answer 다 불러와
-            List<Answer> answers = answerRepository.findAllAnswerByAreaId(areaId);
+            List<Answer> answers = answerRepository.findByAreaId(areaId);
             // 각 팀 총점 구하고
             int mal = 0;
             int lang = 0;
@@ -78,7 +78,7 @@ public class AllAreaService {
             Area area = areas.get(i);
             Long areaId = area.getId();
             // 오늘치 + fin=1인 answer 다 불러와
-            List<Answer> answers = answerRepository.findAllAnswerByAreaId(areaId);
+            List<Answer> answers = answerRepository.findByAreaId(areaId);
             // 각 팀 총점 구하고
             int mal = 0;
             int lang = 0;

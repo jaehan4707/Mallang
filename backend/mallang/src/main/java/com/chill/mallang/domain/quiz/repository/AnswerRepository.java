@@ -45,10 +45,4 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
             "  AND DATE_FORMAT(a1.created_at, '%Y-%m-%d') = DATE_FORMAT(CURRENT_DATE, '%Y-%m-%d') " +
             "ORDER BY a1.score DESC, a1.answer_time ASC", nativeQuery = true)
     List<Answer> findByAreaId(@Param("areaId") Long areaId);
-
-    @Query(value = "SELECT * FROM answer" +
-            "WHERE area = :areaId AND check_fin = 1" +
-            "AND DATE_FORMAT(created_at, '%Y-%m-%d') = DATE_FORMAT(CURRENT_DATE, '%Y-%m-%d')"
-            ,nativeQuery = true)
-    List<Answer> findAllAnswerByAreaId(@Param("areaId") Long areaId);
 }
