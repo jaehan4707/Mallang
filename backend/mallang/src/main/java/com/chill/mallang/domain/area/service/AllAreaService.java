@@ -21,6 +21,7 @@ public class AllAreaService {
     @Autowired
     private AreaRepository areaRepository;
 
+    @Autowired
     private AnswerRepository answerRepository;
 
     private Logger logger = LoggerFactory.getLogger(AllAreaService.class);
