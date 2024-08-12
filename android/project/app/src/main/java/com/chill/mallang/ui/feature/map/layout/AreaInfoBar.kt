@@ -75,6 +75,6 @@ fun AreaInfoBar(
 @Composable
 fun LocationInfoBarPreview() {
     MallangTheme {
-        AreaInfoBar(area = Area(1, "찰밭공원", 0.0, 0.0), distance = 10)
+        AreaInfoBar(area = Area(1, "찰밭공원", 0.0, 0.0, teamId = 1), distance = 10)
     }
 }

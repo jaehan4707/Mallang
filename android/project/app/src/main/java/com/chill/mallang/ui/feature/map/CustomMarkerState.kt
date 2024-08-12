@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.setValue
 import com.chill.mallang.data.model.entity.Area
+import com.chill.mallang.ui.feature.map.MapDistance.inArea
 import com.google.maps.android.compose.MarkerState
 
 class CustomMarkerState(
@@ -17,5 +18,5 @@ class CustomMarkerState(
 
     var occupyingTeamId by mutableLongStateOf(1L)
 
-    var radius by mutableDoubleStateOf(10.0)
+    var radius by mutableDoubleStateOf(inArea.toDouble())
 }

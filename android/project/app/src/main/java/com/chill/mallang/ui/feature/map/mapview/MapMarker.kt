@@ -13,6 +13,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +30,8 @@ import com.chill.mallang.ui.feature.map.CustomMarkerState
 import com.chill.mallang.ui.theme.BackGround
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
+import com.chill.mallang.ui.theme.Red01
+import com.chill.mallang.ui.theme.SkyBlue
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.Circle
@@ -40,6 +46,19 @@ fun CustomMarkerWithArea(
     state: CustomMarkerState,
     onClick: (Area) -> Unit = {},
 ) {
+    val teamColor by
+        remember {
+            mutableStateOf(
+                when (state.area.teamId) {
+                    1L -> Red01
+
+                    2L -> SkyBlue
+
+                    else -> Gray6
+                },
+            )
+        }
+
     MarkerComposable(
         state = state.marker,
         onClick = {
@@ -47,10 +66,13 @@ fun CustomMarkerWithArea(
             false
         },
     ) {
-        CustomMarker(distance = state.distance, occupyingTeamId = state.occupyingTeamId)
+        CustomMarker(distance = state.distance, occupyingTeamId = state.area.teamId)
     }
     Circle(
         center = state.marker.position,
+        strokeColor =
+        teamColor,
+        fillColor = teamColor.copy(alpha = 0.3f),
         radius = state.radius,
     )
 }
@@ -60,6 +82,17 @@ fun CustomMarker(
     distance: Int,
     occupyingTeamId: Long,
 ) {
+    val flagResId by
+        remember {
+            mutableIntStateOf(
+                when (occupyingTeamId) {
+                    1L -> R.drawable.img_mal_mark
+                    2L -> R.drawable.img_lang_mark
+                    else -> R.drawable.img_no_mark
+                },
+            )
+        }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -75,8 +108,12 @@ fun CustomMarker(
             )
         }
         Image(
-            modifier = Modifier.padding(top = 8.dp).size(56.dp).offset(x = 10.dp),
-            painter = painterResource(id = if(occupyingTeamId == 1L) R.drawable.img_mal_mark else R.drawable.img_lang_mark),
+            modifier =
+                Modifier
+                    .padding(top = 8.dp)
+                    .size(56.dp)
+                    .offset(x = 10.dp),
+            painter = painterResource(id = flagResId),
             contentDescription = "",
         )
     }
@@ -133,5 +170,13 @@ fun bitmapDescriptor(
 fun CustomMarkerPreview() {
     MallangTheme {
         CustomMarker(distance = 100, occupyingTeamId = 1L)
+    }
+}
+
+@Preview
+@Composable
+fun CustomMarkerPreviewWithNoMark() {
+    MallangTheme {
+        CustomMarker(distance = 100, occupyingTeamId = 0L)
     }
 }

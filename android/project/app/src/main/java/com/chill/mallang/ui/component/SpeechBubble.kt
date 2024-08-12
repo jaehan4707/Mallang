@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -7,11 +8,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
@@ -40,6 +40,8 @@ fun SpeechBubble(
                 tailPosition,
             ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(width = 2.dp, color = Color.Black)
     ) {
         Box(
             modifier = Modifier.padding(bottom = 16.dp),
@@ -63,22 +65,72 @@ class SpeechBubbleShape(
         with(density) {
             val path =
                 Path().apply {
-                    // Draw rounded rectangle
-                    addRoundRect(
-                        RoundRect(
-                            rect =
-                                Rect(
-                                    offset = Offset.Zero,
-                                    size = Size(size.width, size.height - tailHeight.toPx()),
-                                ),
-                            cornerRadius = CornerRadius(cornerRadius.toPx()),
+                    val width = size.width
+                    val height= size.height
+                    val cornerRadiusPx = cornerRadius.toPx()
+                    val tailWidthPx = tailWidth.toPx()
+                    val tailHeightPx = tailHeight.toPx()
+
+                    // Top left corner
+                    moveTo(cornerRadiusPx, 0f)
+
+                    // Top line
+                    lineTo(width - cornerRadiusPx, 0f)
+
+                    // Top right corner
+                    arcTo(
+                        rect = Rect(
+                            offset = Offset(width - 2 * cornerRadiusPx, 0f),
+                            size = Size(2* cornerRadiusPx, 2 * cornerRadiusPx)
                         ),
+                        startAngleDegrees = 270f,
+                        sweepAngleDegrees = 90f,
+                        forceMoveTo = false
                     )
-                    // Draw tail
-                    moveTo(size.width / 2f - tailWidth.toPx(), size.height - tailHeight.toPx())
-                    lineTo(size.width * tailPosition, size.height)
-                    lineTo(size.width / 2f + tailWidth.toPx(), size.height - tailHeight.toPx())
-                    close()
+
+                    // Right line
+                    lineTo(width, height - tailHeightPx - cornerRadiusPx)
+
+                    // Bottom right corner
+                    arcTo(
+                        rect = Rect(
+                            offset = Offset(width - 2 * cornerRadiusPx, height - tailHeightPx - 2 * cornerRadiusPx),
+                            size = Size(2 * cornerRadiusPx, 2 * cornerRadiusPx)
+                        ),
+                        startAngleDegrees = 0f,
+                        sweepAngleDegrees = 90f,
+                        forceMoveTo = false
+                    )
+
+                    // Tail
+                    lineTo(width / 2 + tailWidthPx, height - tailHeightPx)
+                    lineTo(width * tailPosition, height)
+                    lineTo(width / 2 - tailWidthPx, height - tailHeightPx)
+
+                    // Bottom left corner
+                    arcTo(
+                        rect = Rect(
+                            offset = Offset(0f, height - tailHeightPx - 2 * cornerRadiusPx),
+                            size = Size(2 * cornerRadiusPx, 2 * cornerRadiusPx)
+                        ),
+                        startAngleDegrees = 90f,
+                        sweepAngleDegrees = 90f,
+                        forceMoveTo = false
+                    )
+
+                    // Left line
+                    lineTo(0f, cornerRadiusPx)
+
+                    // Top left corner (close path)
+                    arcTo(
+                        rect = Rect(
+                            offset = Offset(0f, 0f),
+                            size = Size(2 * cornerRadiusPx, 2 * cornerRadiusPx)
+                        ),
+                        startAngleDegrees = 180f,
+                        sweepAngleDegrees = 90f,
+                        forceMoveTo = false
+                    )
                 }
             return Outline.Generic(path)
         }

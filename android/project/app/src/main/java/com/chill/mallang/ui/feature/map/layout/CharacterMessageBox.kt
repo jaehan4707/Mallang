@@ -33,7 +33,7 @@ fun CharacterMessageBox(
             )
         }
         Image(
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(100.dp),
             painter = painterResource(id = messageWithCharacter.character),
             contentDescription = "",
         )
