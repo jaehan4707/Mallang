@@ -11,7 +11,8 @@ data class Area(
     val areaId: Long,
     val areaName: String,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val teamId: Long,
 ) {
     @Transient
     val latLng = LatLng(latitude, longitude)

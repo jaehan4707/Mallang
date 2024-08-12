@@ -153,7 +153,7 @@ private fun MapScaffoldPreview() {
 private fun MapScaffoldPreviewWithAreaInfo() {
     MallangTheme {
         MapScaffold(
-            areaSelected = Area(1, "찰밭공원", 0.0, 0.0),
+            areaSelected = Area(1, "찰밭공원", 0.0, 0.0, teamId = 1),
             currentLocation = LocationState.Tracking(LatLng(0.0, 0.0)),
             status = TeamList(listOf()),
             proximityState = ProximityState.Adjacent(100),
