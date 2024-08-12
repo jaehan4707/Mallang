@@ -1,6 +1,8 @@
 package com.chill.mallang.ui.feature.fort_detail.layout
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -166,6 +170,12 @@ fun TeamScoreAndTopUser(
             )
         }
         Text(
+            modifier =
+                Modifier
+                    .shadow(elevation = 10.dp, shape = RoundedCornerShape(8.dp))
+                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                    .border(4.dp, shape = RoundedCornerShape(8.dp), color = teamColor)
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
             text = stringResource(R.string.team_score, teamInfo.teamPoint),
             fontSize = 30.sp,
             style = Typography.displayLarge,
@@ -191,8 +201,8 @@ fun DetailBodyPreviewWithData() {
                 AreaDetailState.Success(
                     AreaDetail(
                         areaName = "Name",
-                        TeamInfo(1, 1, null),
-                        TeamInfo(2, 1, null),
+                        TeamInfo(1, 100, null),
+                        TeamInfo(2, 80, null),
                     ),
                 ),
         )
