@@ -55,25 +55,14 @@ fun DetailBody(
         }
 
         is AreaDetailState.Success -> {
-            val leftInfo by remember {
-                mutableStateOf(
-                    if (occupationState.areaDetail.myTeamInfo.teamId !=
+            val backgroundResource by remember {
+                mutableIntStateOf(
+                    if (occupationState.areaDetail.myTeamInfo.teamId ==
                         1
                     ) {
-                        occupationState.areaDetail.myTeamInfo
+                        R.drawable.img_vs_background
                     } else {
-                        occupationState.areaDetail.oppoTeamInfo
-                    },
-                )
-            }
-            val rightInfo by remember {
-                mutableStateOf(
-                    if (occupationState.areaDetail.myTeamInfo.teamId !=
-                        1
-                    ) {
-                        occupationState.areaDetail.oppoTeamInfo
-                    } else {
-                        occupationState.areaDetail.myTeamInfo
+                        R.drawable.img_vs_background_reverse
                     },
                 )
             }
@@ -84,7 +73,7 @@ fun DetailBody(
                         .fillMaxSize(),
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.img_vs_background_reverse),
+                    painter = painterResource(id = backgroundResource),
                     contentDescription = null,
                     contentScale = ContentScale.FillWidth,
                 )
@@ -93,14 +82,16 @@ fun DetailBody(
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
                 ) {
                     TeamScoreAndTopUser(
-                        teamInfo = leftInfo,
+                        teamInfo = occupationState.areaDetail.myTeamInfo,
+                        isMyTeam = true,
                         modifier =
                             Modifier
                                 .weight(1F)
                                 .fillMaxHeight(),
                     )
                     TeamScoreAndTopUser(
-                        teamInfo = rightInfo,
+                        teamInfo = occupationState.areaDetail.oppoTeamInfo,
+                        isMyTeam = false,
                         modifier =
                             Modifier
                                 .weight(1F)
@@ -140,13 +131,20 @@ fun FortDetailHeader(
 @Composable
 fun TeamScoreAndTopUser(
     teamInfo: TeamInfo,
+    isMyTeam: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val teamColor by remember(teamInfo.teamId) { mutableStateOf(if (teamInfo.teamId == 1) Color.Red else Color.Blue) }
     val teamTopUserTitle =
         if (teamInfo.teamId == 1) stringResource(R.string.team_mal_title) else stringResource(R.string.team_rang_title)
     val teamImage by remember {
-        mutableIntStateOf(if (teamInfo.teamId == 1) R.drawable.img_mal_char_oppo else R.drawable.img_lang_char_oppo)
+        mutableIntStateOf(
+            if (isMyTeam) {
+                if (teamInfo.teamId == 1) R.drawable.img_mal_char else R.drawable.img_lang_char
+            } else {
+                if (teamInfo.teamId == 1) R.drawable.img_mal_char_oppo else R.drawable.img_lang_char_oppo
+            },
+        )
     }
 
     Column(
