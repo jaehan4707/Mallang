@@ -152,7 +152,7 @@ class Game01ViewModel
         fun fetchQuizIds() {
             viewModelScope.launch {
                 delay(1000L)
-                quizRepository.getQuizIds(areaId).collectLatest { response ->
+                quizRepository.getQuizIds(areaId = areaId, userId = userInfo.id).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
                             _questionIdList.addAll(response.body ?: listOf())

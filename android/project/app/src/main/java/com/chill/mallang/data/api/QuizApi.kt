@@ -12,9 +12,10 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface QuizApi {
-    @GET("quiz/start/{areaId}")
+    @GET("quiz/start/{areaId}/{userId}")
     suspend fun getQuizIds(
         @Path("areaId") areaId: Long,
+        @Path("userId") userId: Long,
     ): Response<ResponseBody<List<Long>>>
 
     @GET("quiz/{quizId}")

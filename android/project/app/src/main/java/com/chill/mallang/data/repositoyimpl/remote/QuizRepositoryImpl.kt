@@ -17,11 +17,11 @@ class QuizRepositoryImpl
     constructor(
         private val quizApi: QuizApi,
     ) : QuizRepository {
-        override suspend fun getQuizIds(areaId: Long): Flow<ApiResponse<List<Long>>> =
+        override suspend fun getQuizIds(areaId: Long, userId: Long): Flow<ApiResponse<List<Long>>> =
             flow {
                 val response =
                     apiHandler {
-                        quizApi.getQuizIds(areaId)
+                        quizApi.getQuizIds(areaId = areaId, userId = userId)
                     }
                 when (response) {
                     is ApiResponse.Success -> {
