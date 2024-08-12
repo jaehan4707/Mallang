@@ -109,7 +109,7 @@ class Game01ViewModel
 
         fun fetchUserInfo() {
             viewModelScope.launch {
-                delay(3000L)
+                delay(1500L)
                 userRepository.getUserInfo().collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
@@ -151,7 +151,7 @@ class Game01ViewModel
 
         fun fetchQuizIds() {
             viewModelScope.launch {
-                delay(2000L)
+                delay(1000L)
                 quizRepository.getQuizIds(areaId).collectLatest { response ->
                     when (response) {
                         is ApiResponse.Success -> {
@@ -198,7 +198,7 @@ class Game01ViewModel
             val currentTimestamp = getCurrentTimestamp()
 
             viewModelScope.launch {
-                delay(1500L)
+                delay(500L)
                 quizRepository
                     .postUserAnswer(
                         gradingUserAnswerRequest =
@@ -228,7 +228,7 @@ class Game01ViewModel
 
         fun fetchReviews() {
             viewModelScope.launch {
-                delay(2500L)
+                delay(1000L)
                 quizRepository
                     .getResults(
                         fetchGameResultRequest =
