@@ -2,6 +2,7 @@ package com.chill.mallang.data.repository.remote
 
 import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.AreaDetail
+import com.chill.mallang.data.model.entity.Summary
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.data.model.entity.TeamRecords
 import com.chill.mallang.data.model.entity.TryCount
@@ -24,4 +25,6 @@ interface AreaRepository {
         areaId: Long,
         userId: Long,
     ): Flow<ApiResponse<TeamRecords>>
+
+    suspend fun getDailySummary(): Flow<ApiResponse<List<Summary>>>
 }
