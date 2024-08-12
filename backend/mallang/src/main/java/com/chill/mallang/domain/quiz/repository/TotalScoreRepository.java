@@ -47,7 +47,19 @@ public interface TotalScoreRepository extends JpaRepository<TotalScore, Long> {
             "ORDER BY t.total_score DESC LIMIT 1", nativeQuery = true)
     Long findTopUserByAreaIdAndFactionId(Long areaId, Long factionId);
 
-
-
-
+    @Query(value = "SELECT * " +
+            "FROM total_score ts " +
+            "WHERE ts.area = :areaId " +
+            "AND ts.faction = :factionId " +
+            "AND DATE(ts.created_at) = CURDATE() " +
+            "AND ts.total_score = (SELECT MAX(ts2.total_score) " +
+            "                     FROM total_score ts2 " +
+            "                     WHERE ts2.user = ts.user " +
+            "                     AND ts2.area = ts.area " +
+            "                     AND DATE(ts2.created_at) = CURDATE()) " +
+            "ORDER BY ts.total_score DESC",
+            nativeQuery = true)
+    List<TotalScore> findByAreaAndFactionWithHighestScore(
+            @Param("areaId") Long areaId,
+            @Param("factionId") Long factionId);
 }
