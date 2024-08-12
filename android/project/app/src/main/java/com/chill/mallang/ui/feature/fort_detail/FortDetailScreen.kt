@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,13 +37,22 @@ fun FortDetailScreen(
     val teamLeadersState by viewModel.teamRecordStateFlow.collectAsStateWithLifecycle()
     val tryCountState by viewModel.tryCountStateFlow.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        if (areaId == null) {
-            viewModel.invalidateData()
-        } else {
-            viewModel.loadOccupationState(areaId)
-            viewModel.loadTeamLeadersState(areaId)
-            viewModel.loadTryCount()
+    var isLoaded by remember{ mutableStateOf(false) }
+    
+    DisposableEffect(isLoaded) {
+        if(!isLoaded){
+            if (areaId == null) {
+                viewModel.invalidateData()
+            } else {
+                viewModel.loadOccupationState(areaId)
+                viewModel.loadTeamLeadersState(areaId)
+                viewModel.loadTryCount()
+            }
+            isLoaded = true
+        }
+
+        onDispose {
+            isLoaded = false
         }
     }
 
