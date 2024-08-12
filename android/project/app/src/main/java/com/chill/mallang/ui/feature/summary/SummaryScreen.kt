@@ -157,13 +157,13 @@ fun SummaryContent(
                         Image(
                             modifier = Modifier.size(150.dp),
                             alignment = Alignment.CenterStart,
-                            painter = painterResource(id = R.drawable.img_lang_fighting),
+                            painter = painterResource(id = R.drawable.img_lang_char),
                             contentDescription = "",
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         Image(
                             modifier = Modifier.size(150.dp),
-                            painter = painterResource(id = R.drawable.img_mal_fighting),
+                            painter = painterResource(id = R.drawable.img_mal_char_oppo),
                             contentDescription = "",
                         )
                     }
