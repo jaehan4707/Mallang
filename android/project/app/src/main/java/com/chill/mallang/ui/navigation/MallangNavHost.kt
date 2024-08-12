@@ -203,7 +203,9 @@ fun MallangNavHost(
         composable(
             route = DestinationStudy.routeWithArgs,
             arguments = DestinationStudy.arguments,
-        ) {
+        ) { navBackStackEntry ->
+            val routeStudyId = navBackStackEntry.arguments?.getLong("studyId")
+
             StudyScreen(
                 modifier = modifier,
                 navigateToStudyResult = { studyId, userAnswer ->
@@ -213,8 +215,14 @@ fun MallangNavHost(
                             userAnswer = userAnswer,
                         ),
                     ) {
-                        popUpTo(DestinationWordNote.route) {
-                            inclusive = false
+                        if (routeStudyId == -1L) {
+                            popUpTo(DestinationWordNote.route) {
+                                inclusive = false
+                            }
+                        } else {
+                            popUpTo(DestinationIncorrectNote.route) {
+                                inclusive = false
+                            }
                         }
                     }
                 },
