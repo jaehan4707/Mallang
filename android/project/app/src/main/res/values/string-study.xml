@@ -12,4 +12,6 @@
     <string name="wrong_message">오답!</string>
     <string name="study_load_error_message">"현재 데이터를 불러올 수 없습니다."</string>
     <string name="incorrect_note_script">클릭하면 틀렸던 문제를 다시 풀 수 있어요</string>
+    <string name="no_data_message">아직 단어장에 단어가 없어요!\n학습 퀴즈를 풀어 정답을 맞혀 보세요. :)</string>
+    <string name="no_incorrect_word_message">아직 틀린 문제가 없어요!\n더 많은 문제에 도전해 봐요.</string>
 </resources>

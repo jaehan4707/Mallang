@@ -146,9 +146,9 @@ fun WordNoteScreenContent(
 
     Box(
         modifier =
-            modifier
-                .fillMaxSize()
-                .background(color = White),
+        modifier
+            .fillMaxSize()
+            .background(color = White),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -158,13 +158,28 @@ fun WordNoteScreenContent(
                 isWordScreen = true,
                 onClick = onClick,
             )
-            Box(modifier = Modifier.weight(1f)) {
-                GridWordList(
-                    wordList = wordNoteState.wordList,
-                    onWordClick = { index ->
-                        selectedWordIndex = index
-                    },
-                )
+            Box(
+                modifier = Modifier.weight(1f),
+            ) {
+                // 아직 단어장에 아무 데이터도 없을 때
+                if (wordNoteState.wordList.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = context.getString(R.string.no_data_message),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                } else {
+                    GridWordList(
+                        wordList = wordNoteState.wordList,
+                        onWordClick = { index ->
+                            selectedWordIndex = index
+                        },
+                    )
+                }
             }
             Box(
                 modifier = Modifier.fillMaxWidth(),
@@ -220,14 +235,15 @@ fun WordListItem(
 ) {
     Surface(
         modifier =
-            Modifier
-                .fillMaxWidth(0.3f)
-                .height(110.dp)
-                .padding(horizontal = 5.dp, vertical = 8.dp)
-                .shadow(
-                    elevation = 5.dp,
-                    shape = RoundedCornerShape(15.dp),
-                ).clickable(onClick = onClick),
+        Modifier
+            .fillMaxWidth(0.3f)
+            .height(110.dp)
+            .padding(horizontal = 5.dp, vertical = 8.dp)
+            .shadow(
+                elevation = 5.dp,
+                shape = RoundedCornerShape(15.dp),
+            )
+            .clickable(onClick = onClick),
         shadowElevation = 10.dp,
         shape = RoundedCornerShape(15.dp),
         color = BackGround,
@@ -235,9 +251,9 @@ fun WordListItem(
     ) {
         Column(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -254,12 +270,12 @@ fun WordNotePreview() {
 //    WordNoteScreen()
     WordListItem(
         word =
-            CorrectWord(
-                word = "괄목",
-                pos = "명사",
-                meaning = "뜻",
-                example = "예시",
-            ),
+        CorrectWord(
+            word = "괄목",
+            pos = "명사",
+            meaning = "뜻",
+            example = "예시",
+        ),
     ) {
     }
 }
