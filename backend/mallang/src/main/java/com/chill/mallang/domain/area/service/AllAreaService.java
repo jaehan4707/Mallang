@@ -6,6 +6,7 @@ import com.chill.mallang.domain.area.repository.AreaRepository;
 import com.chill.mallang.domain.quiz.model.Answer;
 import com.chill.mallang.domain.quiz.repository.AnswerRepository;
 import com.chill.mallang.errors.exception.RestApiException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +17,11 @@ import java.util.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AllAreaService {
 
-    @Autowired
-    private AreaRepository areaRepository;
-
-    @Autowired
-    private AnswerRepository answerRepository;
+    private final AreaRepository areaRepository;
+    private final AnswerRepository answerRepository;
 
     private Logger logger = LoggerFactory.getLogger(AllAreaService.class);
 
@@ -46,7 +45,8 @@ public class AllAreaService {
             int winTeam = 0;// 기본 점령 안된 상태
             if (mal > lang) {
                 winTeam = 1;
-            } else if (lang > mal) {
+            }
+            if (lang > mal) {
                 winTeam = 2;
             }
 
