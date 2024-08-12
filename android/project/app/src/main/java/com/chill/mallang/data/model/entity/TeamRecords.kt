@@ -6,9 +6,17 @@ import kotlinx.serialization.Serializable
 @Immutable
 @Serializable
 data class TeamRecords(
-    val userRecord: UserRecord?,
+    val userRecord: MyRecord?,
     val myTeamRecords: List<UserRecord>,
     val oppoTeamRecords: List<UserRecord>,
+)
+
+@Immutable
+@Serializable
+data class MyRecord(
+    val userPlace: Int,
+    val userScore: Int,
+    val userPlayTime: Int,
 )
 
 @Immutable

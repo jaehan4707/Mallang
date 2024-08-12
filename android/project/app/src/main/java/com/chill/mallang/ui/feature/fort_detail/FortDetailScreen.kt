@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.data.model.entity.AreaDetail
+import com.chill.mallang.data.model.entity.MyRecord
 import com.chill.mallang.data.model.entity.TeamInfo
 import com.chill.mallang.data.model.entity.TeamRecords
 import com.chill.mallang.data.model.entity.UserInfo
@@ -119,7 +120,7 @@ fun FortDetailScreenPreviewWithData() {
             teamRecordState =
                 TeamRecordState.Success(
                     TeamRecords(
-                        UserRecord(1, 1, 1),
+                        MyRecord(1, 1, 1),
                         listOf(UserRecord(1, 1, 1)),
                         listOf(UserRecord(1, 1, 1)),
                     ),
