@@ -31,6 +31,7 @@ import com.chill.mallang.ui.theme.Typography
 fun AnswerBody(
     userAnswer: String,
     onUserAnswerChanged: (String) -> Unit,
+    scrollToBottom: () -> Unit = {},
 ) {
     Box(
         modifier =
@@ -68,6 +69,7 @@ fun AnswerBody(
                 value = userAnswer,
                 onValueChange = {
                     onUserAnswerChanged(it)
+                    scrollToBottom()
                 },
                 modifier =
                     Modifier
