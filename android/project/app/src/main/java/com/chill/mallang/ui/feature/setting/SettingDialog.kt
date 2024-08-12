@@ -105,25 +105,6 @@ fun SettingDialog(
                         offIconImage = R.drawable.ic_volume_off,
                     )
                 }
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Spacer(modifier = Modifier.weight(0.45f))
-                    Text(text = stringResource(R.string.setting_notification))
-                    Spacer(modifier = Modifier.weight(0.1f))
-                    MallangSwitch(
-                        checked = notificationChecked,
-                        setChecked = viewModel::toggleNotificationAlarm,
-                        onIconImage = R.drawable.ic_notification_on,
-                        offIconImage = R.drawable.ic_notification_off,
-                    )
-                    Spacer(modifier = Modifier.weight(0.45f))
-                }
                 Row(modifier = Modifier.fillMaxWidth()) {
                     LongBlackButton(
                         modifier =

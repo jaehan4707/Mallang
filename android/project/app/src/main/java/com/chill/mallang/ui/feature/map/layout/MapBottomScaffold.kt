@@ -43,7 +43,7 @@ fun MapScaffold(
     val leftSide by remember(status) {
         mutableIntStateOf(status.teams.find { team -> team.teamId == 1 }?.area ?: 0)
     }
-    val rightSide by remember {
+    val rightSide by remember(status) {
         mutableIntStateOf(status.teams.find { team -> team.teamId == 2 }?.area ?: 0)
     }
 

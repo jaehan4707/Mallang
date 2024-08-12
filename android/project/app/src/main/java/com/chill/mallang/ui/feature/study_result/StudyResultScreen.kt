@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -42,14 +43,17 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.chill.mallang.R
+import com.chill.mallang.data.model.entity.StudyResultWord
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.LoadingDialog
+import com.chill.mallang.ui.component.LongBlackButton
 import com.chill.mallang.ui.feature.study.QuizBox
 import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray3
@@ -72,6 +76,9 @@ fun StudyResultScreen(
     // TopBar
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
     val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
+
+    // context
+    val context = LocalContext.current
 
     BackConfirmHandler(
         isBackPressed = isBackPressed,
@@ -105,11 +112,22 @@ fun StudyResultScreen(
                 modifier = modifier,
                 studyResultState = studyResultState as StudyResultState.Success,
                 userAnswer = userAnswer,
+                popUpBackStack = popUpBackStack,
             )
         }
 
         is StudyResultState.Error -> {
             // 에러 시 표시할 것
+            // 에러났을 때 처리
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = context.getString(R.string.study_load_error_message),
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }
@@ -119,6 +137,7 @@ fun StudyResultScreenContent(
     modifier: Modifier,
     studyResultState: StudyResultState.Success,
     userAnswer: Int,
+    popUpBackStack: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var expandedItem by remember { mutableIntStateOf(-1) }
@@ -174,6 +193,11 @@ fun StudyResultScreenContent(
                     expandedItem = if (expandedItem == selectedIndex + 1) -1 else selectedIndex + 1
                 },
             )
+            Spacer(modifier = Modifier.weight(1f))
+            LongBlackButton(onClick = {
+                popUpBackStack()
+            }, text = "완료")
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
@@ -193,7 +217,7 @@ fun ResultAnswerList(
         modifier =
             Modifier
                 .padding(12.dp)
-                .fillMaxSize(),
+                .wrapContentSize(),
     ) {
         items(size) { index ->
             AnswerResultListItem(
@@ -397,4 +421,27 @@ fun QuizBoxWithUnderline(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun ResultPreview() {
+    StudyResultScreenContent(
+        modifier = Modifier,
+        studyResultState =
+            StudyResultState.Success(
+                quizTitle = "타이틀",
+                quizScript = "스크립트요__빈칸",
+                wordList =
+                    arrayListOf(
+                        StudyResultWord(word = "보기1", meaning = "뜻1"),
+                        StudyResultWord(word = "보기1", meaning = "뜻1"),
+                        StudyResultWord(word = "보기1", meaning = "뜻1"),
+                        StudyResultWord(word = "보기1", meaning = "뜻1"),
+                    ),
+                result = true,
+                systemAnswer = 1,
+            ),
+        userAnswer = 2,
+    )
 }
