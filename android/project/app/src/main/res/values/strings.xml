@@ -10,5 +10,5 @@
     <string name="select_faction_message">당신의 진영을 선택해 주세요</string>
     <string name="team_mal">말</string>
     <string name="team_rang">랑</string>
-    <string name="summary_title">🛠️  결산  🛠️</string>
+    <string name="summary_title">결산</string>
 </resources>
