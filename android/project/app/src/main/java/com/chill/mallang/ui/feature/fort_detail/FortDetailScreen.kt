@@ -57,6 +57,7 @@ fun FortDetailScreen(
     }
 
     TopbarHandler(
+        key = isLoaded,
         isVisible = true,
         titleContent = if(occupationState is AreaDetailState.Success){
             {FortDetailHeader(fortName = (occupationState as AreaDetailState.Success).areaDetail.areaName)}
