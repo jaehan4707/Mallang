@@ -77,6 +77,9 @@ fun StudyResultScreen(
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
     val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
 
+    // context
+    val context = LocalContext.current
+
     BackConfirmHandler(
         isBackPressed = isBackPressed,
         onConfirmMessage = stringResource(id = R.string.study_dialog_confirm_message),
@@ -115,6 +118,16 @@ fun StudyResultScreen(
 
         is StudyResultState.Error -> {
             // 에러 시 표시할 것
+            // 에러났을 때 처리
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = context.getString(R.string.study_load_error_message),
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }

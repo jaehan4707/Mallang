@@ -210,7 +210,7 @@ fun IncorrectListItem(
                 modifier = Modifier.padding(3.dp),
                 text = incorrectWord.script,
                 style = Typography.headlineSmall,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
     }
