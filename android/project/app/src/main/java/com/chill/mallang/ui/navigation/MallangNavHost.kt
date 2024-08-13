@@ -66,7 +66,13 @@ fun MallangNavHost(
         ) {
             SummaryScreen(
                 modifier = modifier,
-                navigateToHome = { navController.navigate(DestinationMain.route) },
+                navigateToHome = {
+                    navController.navigate(DestinationMain.route) {
+                        popUpTo(DestinationLogin.route) {
+                            inclusive = false
+                        }
+                    }
+                },
                 popUpBackStack = navController::popBackStack,
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
