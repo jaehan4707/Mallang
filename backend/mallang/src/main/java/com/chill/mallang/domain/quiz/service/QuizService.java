@@ -137,7 +137,7 @@ public class QuizService {
         coreService.storeTotalScore(userID, areaID, sum, factionID);
         userServiceImpl.addExp(userID, sum);
 
-        List<Float> teamScoreList = totalScoreRepository.findTotalScoreByAreaID(areaID);
+        List<Float> teamScoreList = totalScoreRepository.findTotalScoreByAreaID(areaID, factionID);
         team.put("My Team Total Score", teamScoreList.get(0));
 
         if (teamScoreList.size() == 1) {

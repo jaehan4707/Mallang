@@ -13,10 +13,11 @@ import java.util.List;
 
 public interface TotalScoreRepository extends JpaRepository<TotalScore, Long> {
 
-    @Query(value = "SELECT SUM(t.total_score) FROM total_score t " +
+    @Query(value = "SELECT COALESCE(SUM(t.total_score), 0) FROM total_score t " +
             "WHERE t.area = :areaID AND DATE(t.created_at) = CURDATE() " +
-            "GROUP BY t.faction ", nativeQuery = true)
-    List<Float> findTotalScoreByAreaID(@Param("areaID") Long areaID);
+            "GROUP BY t.faction " +
+            "ORDER BY CASE WHEN t.faction = :factionID THEN 0 ELSE 1 END, t.faction", nativeQuery = true)
+    List<Float> findTotalScoreByAreaID(@Param("areaID") Long areaID, @Param("factionID") Long factionID);
 
     @Query(value = "SELECT SUM(t.total_score) FROM total_score t " +
             "WHERE t.area = :areaID AND DATE(t.created_at) = CURDATE() " +
