@@ -71,7 +71,7 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/{AL2.0,LGPL2.1,LICENSE.md,LICENSE-notice.md}"
         }
     }
 }
@@ -93,11 +93,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -133,4 +128,14 @@ dependencies {
 
     // immutable dependency
     implementation(libs.jetbrains.kotlinx.collections.immutable)
+
+    // test Junit
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(libs.junit)
+
+    //mockk
+    testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
 }

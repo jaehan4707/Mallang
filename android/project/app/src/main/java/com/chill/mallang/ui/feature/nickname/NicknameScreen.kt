@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -91,10 +92,10 @@ fun NicknameScreen(
         Surface(
             color = BackGround,
             modifier =
-                modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .addFocusCleaner(focusManager),
+            modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .addFocusCleaner(focusManager),
         ) {
             NickNameContent(
                 focusManager = focusManager,
@@ -171,9 +172,9 @@ fun NickNameContent(
             Spacer(modifier = Modifier.height(30.dp))
             Column(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 4.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 CustomTextField(
@@ -212,8 +213,8 @@ fun CustomTextField(
 ) {
     Column(
         modifier =
-            Modifier
-                .fillMaxWidth(0.8f),
+        Modifier
+            .fillMaxWidth(0.8f),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         OutlinedTextField(
@@ -230,35 +231,37 @@ fun CustomTextField(
                 }
             },
             modifier =
-                modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
+            modifier
+                .fillMaxWidth()
+                .height(48.dp),
             shape = RoundedCornerShape(10.dp),
             singleLine = true,
             keyboardActions =
-                KeyboardActions(onDone = {
-                    focusManager.clearFocus()
-                }),
+            KeyboardActions(onDone = {
+                focusManager.clearFocus()
+            }),
             colors =
-                OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Gray6,
-                    unfocusedBorderColor = Gray3,
-                    focusedContainerColor = White,
-                    unfocusedContainerColor = White,
-                    errorContainerColor = White, // 에러 상태에서도 배경색이 변경되지 않도록 White 설정
-                    focusedTextColor = Gray6,
-                    unfocusedTextColor = Gray6,
-                    unfocusedPlaceholderColor = Gray3,
-                    focusedPlaceholderColor = Gray3,
-                ),
+            OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Gray6,
+                unfocusedBorderColor = Gray3,
+                focusedContainerColor = White,
+                unfocusedContainerColor = White,
+                errorContainerColor = White, // 에러 상태에서도 배경색이 변경되지 않도록 White 설정
+                focusedTextColor = Gray6,
+                unfocusedTextColor = Gray6,
+                unfocusedPlaceholderColor = Gray3,
+                focusedPlaceholderColor = Gray3,
+            ),
             textStyle = Typography.displayMedium,
             trailingIcon = {
                 IconButton(
+                    modifier = Modifier.testTag("clear_button"),
                     onClick = onClearPressed,
-                ) {
+
+                    ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_cancel),
-                        contentDescription = null,
+                        contentDescription = "clear_button",
                         tint = Color.Unspecified,
                     )
                 }
@@ -268,9 +271,9 @@ fun CustomTextField(
         Text(
             text = errorMessage,
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, start = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, start = 4.dp),
             color = Sub1,
             style = Typography.displayMedium,
         )
