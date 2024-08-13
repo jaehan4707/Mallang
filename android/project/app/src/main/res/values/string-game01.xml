@@ -27,6 +27,7 @@
     <string name="nice_try_message">Nice Try !</string>
     <string name="submit_success_message">"제출 완료 !"</string>
     <string name="game_ending_message">집에 가자 !</string>
+    <string name="game_answer_box_placeholder">정답을 입력하세요.</string>
 
     <string name="a_feedback_message">"\"용사비등(龍蛇飛騰)\" 이시옵니다!"</string>`
     <string name="b_feedback_message">"\"우공이산(愚公移山)\" \n\n지금의 성실함을 유지하며 더 큰 목표를 향해 나아가길 응원합니다."</string>
