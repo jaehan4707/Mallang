@@ -44,6 +44,10 @@ class HomeViewModel
             }
         }
 
+        fun playEffect() {
+            soundManager.playSoundEffect(R.raw.effect_click)
+        }
+
         fun getUserInfo() {
             viewModelScope.launch {
                 userRepository.getUserInfo().collectLatest { response ->
