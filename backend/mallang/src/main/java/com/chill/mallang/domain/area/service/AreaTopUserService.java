@@ -39,6 +39,8 @@ public class AreaTopUserService {
 
             AreaTopUserDTO topUserInfo = AreaTopUserDTO.builder()
                     .areaName(area.getName())
+                    .latitude(area.getLatitude())
+                    .longitude(area.getLongitude())
                     .myTeamInfo(myTeamInfo)
                     .oppoTeamInfo(oppoTeamInfo)
                     .build();
