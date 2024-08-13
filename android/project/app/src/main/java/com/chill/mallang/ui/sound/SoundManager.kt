@@ -3,6 +3,7 @@ package com.chill.mallang.ui.sound
 import android.content.Context
 import android.media.MediaPlayer
 import android.media.SoundPool
+import com.chill.mallang.R
 import com.chill.mallang.core.di.ApplicationScope
 import com.chill.mallang.data.repository.local.SettingsStoreRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -53,6 +54,7 @@ class SoundManager
 
         private var mediaPlayer: MediaPlayer? = null
         private var soundPool: SoundPool = SoundPool.Builder().build()
+        private val soundMap = mutableMapOf<Int, Int>()
 
         private val _backgroundVolume: MutableStateFlow<Float> = MutableStateFlow(1f)
         val backgroundVolume: StateFlow<Float> = _backgroundVolume.asStateFlow()
@@ -64,11 +66,19 @@ class SoundManager
         val notificationAlarm: StateFlow<Boolean> = _notificationAlarm.asStateFlow()
 
         init {
+            loadSounds()
             applicationScope.launch {
                 _backgroundVolume.value = settingsStoreRepository.getBackgroundVolume()
                 _soundEffectsVolume.value = settingsStoreRepository.getSoundEffectsVolume()
                 _notificationAlarm.value = settingsStoreRepository.getNotificationAlarm()
             }
+        }
+
+        // 사용하는 bgm 미리 로드
+        private fun loadSounds() {
+            soundMap[R.raw.effect_click] = soundPool.load(context, R.raw.effect_click, 1)
+            soundMap[R.raw.effect_fail] = soundPool.load(context, R.raw.effect_fail, 1)
+            soundMap[R.raw.effect_success] = soundPool.load(context, R.raw.effect_success, 1)
         }
 
         fun playBackgroundMusic(resId: Int) {
@@ -117,8 +127,9 @@ class SoundManager
         }
 
         fun playSoundEffect(soundResId: Int) {
-            val soundId = soundPool.load(context, soundResId, 1)
-            soundPool.play(soundId, _soundEffectsVolume.value, _soundEffectsVolume.value, 1, 0, 1f)
+            soundMap[soundResId]?.let { id ->
+                soundPool.play(id, _soundEffectsVolume.value, _soundEffectsVolume.value, 1, 0, 1f)
+            }
         }
 
         fun setBackgroundVolume(volume: Float) {
