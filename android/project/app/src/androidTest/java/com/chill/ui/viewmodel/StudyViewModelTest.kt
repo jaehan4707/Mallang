@@ -1,6 +1,8 @@
 package com.chill.ui.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
+import com.chill.data.StudyTestData.inCorrectQuiz
+import com.chill.data.StudyTestData.loadQuizDataErrorMessage
 import com.chill.data.StudyTestData.studyQuiz
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
@@ -45,6 +47,39 @@ internal class StudyViewModelTest {
                 quizTitle = studyQuiz.quizTitle,
                 quizScript = studyQuiz.quizScript,
                 wordList = studyQuiz.wordList,
+                isResultScreen = false,
+            ), viewModel.studyState.value
+        )
+    }
+    @Test
+    fun `학습_퀴즈_데이터를_불러오는데_실패하면_Error로_업데이트합니다`() = runTest {
+        val userId = dataStoreRepository.getUserId() ?: 0L
+        coEvery { savedStateHandle.get<Long>("studyId") } returns -1L
+        coEvery { studyRepository.getStudyQuiz(userId) } returns flowOf(
+            ApiResponse.Error(errorMessage = loadQuizDataErrorMessage)
+        )
+        viewModel = StudyViewModel(savedStateHandle, studyRepository, dataStoreRepository)
+        assertEquals(
+            StudyState.Error(errorMessage = loadQuizDataErrorMessage),
+            viewModel.studyState.value
+        )
+    }
+
+    @Test
+    fun `오답_퀴즈_데이터를_불러오는데_성공하면_UiState를_Success로_업데이트합니다`() = runTest {
+        val userId = dataStoreRepository.getUserId() ?: 0L
+        coEvery { savedStateHandle.get<Long>("studyId") } returns 1L
+        val studyId = savedStateHandle.get<Long>("studyId") ?: 1L
+        coEvery { studyRepository.getIncorrectQuiz(userId, studyId) } returns flowOf(
+            ApiResponse.Success(inCorrectQuiz)
+        )
+        viewModel = StudyViewModel(savedStateHandle, studyRepository, dataStoreRepository)
+        assertEquals(
+            StudyState.Success(
+                studyId = studyId,
+                quizTitle = inCorrectQuiz.quizTitle,
+                quizScript = inCorrectQuiz.quizScript,
+                wordList = inCorrectQuiz.wordList,
                 isResultScreen = false,
             ), viewModel.studyState.value
         )
