@@ -6,6 +6,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -165,6 +167,63 @@ fun Badge(
     }
 }
 
+@Composable
+fun BigBadge(
+    modifier: Modifier = Modifier,
+    level: Int,
+) {
+    val badge by remember(level) {
+        derivedStateOf {
+            LevelCharacter.getResourceOfLevel(level)
+        }
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
+    ) {
+        Surface(
+            modifier =
+                modifier
+                    .size(width = 180.dp, height = 192.dp)
+                    .border(width = 4.dp, color = Gray3, shape = BadgeShape)
+                    .shadow(5.dp, shape = BadgeShape),
+            color = Color.White,
+            contentColor = Gray6,
+            shape = BadgeShape,
+        ) {
+            Column {
+                Box {
+                    Image(
+                        modifier =
+                            Modifier
+                                .padding(horizontal = 8.dp)
+                                .padding(top = 10.dp)
+                                .size(180.dp)
+                                .align(Alignment.BottomCenter),
+                        painter = painterResource(id = badge),
+                        contentDescription = null,
+                    )
+                    Text(
+                        level.toString(),
+                        style = Typography.displaySmall.copy(fontSize = 16.sp),
+                        modifier =
+                            Modifier
+                                .background(color = Gray3, shape = CircleShape)
+                                .padding(top = 6.dp, start = 8.dp, end = 8.dp, bottom = 6.dp)
+                                .align(Alignment.TopCenter),
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.size(40.dp))
+        Text(
+            text = LevelCharacter.getLabelResourceOfLevel(level),
+            fontSize = 30.sp,
+        )
+    }
+}
+
 val BadgeShape =
     RoundedCornerShape(
         topStart = 8.dp,
@@ -202,5 +261,13 @@ fun GaugeBarPreview() {
 fun BadgePreview() {
     MallangTheme {
         Badge(level = 1)
+    }
+}
+
+@Preview
+@Composable
+fun BigBadgePreview() {
+    MallangTheme {
+        BigBadge(level = 12)
     }
 }
