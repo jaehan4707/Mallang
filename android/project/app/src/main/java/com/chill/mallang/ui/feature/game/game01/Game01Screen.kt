@@ -1,5 +1,6 @@
 package com.chill.mallang.ui.feature.game.game01
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +26,8 @@ import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.MallangTheme
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+
+private const val TAG = "kokang"
 
 @Composable
 fun Game01Screen(
@@ -122,14 +125,16 @@ fun Game01Screen(
                 completeCheckResult = { viewModel.updateGame01State(Game01State.REWARD)},
             )
 
-        Game01State.REWARD ->
+        Game01State.REWARD -> {
+            Log.d(TAG, "Game01Screen: ${viewModel.userInfo.exp}\n ${viewModel.playResult.userPlayResult.totalScore} \n${viewModel.userInfo.level}\n${(viewModel.userInfo.level) * 200F}")
             Game01RewardScreen(
                 completeReward = { viewModel.updateGame01State(Game01State.CURTAIN_CALL) },
-                userExp = viewModel.userInfo.exp,
+                userExp = viewModel.userExp,
                 userGameScore = viewModel.playResult.userPlayResult.totalScore,
-                userLevel = viewModel.userInfo.level + 1,
-                LevelExp = (viewModel.userInfo.level + 1) * 200F,
+                userLevel = viewModel.userLevel,
+                LevelExp = viewModel.userLevel * 200F,
             )
+        }
 
         Game01State.CURTAIN_CALL ->
             Game01CurtainCallScreen(

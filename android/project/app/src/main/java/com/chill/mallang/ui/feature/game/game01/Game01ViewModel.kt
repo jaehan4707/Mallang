@@ -48,6 +48,12 @@ class Game01ViewModel
         private var _areaId: Long = 0L
         val areaId: Long get() = _areaId
 
+        private var _userLevel: Int = 0
+        val userLevel: Int get() = _userLevel
+
+        private var _userExp: Float = 0F
+        val userExp: Float get() = _userExp
+
         // 게임01 현재 상태
         var game01State by mutableStateOf(Game01State.INIT)
 
@@ -115,6 +121,8 @@ class Game01ViewModel
                         is ApiResponse.Success -> {
                             _userInfo.value = response.body!!
                             _game01UiEvent.emit(Game01UiEvent.CompleteUserInfoLoad)
+                            _userLevel = response.body.level
+                            _userExp = response.body.exp
                         }
 
                         is ApiResponse.Error -> {
