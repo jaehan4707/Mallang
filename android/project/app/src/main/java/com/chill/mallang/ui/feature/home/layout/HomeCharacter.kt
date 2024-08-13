@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,11 +35,15 @@ fun HomeCharacter(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            modifier = Modifier.size(200.dp),
+            modifier = Modifier.size(200.dp).testTag("user_img"),
             painter = painterResource(id = resId),
-            contentDescription = null,
+            contentDescription = "$resId",
         )
-        Text(text = nickName, style = Typography.headlineLarge)
+        Text(
+            modifier = Modifier.testTag("home_nickname"),
+            text = nickName,
+            style = Typography.headlineLarge,
+        )
     }
 }
 
