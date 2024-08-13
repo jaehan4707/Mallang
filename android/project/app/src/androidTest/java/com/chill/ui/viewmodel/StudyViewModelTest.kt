@@ -51,6 +51,7 @@ internal class StudyViewModelTest {
             ), viewModel.studyState.value
         )
     }
+
     @Test
     fun `학습_퀴즈_데이터를_불러오는데_실패하면_Error로_업데이트합니다`() = runTest {
         val userId = dataStoreRepository.getUserId() ?: 0L
@@ -84,6 +85,7 @@ internal class StudyViewModelTest {
             ), viewModel.studyState.value
         )
     }
+
     @Test
     fun `오답_퀴즈_데이터를_불러오는데_실패하면_UiState를_Error로_업데이트합니다`() = runTest {
         val userId = dataStoreRepository.getUserId() ?: 0L
@@ -97,5 +99,20 @@ internal class StudyViewModelTest {
             StudyState.Error(errorMessage = loadQuizDataErrorMessage),
             viewModel.studyState.value
         )
+    }
+
+    @Test
+    fun `답안_제출이_성공하면_UiState를_Submit_Success로_업데이트합니다`() = runTest {
+        val userId = dataStoreRepository.getUserId() ?: 0L
+        coEvery { savedStateHandle.get<Long>("studyId") } returns 1L
+        val studyId = savedStateHandle.get<Long>("studyId") ?: 1L
+        coEvery { studyRepository.getIncorrectQuiz(any(), any()) } returns flowOf(ApiResponse.Init)
+        val testAnswer = 1
+        coEvery { studyRepository.submitStudyAnswer(userId, studyId, testAnswer) } returns flowOf(
+            ApiResponse.Success(Unit)
+        )
+        viewModel = StudyViewModel(savedStateHandle, studyRepository, dataStoreRepository)
+        viewModel.submitQuiz(studyId, testAnswer)
+        assertEquals(StudyState.SubmitSuccess(studyId), viewModel.studyState.value)
     }
 }
