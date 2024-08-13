@@ -125,38 +125,49 @@ fun IncorrectContent(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 15.dp),
     ) {
         NoteChangeButton(
             context = context,
             isWordScreen = false,
             onClick = onClick,
         )
-        Box(
-            modifier =
+        if (incorrectState.wordList.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = context.getString(R.string.no_incorrect_word_message),
+                    textAlign = TextAlign.Center,
+                )
+            }
+        } else {
+            Box(
+                modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(vertical = 10.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = context.getString(R.string.incorrect_note_script),
-                style = Typography.bodyMedium,
-                color = Gray4,
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = context.getString(R.string.incorrect_note_script),
+                    style = Typography.bodyMedium,
+                    color = Gray4,
+                )
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            IncorrectList(
+                list = incorrectState.wordList,
+                onClick = { index ->
+                    selectedWordIndex = index
+                },
             )
-        }
-        Spacer(modifier = Modifier.height(15.dp))
-        IncorrectList(
-            list = incorrectState.wordList,
-            onClick = { index ->
-                selectedWordIndex = index
-            },
-        )
 
-        // 오답노트일 때는 그때 풀었던 거 보여줌.
-        selectedWordIndex?.let { index ->
-            val word = incorrectState.wordList[index]
-            navigateToStudy(word.studyId)
+            // 오답노트일 때는 그때 풀었던 거 보여줌.
+            selectedWordIndex?.let { index ->
+                val word = incorrectState.wordList[index]
+                navigateToStudy(word.studyId)
+            }
         }
     }
 }
