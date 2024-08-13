@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +54,9 @@ fun IncorrectNoteScreen(
 ) {
     val incorrectState by incorrectViewModel.incorrectNoteState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        incorrectViewModel.loadIncorrectWords()
+    }
     // TopBar
     val (navController, setNavController) = remember { mutableStateOf<NavController?>(null) }
     val (isBackPressed, setBackPressed) = remember { mutableStateOf(false) }
@@ -124,7 +128,7 @@ fun IncorrectContent(
     Column(
         modifier =
             Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
     ) {
         NoteChangeButton(
             context = context,
@@ -144,9 +148,9 @@ fun IncorrectContent(
         } else {
             Box(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
