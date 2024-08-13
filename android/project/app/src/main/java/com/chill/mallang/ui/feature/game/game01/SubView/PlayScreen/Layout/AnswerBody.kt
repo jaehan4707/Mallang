@@ -17,11 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chill.mallang.R
 import com.chill.mallang.ui.theme.Gray3
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
@@ -32,7 +34,8 @@ fun AnswerBody(
     userAnswer: String,
     onUserAnswerChanged: (String) -> Unit,
     scrollToBottom: () -> Unit = {},
-) {
+    ) {
+
     Box(
         modifier =
             Modifier
@@ -75,13 +78,22 @@ fun AnswerBody(
                     Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .background(Color.White)
+                        .background(Color.Transparent)
                         .padding(8.dp),
                 textStyle =
                     TextStyle(
                         fontSize = 15.sp,
                         color = Color.Black,
                     ),
+                decorationBox = { innerTextField ->
+                    if (userAnswer.isEmpty()) {
+                        Text(
+                            text = stringResource(id = R.string.game_answer_box_placeholder),
+                                style = TextStyle(color = Color.Gray)
+                        )
+                    }
+                    innerTextField()
+                }
             )
         }
     }
