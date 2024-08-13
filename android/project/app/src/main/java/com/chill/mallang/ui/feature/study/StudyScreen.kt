@@ -98,14 +98,30 @@ fun StudyScreen(
         },
     )
 
+    HandleStudyUi(
+        modifier = modifier,
+        studyState = studyState,
+        context = context,
+        studyViewModel = studyViewModel,
+        navigateToStudyResult = navigateToStudyResult
+    )
+}
+
+@Composable
+fun HandleStudyUi(
+    modifier: Modifier = Modifier,
+    studyState: StudyState,
+    context: Context = LocalContext.current,
+    studyViewModel: StudyViewModel = hiltViewModel(),
+    navigateToStudyResult: (Long, Int) -> Unit = { studyId, answer -> }
+) {
     when (studyState) {
         is StudyState.Success -> {
-            // studyId = studyId
             StudyScreenContent(
                 modifier = modifier,
                 context = context,
                 studyViewModel = studyViewModel,
-                studyState = studyState as StudyState.Success,
+                studyState = studyState,
                 navigateToStudyResult = navigateToStudyResult,
             )
         }
@@ -126,7 +142,7 @@ fun StudyScreen(
         // 결과 화면으로
         is StudyState.SubmitSuccess -> {
             navigateToStudyResult(
-                (studyState as StudyState.SubmitSuccess).studyId,
+                studyState.studyId,
                 studyViewModel.selectedAnswer,
             )
         }
