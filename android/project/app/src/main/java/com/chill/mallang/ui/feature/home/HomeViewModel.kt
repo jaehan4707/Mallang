@@ -35,7 +35,7 @@ class HomeViewModel
         }
 
         fun stopBGM() {
-            soundManager.stopBackgroundMusic()
+            soundManager.stopBackgroundMusic(R.raw.bgm_default)
         }
 
         fun sendEvent(event: HomeUiEvent) {
