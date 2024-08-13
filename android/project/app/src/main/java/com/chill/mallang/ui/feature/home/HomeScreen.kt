@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.home
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.LoadingDialog
+import com.chill.mallang.ui.component.ReloadEffect
 import com.chill.mallang.ui.component.experiencebar.ExperienceState
 import com.chill.mallang.ui.feature.home.layout.BottomButtonHolder
 import com.chill.mallang.ui.feature.home.layout.HomeBackground
@@ -65,10 +66,7 @@ fun HomeScreen(
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.d("jaehan", "HomeScreen, $uiState")
-    LaunchedEffect(Unit) {
-        Log.d("jaehan", "HIHI")
-    }
+
     val (showSettingDialog, setShowSettingDialog) =
         rememberSaveable {
             mutableStateOf(false)
@@ -77,6 +75,10 @@ fun HomeScreen(
         rememberSaveable {
             mutableStateOf(false)
         }
+
+    ReloadEffect(
+        onLoad = viewModel::getUserInfo
+    )
 
     // TopBar
     TopbarHandler()
@@ -90,6 +92,13 @@ fun HomeScreen(
         popUpBackStack = popUpBackStack,
         exitApplication = exitApplication,
     )
+
+    DisposableEffect(Unit) {
+        viewModel.playBGM()
+        onDispose {
+            viewModel.stopBGM()
+        }
+    }
 
     Box(
         modifier =
@@ -345,12 +354,12 @@ fun ModeButton(
 ) {
     Column(
         modifier =
-            modifier
-                .width(75.dp)
-                .height(75.dp)
-                .noRippleClickable { onClick() }
-                .background(color = Gray2, shape = CircleShape)
-                .border(width = 2.dp, color = Color.Black, shape = CircleShape),
+        modifier
+            .width(75.dp)
+            .height(75.dp)
+            .noRippleClickable { onClick() }
+            .background(color = Gray2, shape = CircleShape)
+            .border(width = 2.dp, color = Color.Black, shape = CircleShape),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
