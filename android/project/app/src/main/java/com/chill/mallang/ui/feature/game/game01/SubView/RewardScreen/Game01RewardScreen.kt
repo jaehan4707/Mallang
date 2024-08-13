@@ -73,7 +73,7 @@ fun Game01RewardScreen(
 
     val messageAlpha by animateFloatAsState(
         targetValue = if (isMessageTransparent) 1.0f else 0.0f,
-        animationSpec = tween(durationMillis = 1000),
+        animationSpec = tween(durationMillis = 500),
     )
 
     val fanfareAlpha by animateFloatAsState(
@@ -84,14 +84,14 @@ fun Game01RewardScreen(
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.celebration))
     val animationState = rememberLottieAnimatable()
 
-    if (userExp + userGameScore >= LevelExp) {
-        targetExpRate = 1F
-        isLevelUp = true
-    } else {
-        targetExpRate = (userExp + userGameScore) / LevelExp
-    }
+    LaunchedEffect(Unit) {
+        if (userExp + userGameScore >= LevelExp) {
+            targetExpRate = 1F
+            isLevelUp = true
+        } else {
+            targetExpRate = (userExp + userGameScore) / LevelExp
+        }
 
-    LaunchedEffect(isLevelUp) {
         if(isLevelUp) {
             delay(2000L)
             isBadgeTransparent = false
@@ -101,6 +101,7 @@ fun Game01RewardScreen(
             targetExpRate = 0F
             initalExpRate = 0F
             delay(1000L)
+            isMessageTransparent = true
             isBadgeTransparent = true
             isBadgeSlide = true
             isFanFareTransparent = true
@@ -113,9 +114,6 @@ fun Game01RewardScreen(
                 composition = composition,
                 iterations = 1,
             )
-
-            delay(1000L)
-            isMessageTransparent = true
         }
     }
 
