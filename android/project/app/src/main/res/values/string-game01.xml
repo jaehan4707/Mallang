@@ -34,4 +34,9 @@
     <string name="c_feedback_message">"\"중용지덕(中庸之德)\" \n\n균형과 절제 속에서 더욱 큰 성장을 이룰 수 있습니다."</string>
     <string name="d_feedback_message">"\"중용지덕(中庸之德)\" \n\n균형과 절제 속에서 더욱 큰 성장을 이룰 수 있습니다."</string>
     <string name="f_feedback_message">"\"대기만성(大器晩成)\" \n\n지금의 작은 시작이 언젠가는 큰 성과로 이어질 것입니다."</string>
+
+    <string name="label_bronze">브론즈</string>
+    <string name="label_silver">실버</string>
+    <string name="label_gold">골드</string>
+    <string name="label_master">마스터</string>
 </resources>
