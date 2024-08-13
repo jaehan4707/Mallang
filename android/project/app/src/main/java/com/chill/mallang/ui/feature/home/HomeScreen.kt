@@ -77,7 +77,7 @@ fun HomeScreen(
         }
 
     ReloadEffect(
-        onLoad = viewModel::getUserInfo
+        onLoad = viewModel::getUserInfo,
     )
 
     // TopBar
@@ -102,14 +102,20 @@ fun HomeScreen(
 
     Box(
         modifier =
-        Modifier
-            .fillMaxSize()
+            Modifier
+                .fillMaxSize(),
     ) {
         HomeContent(
             modifier = modifier,
             uiState = uiState,
-            navigateToGame = navigateToGame,
-            navigateToWordNote = navigateToWordNote,
+            navigateToGame = {
+                viewModel.playEffect()
+                navigateToGame()
+            },
+            navigateToWordNote = {
+                viewModel.playEffect()
+                navigateToWordNote()
+            },
             sendEvent = { viewModel.sendEvent(it) },
             onShowSettingDialog = showSettingDialog,
             onShowEditNickNameDialog = showEditNickNameDialog,
@@ -234,7 +240,8 @@ fun HomeScreenContent(
             modifier = Modifier.weight(1f),
             nickName = uiState.nickName,
             factionId = uiState.factionId,
-            experienceState = uiState.experienceState)
+            experienceState = uiState.experienceState,
+        )
         BottomButtonHolder(
             onClickStudy = navigateToWordNote,
             onClickMap = navigateToGame,
@@ -277,10 +284,10 @@ internal fun UserItem(
 ) {
     Row(
         modifier =
-        Modifier
-            .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
-            .padding(5.dp)
-            .height(IntrinsicSize.Min),
+            Modifier
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
+                .padding(5.dp)
+                .height(IntrinsicSize.Min),
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -308,9 +315,9 @@ fun UserCharacter(
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max),
+                Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
@@ -333,9 +340,9 @@ fun UserCharacter(
             )
             Text(
                 modifier =
-                Modifier
-                    .padding(top = 10.dp)
-                    .align(Alignment.Center),
+                    Modifier
+                        .padding(top = 10.dp)
+                        .align(Alignment.Center),
                 text = stringResource(id = R.string.character_message),
                 style = Typography.bodyLarge,
                 color = Sub1,
@@ -354,12 +361,12 @@ fun ModeButton(
 ) {
     Column(
         modifier =
-        modifier
-            .width(75.dp)
-            .height(75.dp)
-            .noRippleClickable { onClick() }
-            .background(color = Gray2, shape = CircleShape)
-            .border(width = 2.dp, color = Color.Black, shape = CircleShape),
+            modifier
+                .width(75.dp)
+                .height(75.dp)
+                .noRippleClickable { onClick() }
+                .background(color = Gray2, shape = CircleShape)
+                .border(width = 2.dp, color = Color.Black, shape = CircleShape),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -379,6 +386,13 @@ fun ModeButton(
 @Composable
 fun HomePreview() {
     MallangTheme {
-        HomeScreenContent(uiState = HomeUiState.LoadUserInfo("짜이한", 1, ExperienceState.Static(0.5f, 1)))
+        HomeScreenContent(
+            uiState =
+                HomeUiState.LoadUserInfo(
+                    "짜이한",
+                    1,
+                    ExperienceState.Static(0.5f, 1),
+                ),
+        )
     }
 }
