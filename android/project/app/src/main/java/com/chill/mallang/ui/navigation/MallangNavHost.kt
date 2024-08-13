@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navOptions
 import com.chill.mallang.ui.feature.fort_detail.FortDetailScreen
 import com.chill.mallang.ui.feature.game.game01.Game01Screen
 import com.chill.mallang.ui.feature.home.HomeScreen
@@ -186,7 +187,10 @@ fun MallangNavHost(
         ) {
             MapScreen(
                 onShowAreaDetail = { area ->
-                    navController.navigate(DestinationAreaDetail.createRoute(area.areaId))
+                    navController.navigate(
+                        DestinationAreaDetail.createRoute(area.areaId),
+                        navOptions = navOptions { launchSingleTop = true },
+                    )
                 },
             )
         }
