@@ -8,6 +8,7 @@ import com.chill.mallang.data.repository.remote.UserRepository
 import com.chill.mallang.ui.component.experiencebar.ExperienceState
 import com.chill.mallang.ui.feature.home.HomeUiState
 import com.chill.mallang.ui.feature.home.HomeViewModel
+import com.chill.mallang.ui.sound.SoundManager
 import io.mockk.coEvery
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
@@ -20,31 +21,34 @@ import org.junit.Before
 import org.junit.Test
 
 internal class HomeViewModelTest {
-
     private lateinit var viewModel: HomeViewModel
     private val userRepository: UserRepository = mockk()
     private val dataStoreRepository: DataStoreRepository = mockk()
+    private val soundManager: SoundManager = mockk()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         Dispatchers.setMain(Dispatchers.Unconfined)
+        viewModel = HomeViewModel(userRepository, dataStoreRepository, soundManager)
     }
 
     @Test
-    fun `유저_정보를_받아오면_UiState를_Success로_업데이트합니다`() = runTest {
-        coEvery { userRepository.getUserInfo() } returns flowOf(ApiResponse.Success(HomeTestData.user))
-        viewModel = HomeViewModel(userRepository, dataStoreRepository)
-        viewModel.getUserInfo()
-        assertEquals(
-            HomeUiState.LoadUserInfo(
-                nickName = HomeTestData.user.nickName,
-                factionId = HomeTestData.user.factionId,
-                experienceState = ExperienceState.Static(
-                    value = percentage,
-                    level = HomeTestData.user.level,
+    fun `유저_정보를_받아오면_UiState를_Success로_업데이트합니다`() =
+        runTest {
+            coEvery { userRepository.getUserInfo() } returns flowOf(ApiResponse.Success(HomeTestData.user))
+            viewModel.getUserInfo()
+            assertEquals(
+                HomeUiState.LoadUserInfo(
+                    nickName = HomeTestData.user.nickName,
+                    factionId = HomeTestData.user.factionId,
+                    experienceState =
+                        ExperienceState.Static(
+                            value = percentage,
+                            level = HomeTestData.user.level,
+                        ),
                 ),
-            ), viewModel.uiState.value
-        )
-    }
+                viewModel.uiState.value,
+            )
+        }
 }
