@@ -10,6 +10,8 @@ import lombok.Setter;
 @Builder
 public class AreaTopUserDTO {
     private String areaName;
+    private double latitude;
+    private double longitude;
     private FactionDTO myTeamInfo;
     private FactionDTO oppoTeamInfo;
 }
