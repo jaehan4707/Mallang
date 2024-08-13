@@ -178,16 +178,17 @@ class MapViewModel
 
         private fun getProximityClosestArea(latLng: LatLng): ProximityState {
             val closest = getClosestArea(latLng)
-            return if (closest != null) {
+            if (closest != null) {
                 val distance =
                     SphericalUtil.computeDistanceBetween(closest.latLng, latLng).toInt()
                 if (distance < inArea) {
-                    ProximityState.Adjacent(distance)
+                    selectedArea = closest
+                    return ProximityState.Adjacent(distance)
                 } else {
-                    ProximityState.FarAway
+                    return ProximityState.FarAway
                 }
             } else {
-                ProximityState.FarAway
+                return ProximityState.FarAway
             }
         }
     }

@@ -48,17 +48,22 @@ object DestinationMap : ScreenDestinations {
 object DestinationAreaDetail : ScreenDestinationsWithArgument {
     override val arg: String
         get() = "areaId"
+    val arg2: String = "distance"
     override val routeWithArgs: String
-        get() = "${this.route}/{areaId}"
+        get() = "${this.route}/{areaId}/{distance}"
     override val arguments: List<NamedNavArgument>
         get() =
             listOf(
                 navArgument(name = arg) { type = NavType.LongType },
+                navArgument(name = arg2) { type = NavType.IntType },
             )
     override val route: String
         get() = "area_detail"
 
-    fun createRoute(areaId: Long) = "${this.route}/$areaId"
+    fun createRoute(
+        areaId: Long,
+        distance: Int,
+    ) = "${this.route}/$areaId/$distance"
 }
 
 object DestinationNickName : ScreenDestinationsWithArgument {

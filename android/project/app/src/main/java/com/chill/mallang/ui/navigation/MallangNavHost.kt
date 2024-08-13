@@ -186,9 +186,9 @@ fun MallangNavHost(
             route = DestinationMap.route,
         ) {
             MapScreen(
-                onShowAreaDetail = { area ->
+                onShowAreaDetail = { area, distance ->
                     navController.navigate(
-                        DestinationAreaDetail.createRoute(area.areaId),
+                        DestinationAreaDetail.createRoute(area.areaId, distance),
                         navOptions = navOptions { launchSingleTop = true },
                     )
                 },
@@ -200,8 +200,10 @@ fun MallangNavHost(
             arguments = DestinationAreaDetail.arguments,
         ) { navBackStackEntry ->
             val areaId = navBackStackEntry.arguments?.getLong(DestinationAreaDetail.arg)
+            val distance = navBackStackEntry.arguments?.getInt(DestinationAreaDetail.arg2)
             FortDetailScreen(
                 areaId = areaId,
+                distance = distance,
                 onStartGame = {
                     navController.navigate(
                         DestinationGame.createRoute(areaId = areaId ?: -1),
