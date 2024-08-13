@@ -126,16 +126,16 @@ fun FortDetailScreenPreviewWithData() {
                 AreaDetailState.Success(
                     AreaDetail(
                         areaName = "Name",
-                        TeamInfo(1, 1, UserInfo(1, "Name")),
-                        TeamInfo(1, 1, UserInfo(1, "Name")),
+                        TeamInfo(1, 1f, UserInfo(1, "Name")),
+                        TeamInfo(1, 1f, UserInfo(1, "Name")),
                     ),
                 ),
             teamRecordState =
                 TeamRecordState.Success(
                     TeamRecords(
-                        MyRecord(1, 1, 1),
-                        listOf(UserRecord(1, 1, 1)),
-                        listOf(UserRecord(1, 1, 1)),
+                        MyRecord(1, 1f, 1),
+                        listOf(UserRecord(1, 1f, 1)),
+                        listOf(UserRecord(1, 1f, 1)),
                     ),
                 ),
             tryCountState = TryCountState.Success(3),

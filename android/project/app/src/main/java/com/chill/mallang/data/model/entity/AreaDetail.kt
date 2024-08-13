@@ -15,7 +15,7 @@ data class AreaDetail(
 @Immutable
 data class TeamInfo(
     val teamId: Int,
-    val teamPoint: Int,
+    val teamPoint: Float?,
     val topUser: UserInfo?,
 )
 

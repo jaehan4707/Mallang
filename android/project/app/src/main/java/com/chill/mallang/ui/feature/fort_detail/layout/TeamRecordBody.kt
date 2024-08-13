@@ -163,7 +163,7 @@ fun RecordListItem(
                 modifier = Modifier.weight(1f),
             )
             Text(
-                text = stringResource(R.string.user_record_score, userRecord.userScore),
+                text = stringResource(R.string.user_record_score, userRecord.userScore?.toInt() ?: 0),
                 fontSize = 22.sp,
                 style = Typography.displayLarge,
             )
