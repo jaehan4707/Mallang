@@ -15,8 +15,10 @@ fun ReloadEffect(
     var isLoaded by remember { mutableStateOf(false) }
 
     DisposableEffect(isLoaded) {
-        onLoad()
-        isLoaded = true
+        if (!isLoaded) {
+            onLoad()
+            isLoaded = true
+        }
         onDispose {
             onUnload()
             isLoaded = false
