@@ -201,6 +201,8 @@ fun DetailBodyPreviewWithData() {
                 AreaDetailState.Success(
                     AreaDetail(
                         areaName = "Name",
+                        latitude = 0.0,
+                        longitude = 0.0,
                         TeamInfo(1, 100f, null),
                         TeamInfo(2, 80f, null),
                     ),

@@ -34,7 +34,7 @@ import com.google.android.gms.maps.model.LatLng
 @Composable
 fun MapScreen(
     modifier: Modifier = Modifier,
-    onShowAreaDetail: (Area) -> Unit = {},
+    onShowAreaDetail: (area:Area, distance:Int) -> Unit = { _,_ ->},
 ) {
     val context = LocalContext.current
     val viewModel: MapViewModel = hiltViewModel()
@@ -104,7 +104,7 @@ fun MapScreenContent(
     selectedArea: Area?,
     onSelectArea: (Area) -> Unit = {},
     onLocate: () -> Unit = {},
-    onShowAreaDetail: (Area) -> Unit = {},
+    onShowAreaDetail: (area:Area, distance:Int) -> Unit = { _,_-> },
     onCameraMove: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxSize()) {

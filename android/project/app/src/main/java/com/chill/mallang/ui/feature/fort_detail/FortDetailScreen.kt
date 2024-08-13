@@ -30,6 +30,7 @@ import com.chill.mallang.ui.theme.MallangTheme
 fun FortDetailScreen(
     modifier: Modifier = Modifier,
     areaId: Long?,
+    distance: Int?,
     onStartGame: () -> Unit = {},
 ) {
     val viewModel: FortDetailViewModel = hiltViewModel()
@@ -69,6 +70,7 @@ fun FortDetailScreen(
         areaDetailState = occupationState,
         teamRecordState = teamLeadersState,
         onStartGame = onStartGame,
+        distance = distance,
         tryCountState = tryCountState,
     )
 }
@@ -79,6 +81,7 @@ fun AreaDetailContent(
     areaDetailState: AreaDetailState,
     teamRecordState: TeamRecordState,
     tryCountState: TryCountState,
+    distance: Int?,
     onStartGame: () -> Unit = {},
 ) {
     Column(
@@ -94,6 +97,7 @@ fun AreaDetailContent(
         GameStartBody(
             modifier = Modifier.weight(2F),
             onStartGame = onStartGame,
+            distance = distance,
             tryCountState = tryCountState,
         )
         TeamRecordBody(
@@ -111,6 +115,7 @@ fun FortDetailScreenPreview() {
             modifier = Modifier,
             areaDetailState = AreaDetailState.Loading,
             teamRecordState = TeamRecordState.Loading,
+            distance = 100,
             tryCountState = TryCountState.Loading,
         )
     }
@@ -126,6 +131,8 @@ fun FortDetailScreenPreviewWithData() {
                 AreaDetailState.Success(
                     AreaDetail(
                         areaName = "Name",
+                        latitude = 0.0,
+                        longitude = 0.0,
                         TeamInfo(1, 1f, UserInfo(1, "Name")),
                         TeamInfo(1, 1f, UserInfo(1, "Name")),
                     ),
@@ -138,6 +145,7 @@ fun FortDetailScreenPreviewWithData() {
                         listOf(UserRecord(1, 1f, 1)),
                     ),
                 ),
+            distance = 20,
             tryCountState = TryCountState.Success(3),
         )
     }

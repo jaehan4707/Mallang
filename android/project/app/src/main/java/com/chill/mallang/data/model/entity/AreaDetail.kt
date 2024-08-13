@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 @Immutable
 data class AreaDetail(
     val areaName: String,
+    val latitude: Double,
+    val longitude: Double,
     val myTeamInfo: TeamInfo,
     val oppoTeamInfo: TeamInfo,
 )

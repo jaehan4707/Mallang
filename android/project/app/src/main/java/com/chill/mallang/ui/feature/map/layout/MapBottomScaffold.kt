@@ -38,7 +38,7 @@ fun MapScaffold(
     proximityState: ProximityState,
     currentLocation: LocationState,
     onLocate: () -> Unit = {},
-    onShowDetail: (Area) -> Unit = {},
+    onShowDetail: (area:Area, distance:Int) -> Unit = { _,_ -> },
 ) {
     val leftSide by remember(status) {
         mutableIntStateOf(status.teams.find { team -> team.teamId == 1 }?.area ?: 0)
@@ -119,7 +119,7 @@ fun MapScaffold(
                 modifier = Modifier.padding(16.dp),
                 area = areaSelected,
                 distance = distance,
-                onShowDetail = { area -> onShowDetail(area) },
+                onShowDetail = { area -> onShowDetail(area, distance ?: -1) },
             )
         }
     }
