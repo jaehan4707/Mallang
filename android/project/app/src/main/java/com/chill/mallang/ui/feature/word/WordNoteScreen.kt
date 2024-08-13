@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -221,7 +222,9 @@ fun GridWordList(
     onWordClick: (Int) -> Unit,
 ) {
     LazyVerticalGrid(
-        modifier = Modifier.padding(horizontal = 12.dp),
+        modifier = Modifier
+            .padding(horizontal = 12.dp)
+            .testTag("word_note_list"),
         columns = GridCells.Fixed(3),
         state = rememberLazyGridState(),
     ) {
