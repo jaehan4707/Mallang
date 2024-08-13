@@ -357,7 +357,8 @@ fun AnswerListItem(
                     .fillMaxWidth()
                     .background(color = Color.White, shape = RoundedCornerShape(8.dp))
                     .border(2.dp, color = Gray6, shape = RoundedCornerShape(8.dp))
-                    .clickable { onItemClick(index) },
+                    .clickable { onItemClick(index) }
+                    .testTag("study_quiz_$index"),
             ) {
                 Box(
                     modifier =
@@ -387,7 +388,7 @@ fun AnswerListItem(
                     Icon(
                         modifier = Modifier.padding(10.dp),
                         painter = painterResource(id = R.drawable.ic_check),
-                        contentDescription = null,
+                        contentDescription = "study_check_$index",
                     )
                 }
             }
