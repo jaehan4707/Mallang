@@ -48,7 +48,7 @@ fun MapScaffold(
     }
 
     // 현 위치와 선택된 위치 사이의 거리
-    val distance by remember {
+    val distance by remember(currentLocation, areaSelected) {
         derivedStateOf {
             if (currentLocation is LocationState.Tracking && areaSelected != null) {
                 SphericalUtil

@@ -33,16 +33,16 @@ fun GameStartBody(
     tryCountState: TryCountState,
     onStartGame: () -> Unit = {},
 ) {
-    val enabled by remember {
+    val enabled by remember(tryCountState) {
         mutableStateOf(
-                tryCountState is TryCountState.Success &&
+            tryCountState is TryCountState.Success &&
                 tryCountState.tryCount > 0,
         )
     }
-    val inRange by remember {
+    val inRange by remember(distance) {
         mutableStateOf(
             distance != null &&
-                    distance < inArea
+                distance < inArea,
         )
     }
 
