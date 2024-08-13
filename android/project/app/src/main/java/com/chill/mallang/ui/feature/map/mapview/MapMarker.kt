@@ -70,8 +70,8 @@ fun CustomMarkerWithArea(
     }
     Circle(
         center = state.marker.position,
-        strokeColor =
-        teamColor,
+        strokeWidth = 2f,
+        strokeColor = teamColor,
         fillColor = teamColor.copy(alpha = 0.3f),
         radius = state.radius,
     )
