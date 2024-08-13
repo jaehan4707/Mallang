@@ -125,6 +125,8 @@ class UserRepositoryImpl
                                     factionId = it.faction ?: 0,
                                     tryCount = it.tryCount ?: 0,
                                     nickName = it.nickName ?: "",
+                                    level = it.level ?: 0,
+                                    exp = it.exp ?: 0f,
                                 )
                             } ?: User()
                         dataStoreRepository.saveUser(user)
