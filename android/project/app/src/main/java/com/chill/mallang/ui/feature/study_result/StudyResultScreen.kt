@@ -1,8 +1,10 @@
 package com.chill.mallang.ui.feature.study_result
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
@@ -25,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -97,7 +100,7 @@ fun StudyResultScreen(
 
     TopbarHandler(
         isVisible = true,
-        title = "풀이 결과",
+        title = context.getString(R.string.study_quiz_result_title),
         onBack = { nav ->
             setBackPressed(true)
             setNavController(nav)
@@ -165,13 +168,8 @@ fun StudyResultScreenContent(
             val titleColor =
                 if (title == context.getString(R.string.correct_message)) Green1 else Sub1
 
-            Text(
-                modifier = Modifier.padding(vertical = 10.dp),
-                text = title,
-                style = Typography.headlineLarge,
-                fontSize = 40.sp,
-                color = titleColor,
-            )
+            AnimatedTitle(title = title, titleColor = titleColor)
+
             if (!studyResultState.result) { // 오답일 때는 기존처럼 __ 빈칸 뚫린 거로
                 QuizBox(
                     quizTitle = studyResultState.quizTitle,
@@ -200,6 +198,29 @@ fun StudyResultScreenContent(
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
+}
+
+@Composable
+fun AnimatedTitle(
+    title: String,
+    titleColor: Color,
+) {
+    var isAnimated by remember { mutableStateOf(false) }
+    val fontSize by animateFloatAsState(
+        targetValue = if (isAnimated) 50f else 20f,
+        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+    )
+
+    LaunchedEffect(true) {
+        isAnimated = true
+    }
+    Text(
+        modifier = Modifier.padding(vertical = 20.dp),
+        text = title,
+        style = Typography.headlineLarge,
+        fontSize = fontSize.sp,
+        color = titleColor,
+    )
 }
 
 @Composable

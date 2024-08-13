@@ -2,10 +2,12 @@ package com.chill.mallang.ui.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chill.mallang.R
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.UserRepository
 import com.chill.mallang.ui.component.experiencebar.ExperienceState
+import com.chill.mallang.ui.sound.SoundManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,14 +23,19 @@ class HomeViewModel
     constructor(
         private val userRepository: UserRepository,
         private val dataStoreRepository: DataStoreRepository,
+        private val soundManager: SoundManager,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
         val uiState = _uiState.asStateFlow()
         private val _event = MutableSharedFlow<HomeUiEvent>()
         val event = _event.asSharedFlow()
 
-        init {
-            getUserInfo()
+        fun playBGM() {
+            soundManager.playBackgroundMusic(R.raw.bgm_default)
+        }
+
+        fun stopBGM() {
+            soundManager.stopBackgroundMusic(R.raw.bgm_default)
         }
 
         fun sendEvent(event: HomeUiEvent) {

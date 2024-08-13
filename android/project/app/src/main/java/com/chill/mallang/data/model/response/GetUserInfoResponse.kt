@@ -15,4 +15,8 @@ data class GetUserInfoResponse(
     val faction: Long? = null,
     @SerialName("try_count")
     val tryCount: Int? = null,
+    @SerialName("level")
+    val level: Int? = null,
+    @SerialName("exp")
+    val exp: Float? = null,
 )

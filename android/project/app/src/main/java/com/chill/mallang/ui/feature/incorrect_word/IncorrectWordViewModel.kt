@@ -23,11 +23,7 @@ class IncorrectWordViewModel
             MutableStateFlow<IncorrectNoteState>(IncorrectNoteState.Loading)
         val incorrectNoteState = _incorrectNoteState.asStateFlow()
 
-        init {
-            loadIncorrectWords()
-        }
-
-        private fun loadIncorrectWords() {
+        fun loadIncorrectWords() {
             viewModelScope.launch {
                 dataStoreRepository.getUserId()?.let { userId ->
                     studyRepository.getIncorrectList(userId).collectLatest { response ->
