@@ -20,4 +20,5 @@ object WordNoteTestData {
             example = "단어장2 예문"
         ),
     )
+    val loadErrorMessage = "단어장 불러오기에 실패했습니다"
 }
