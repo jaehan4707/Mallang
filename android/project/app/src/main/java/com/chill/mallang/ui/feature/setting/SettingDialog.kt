@@ -40,8 +40,8 @@ fun SettingDialog(
     onSignOut: () -> Unit = {},
 ) {
     val viewModel: SettingViewModel = hiltViewModel()
-    val backGroundMusicChecked by viewModel.backgroundVolume.collectAsStateWithLifecycle(false)
-    val effectMusicChecked by viewModel.soundEffectsVolume.collectAsStateWithLifecycle(false)
+    val backGroundMusicChecked by viewModel.backgroundVolume.collectAsStateWithLifecycle(true)
+    val effectMusicChecked by viewModel.soundEffectsVolume.collectAsStateWithLifecycle(true)
     val notificationChecked by viewModel.notificationAlarm.collectAsStateWithLifecycle()
     Dialog(onDismissRequest = onClose) {
         Surface(
