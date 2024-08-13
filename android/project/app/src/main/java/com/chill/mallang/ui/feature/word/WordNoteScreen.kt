@@ -104,26 +104,38 @@ fun WordNoteScreen(
         },
     )
 
-    when (wordNoteState) {
+    HandleWordNoteUi(
+        uiState = wordNoteState, onClick = { navigateToIncorrectWord() },
+        navigateToStudy = navigateToStudy
+    )
+}
+
+@Composable
+fun HandleWordNoteUi(
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    uiState: WordNoteState,
+    navigateToStudy: (Long) -> Unit = {},
+    onClick: () -> Unit = {},
+) {
+    when (uiState) {
         is WordNoteState.Success -> {
             WordNoteScreenContent(
                 modifier = modifier,
                 context = context,
-                wordNoteState = wordNoteState as WordNoteState.Success,
+                wordNoteState = uiState,
                 navigateToQuiz = navigateToStudy,
-                onClick = {
-                    navigateToIncorrectWord()
-                },
+                onClick = onClick,
             )
         }
 
         is WordNoteState.Error -> {
-            // api 에러일 때
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
+                    modifier = Modifier.testTag("word_note_error_message"),
                     text = context.getString(R.string.study_load_error_message),
                     textAlign = TextAlign.Center,
                 )
@@ -136,8 +148,8 @@ fun WordNoteScreen(
 
 @Composable
 fun WordNoteScreenContent(
-    modifier: Modifier,
-    context: Context,
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
     wordNoteState: WordNoteState.Success,
     navigateToQuiz: (Long) -> Unit = {},
     onClick: () -> Unit = {},
@@ -161,7 +173,6 @@ fun WordNoteScreenContent(
             Box(
                 modifier = Modifier.weight(1f),
             ) {
-                // 아직 단어장에 아무 데이터도 없을 때
                 if (wordNoteState.wordList.isEmpty()) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -267,7 +278,6 @@ fun WordListItem(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun WordNotePreview() {
-//    WordNoteScreen()
     WordListItem(
         word =
         CorrectWord(
