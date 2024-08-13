@@ -4,8 +4,10 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onChildAt
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import com.chill.data.WordNoteTestData.loadErrorMessage
 import com.chill.data.WordNoteTestData.wordList
 import com.chill.mallang.data.model.response.ApiResponse
@@ -67,5 +69,21 @@ class WordNoteScreenTest {
         composeTestRule.onNodeWithTag("word_note_error_message").assertIsDisplayed()
         composeTestRule.onNodeWithTag("word_note_error_message")
             .assertTextEquals(loadErrorMessage)
+    }
+
+    @Test
+    fun `단어를_클릭하면_단어장_다이얼로그가_화면에_출력된다`() = runTest {
+        val userId = dataStoreRepository.getUserId() ?: 1L
+        coEvery { studyRepository.getWordList(userId) } returns flowOf(
+            ApiResponse.Success(wordList)
+        )
+        viewModel = WordNoteViewModel(studyRepository, dataStoreRepository)
+        composeTestRule.setContent {
+            HandleWordNoteUi(uiState = viewModel.wordNoteState.value)
+        }
+        composeTestRule.onNodeWithTag("word_note_list")
+            .onChildAt(0)
+            .performClick()
+        composeTestRule.onNodeWithTag("word_card_dialog").assertExists()
     }
 }
