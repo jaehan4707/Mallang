@@ -88,7 +88,7 @@ fun AnimatedGaugeBar(
     targetValue: Float,
     animationDuration: Int = 1000,
 ) {
-    var currentPercentage by remember { mutableFloatStateOf(initialValue) } // Trigger animation when targetPercentage changes
+    var currentPercentage by remember(initialValue) { mutableFloatStateOf(initialValue) } // Trigger animation when targetPercentage changes
 
     LaunchedEffect(targetValue) {
         currentPercentage = targetValue
