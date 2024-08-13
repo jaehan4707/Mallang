@@ -86,4 +86,26 @@ class WordNoteScreenTest {
             .performClick()
         composeTestRule.onNodeWithTag("word_card_dialog").assertExists()
     }
+
+    @Test
+    fun `단어장_다이얼로그에는_클릭된_단어가_출력된다`() = runTest {
+        val userId = dataStoreRepository.getUserId() ?: 1L
+        coEvery { studyRepository.getWordList(userId) } returns flowOf(
+            ApiResponse.Success(wordList)
+        )
+        viewModel = WordNoteViewModel(studyRepository, dataStoreRepository)
+        composeTestRule.setContent {
+            HandleWordNoteUi(uiState = viewModel.wordNoteState.value)
+        }
+        composeTestRule.onNodeWithTag("word_note_list")
+            .onChildAt(0)
+            .performClick()
+        composeTestRule.onNodeWithTag("word_card_dialog_word")
+            .assertTextEquals(wordList.first().word)
+        composeTestRule.onNodeWithTag("word_card_dialog_example")
+            .assertTextEquals(wordList.first().example)
+        composeTestRule.onNodeWithTag("word_card_dialog_meaning")
+            .assertTextEquals(wordList.first().meaning)
+        composeTestRule.onNodeWithTag("word_card_dialog_pos").assertTextEquals(wordList.first().pos)
+    }
 }
