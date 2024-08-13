@@ -1,9 +1,11 @@
 package com.chill.ui.screen
 
+import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import com.chill.data.HomeTestData
+import com.chill.mallang.R
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.UserRepository
@@ -53,6 +55,25 @@ class HomeScreenTest {
             composeTestRule
                 .onNodeWithTag("home_nickname")
                 .assertTextEquals(HomeTestData.user.nickName)
+        }
+
+    @Test
+    fun `유저_진영에_맞는_캐릭터가_표시되어야한다`() =
+        runTest {
+            coEvery { userRepository.getUserInfo() } returns flowOf(ApiResponse.Success(HomeTestData.user))
+            composeTestRule.setContent {
+                HomeScreen(viewModel = viewModel)
+            }
+            viewModel.getUserInfo()
+            val imgId =
+                if (HomeTestData.user.factionId == 1L) {
+                    R.drawable.img_mal_default_character
+                } else {
+                    R.drawable.img_lang_default_character
+                }
+            composeTestRule
+                .onNodeWithTag("user_img")
+                .assertContentDescriptionEquals("$imgId")
         }
 
     @After
