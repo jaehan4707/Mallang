@@ -176,7 +176,7 @@ fun TeamScoreAndTopUser(
                     .background(color = Color.White, shape = RoundedCornerShape(8.dp))
                     .border(4.dp, shape = RoundedCornerShape(8.dp), color = teamColor)
                     .padding(vertical = 4.dp, horizontal = 8.dp),
-            text = stringResource(R.string.team_score, teamInfo.teamPoint),
+            text = stringResource(R.string.team_score, teamInfo.teamPoint?.toInt() ?: 0),
             fontSize = 30.sp,
             style = Typography.displayLarge,
             color = teamColor,
@@ -201,8 +201,8 @@ fun DetailBodyPreviewWithData() {
                 AreaDetailState.Success(
                     AreaDetail(
                         areaName = "Name",
-                        TeamInfo(1, 100, null),
-                        TeamInfo(2, 80, null),
+                        TeamInfo(1, 100f, null),
+                        TeamInfo(2, 80f, null),
                     ),
                 ),
         )

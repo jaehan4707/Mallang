@@ -15,8 +15,8 @@ data class TeamRecords(
 @Serializable
 data class MyRecord(
     val userPlace: Int,
-    val userScore: Int,
-    val userPlayTime: Int,
+    val userScore: Float?,
+    val userPlayTime: Int?,
 )
 
 @Immutable
@@ -25,10 +25,10 @@ data class UserRecord(
     val userId: Long,
     val userName: String,
     val userPlace: Int,
-    val userScore: Int,
-    val userPlayTime: Int,
+    val userScore: Float?,
+    val userPlayTime: Int?,
 ) {
-    constructor(userPlace: Int, userScore: Int, userPlayTime: Int) : this(
+    constructor(userPlace: Int, userScore: Float?, userPlayTime: Int) : this(
         0,
         "",
         userPlace,
