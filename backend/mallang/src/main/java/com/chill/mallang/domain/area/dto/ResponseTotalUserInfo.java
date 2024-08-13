@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class ResponseTotalUserInfo {
-    private Integer userScore;
+    private float userScore;
     private Integer userPlayTime;
     private Integer userPlace;
 }

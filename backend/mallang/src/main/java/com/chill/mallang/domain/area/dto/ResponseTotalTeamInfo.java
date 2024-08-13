@@ -16,7 +16,7 @@ public class ResponseTotalTeamInfo {
     @NotNull
     private String userName;
     @NotNull
-    private Integer userScore;
+    private Float userScore;
     @NotNull
     private Integer userPlayTime;
 }
