@@ -74,4 +74,19 @@ internal class StudyScreenTest {
         composeTestRule.onNodeWithTag("study_quiz_$clickIndex").performClick()
         composeTestRule.onNodeWithContentDescription("study_check_$clickIndex").assertIsDisplayed()
     }
+
+    @Test
+    fun `보기를_선택하지_않고_제출할경우_에러메시지가_출력된다`() = runTest {
+        val userId = dataStoreRepository.getUserId() ?: 0L
+        coEvery { savedStateHandle.get<Long>("studyId") } returns -1L
+        coEvery { studyRepository.getStudyQuiz(userId) } returns flowOf(
+            ApiResponse.Success(studyQuiz)
+        )
+        viewModel = StudyViewModel(savedStateHandle, studyRepository, dataStoreRepository)
+        composeTestRule.setContent {
+            HandleStudyUi(studyState = viewModel.studyState.value, studyViewModel = viewModel)
+        }
+        composeTestRule.onNodeWithTag("study_submit_button").performClick()
+        composeTestRule.onNodeWithTag("error_snack_bar").assertIsDisplayed()
+    }
 }

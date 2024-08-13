@@ -224,7 +224,7 @@ fun StudyScreenContent(
                     .align(Alignment.BottomEnd)
                     .offset(y = (-30).dp) // 버튼을 20dp 위로 올림
                     .width(180.dp)
-                    .height(80.dp),
+                    .height(80.dp).testTag("study_submit_button"),
                 colors =
                 ButtonDefaults.buttonColors(
                     containerColor = Gray6,
