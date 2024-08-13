@@ -34,7 +34,7 @@ import com.google.android.gms.maps.model.LatLng
 @Composable
 fun MapScreen(
     modifier: Modifier = Modifier,
-    onShowAreaDetail: (area:Area, distance:Int) -> Unit = { _,_ ->},
+    onShowAreaDetail: (area: Area, distance: Int) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
     val viewModel: MapViewModel = hiltViewModel()
@@ -79,6 +79,12 @@ fun MapScreen(
         }
     }
 
+    LaunchedEffect(areas) {
+        if (currentLocation is LocationState.Tracking) {
+            viewModel.setLocation((currentLocation as LocationState.Tracking).latLng)
+        }
+    }
+
     TopbarHandler(isVisible = true)
 
     MapScreenContent(
@@ -104,7 +110,7 @@ fun MapScreenContent(
     selectedArea: Area?,
     onSelectArea: (Area) -> Unit = {},
     onLocate: () -> Unit = {},
-    onShowAreaDetail: (area:Area, distance:Int) -> Unit = { _,_-> },
+    onShowAreaDetail: (area: Area, distance: Int) -> Unit = { _, _ -> },
     onCameraMove: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxSize()) {
