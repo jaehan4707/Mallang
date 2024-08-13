@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.TeamList
 import com.chill.mallang.data.model.response.ApiResponse
@@ -13,6 +14,7 @@ import com.chill.mallang.data.repository.remote.AreaRepository
 import com.chill.mallang.ui.feature.map.MapDistance.inArea
 import com.chill.mallang.ui.feature.map.state.ProximityState
 import com.chill.mallang.ui.feature.map.state.TryCountState
+import com.chill.mallang.ui.sound.SoundManager
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +31,7 @@ class MapViewModel
     constructor(
         private val savedStateHandle: SavedStateHandle,
         private val areaRepository: AreaRepository,
+        private val soundManager: SoundManager,
     ) : ViewModel() {
         private val _currentLocation = MutableStateFlow<LocationState>(LocationState.Empty)
         val currentLocation: StateFlow<LocationState> = _currentLocation
@@ -47,6 +50,14 @@ class MapViewModel
 
         var selectedArea by mutableStateOf<Area?>(null)
             private set
+
+        fun playBGM() {
+            soundManager.playBackgroundMusic(R.raw.bgm_map)
+        }
+
+        fun stopBGM() {
+            soundManager.stopBackgroundMusic(R.raw.bgm_map)
+        }
 
         fun setLocation(latLng: LatLng) {
             _currentLocation.update {

@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.data.model.entity.Area
 import com.chill.mallang.data.model.entity.TeamList
+import com.chill.mallang.ui.component.ReloadEffect
 import com.chill.mallang.ui.feature.map.layout.MapScaffold
 import com.chill.mallang.ui.feature.map.mapview.MapView
 import com.chill.mallang.ui.feature.map.state.ProximityState
@@ -61,9 +62,15 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadStatus()
-    }
+    ReloadEffect(
+        onLoad = {
+            viewModel.playBGM()
+            viewModel.loadStatus()
+        },
+        onUnload = {
+            viewModel.stopBGM()
+        },
+    )
 
     LaunchedEffect(hasPermission) {
         if (hasPermission) {
@@ -115,7 +122,7 @@ fun MapScreenContent(
             status = status,
             onLocate = onLocate,
             onShowDetail = onShowAreaDetail,
-            proximityState = proximityState
+            proximityState = proximityState,
         )
     }
 }

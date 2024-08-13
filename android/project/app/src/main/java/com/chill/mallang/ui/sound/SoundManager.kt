@@ -97,10 +97,12 @@ class SoundManager
             }
         }
 
-        fun stopBackgroundMusic() {
-            mediaPlayer?.run {
-                stop()
-                prepare()
+        fun stopBackgroundMusic(resId: Int) {
+            if (currentBackgroundId == resId) {
+                mediaPlayer?.run {
+                    stop()
+                    prepare()
+                }
             }
         }
 
