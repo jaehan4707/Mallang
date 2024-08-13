@@ -118,7 +118,7 @@ class SoundManager
 
         fun playSoundEffect(soundResId: Int) {
             val soundId = soundPool.load(context, soundResId, 1)
-            soundPool.setVolume(soundId, _soundEffectsVolume.value, _soundEffectsVolume.value)
+            soundPool.play(soundId, _soundEffectsVolume.value, _soundEffectsVolume.value, 1, 0, 1f)
         }
 
         fun setBackgroundVolume(volume: Float) {
