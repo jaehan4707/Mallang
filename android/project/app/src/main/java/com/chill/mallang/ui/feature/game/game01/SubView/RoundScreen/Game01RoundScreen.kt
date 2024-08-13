@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.game.game01.SubView
+package com.chill.mallang.ui.feature.game.game01.SubView.RoundScreen
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -62,7 +62,7 @@ fun Game01RoundScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.mipmap.malang),
+                painter = painterResource(id = R.drawable.img_round_loading),
                 contentDescription = "말랑",
                 modifier = modifier
                     .size(size)

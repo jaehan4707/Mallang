@@ -1,4 +1,4 @@
-package com.chill.mallang.ui.feature.game.game01.SubView
+package com.chill.mallang.ui.feature.game.game01.SubView.RewardScreen
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState

@@ -8,7 +8,7 @@ import com.chill.mallang.data.model.response.ApiResponse
 import kotlinx.coroutines.flow.Flow
 
 interface QuizRepository {
-    suspend fun getQuizIds(areaId: Long): Flow<ApiResponse<List<Long>>>
+    suspend fun getQuizIds(areaId: Long, userId: Long): Flow<ApiResponse<List<Long>>>
 
     suspend fun getQuiz(quizId: Long): Flow<ApiResponse<Game01QuizData>>
 
