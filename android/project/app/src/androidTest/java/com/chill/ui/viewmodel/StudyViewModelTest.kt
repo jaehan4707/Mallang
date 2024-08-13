@@ -84,4 +84,18 @@ internal class StudyViewModelTest {
             ), viewModel.studyState.value
         )
     }
+    @Test
+    fun `오답_퀴즈_데이터를_불러오는데_실패하면_UiState를_Error로_업데이트합니다`() = runTest {
+        val userId = dataStoreRepository.getUserId() ?: 0L
+        coEvery { savedStateHandle.get<Long>("studyId") } returns 1L
+        val studyId = savedStateHandle.get<Long>("studyId") ?: 1L
+        coEvery { studyRepository.getIncorrectQuiz(userId, studyId) } returns flowOf(
+            ApiResponse.Error(errorMessage = loadQuizDataErrorMessage)
+        )
+        viewModel = StudyViewModel(savedStateHandle, studyRepository, dataStoreRepository)
+        assertEquals(
+            StudyState.Error(errorMessage = loadQuizDataErrorMessage),
+            viewModel.studyState.value
+        )
+    }
 }
