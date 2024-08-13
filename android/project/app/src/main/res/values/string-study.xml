@@ -3,6 +3,7 @@
     <string name="submit_study">제출하기</string>
     <string name="unselect_snackbar_message">정답을 선택해 주세요!</string>
     <string name="study_quiz_title">학습 퀴즈</string>
+    <string name="study_quiz_result_title">풀이 결과</string>
     <string name="word_note">단어장</string>
     <string name="incorrect_word_note">오답노트</string>
     <string name="change_to_incorrect_note">오답노트로 변경</string>
