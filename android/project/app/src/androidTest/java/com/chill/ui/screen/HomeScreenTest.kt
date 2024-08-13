@@ -76,6 +76,23 @@ class HomeScreenTest {
                 .assertContentDescriptionEquals("$imgId")
         }
 
+    @Test
+    fun `유저의_레벨은_올바르게_표시되어야한다`() =
+        runTest {
+            val testUser = HomeTestData.user.copy(level = 9)
+            coEvery { userRepository.getUserInfo() } returns
+                flowOf(
+                    ApiResponse.Success(testUser),
+                )
+            composeTestRule.setContent {
+                HomeScreen(viewModel = viewModel)
+            }
+            viewModel.getUserInfo()
+            composeTestRule
+                .onNodeWithTag("user_exp")
+                .assertTextEquals(testUser.level.toString())
+        }
+
     @After
     fun tearDown() {
         Dispatchers.resetMain() // Reset after tests
