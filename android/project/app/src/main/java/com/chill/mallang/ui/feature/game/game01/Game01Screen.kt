@@ -125,6 +125,10 @@ fun Game01Screen(
         Game01State.REWARD ->
             Game01RewardScreen(
                 completeReward = { viewModel.updateGame01State(Game01State.CURTAIN_CALL) },
+                userExp = viewModel.userInfo.exp,
+                userGameScore = viewModel.playResult.userPlayResult.totalScore,
+                userLevel = viewModel.userInfo.level + 1,
+                LevelExp = (viewModel.userInfo.level + 1) * 200F,
             )
 
         Game01State.CURTAIN_CALL ->
