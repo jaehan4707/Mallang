@@ -1,6 +1,5 @@
 package com.chill.mallang.ui.feature.word
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -45,7 +44,6 @@ class WordNoteViewModel
                         .collectLatest { response ->
                             when (response) {
                                 is ApiResponse.Success -> {
-                                    Log.d("nakyung", "response: ${response.body}")
                                     _wordNoteState.value =
                                         WordNoteState.Success(
                                             wordList = response.body ?: emptyList(),
