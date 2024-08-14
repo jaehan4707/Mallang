@@ -23,13 +23,7 @@ public interface TotalScoreRepository extends JpaRepository<TotalScore, Long> {
             "WHERE t.area = :areaID AND DATE(t.created_at) = CURDATE() " +
             "AND t.faction = :factionID ", nativeQuery = true)
     List<Float> findTotalScoreByAreaIDAndFactionID(@Param("areaID") Long areaID, @Param("factionID") Long factionID);
-    //    @Query(value = "SELECT u.nickname AS nickName, t.total_score AS totalScore " +
-//            "FROM total_score t " +
-//            "JOIN user u ON t.user = u.id " +
-//            "WHERE t.area = :areaID AND t.faction = :factionID AND DATE(t.created_at) = CURDATE() " +
-//            "ORDER BY t.total_score DESC " +
-//            "LIMIT 3", nativeQuery = true)
-//    List<TeamRankResponse> findTop3(@Param("areaID") Long areaID, @Param("factionID") Long factionID);
+
     @Query("SELECT new com.chill.mallang.domain.quiz.dto.response.TeamRankResponse(u.nickname, t.totalScore) " +
             "FROM TotalScore t JOIN User u ON t.user.id = u.id " +
             "WHERE t.area.id = :areaID AND t.faction.id = :factionID AND FUNCTION('DATE', t.created_at) = CURRENT_DATE " +
@@ -37,7 +31,7 @@ public interface TotalScoreRepository extends JpaRepository<TotalScore, Long> {
     List<TeamRankResponse> findTop3(@Param("areaID") Long areaID, @Param("factionID") Long factionID, Pageable pageable);
 
     default List<TeamRankResponse> findTop3Results(Long areaID, Long factionID) {
-        Pageable pageable = PageRequest.of(0, 3); // 첫 번째 페이지, 3개의 결과
+        Pageable pageable = PageRequest.of(0, 10); // 첫 번째 페이지, 3개의 결과
         return findTop3(areaID, factionID, pageable);
     }
 
