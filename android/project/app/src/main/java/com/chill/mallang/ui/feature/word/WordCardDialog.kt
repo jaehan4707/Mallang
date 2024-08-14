@@ -31,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,7 +54,7 @@ fun WordCardDialog(
 ) {
     BasicAlertDialog(
         onDismissRequest = onDismiss,
-        modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight(),
+        modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight().testTag("word_card_dialog"),
         properties = DialogProperties(usePlatformDefaultWidth = false),
         content = {
             Surface(
@@ -199,6 +200,7 @@ fun WordCardContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
+                    modifier = Modifier.testTag("word_card_dialog_word"),
                     text = card.word,
                     style = Typography.headlineLarge,
                     color = Gray6,
@@ -208,6 +210,7 @@ fun WordCardContent(
             }
             Spacer(modifier = Modifier.height(10.dp))
             Text(
+                modifier = Modifier.testTag("word_card_dialog_meaning"),
                 text = card.meaning,
                 style = Typography.headlineSmall,
                 color = Gray6,
@@ -226,7 +229,7 @@ fun WordCardContent(
         Text(
             modifier =
                 Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth().testTag("word_card_dialog_example"),
             text = card.example,
             style = Typography.headlineSmall,
             textAlign = TextAlign.Center,

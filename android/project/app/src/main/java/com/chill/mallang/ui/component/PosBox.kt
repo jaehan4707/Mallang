@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.ui.theme.Typography
 
@@ -26,7 +27,7 @@ fun PosBox(
             ).padding(horizontal = 5.dp, vertical = 2.dp),
     ) {
         Text(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier.align(Alignment.Center).testTag("word_card_dialog_pos"),
             text = pos,
             style = Typography.displaySmall,
             color = Color.White,
