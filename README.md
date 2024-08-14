@@ -32,14 +32,37 @@
 
 ### 홈
 
+|배경화면onOff|로그아웃|회원탈퇴|
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/5aac8485-c8d9-48f7-80ca-36700b24b8f8" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/2ceb01ff-4ac0-4141-ab32-6d6336a3786e" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/313e006a-27a3-49cd-9550-8376c7ab0021" width=200 height=400/>
+
+
 
 ### 학습
+
+|단어장|오답노트|학습퀴즈|
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/5aac8485-c8d9-48f7-80ca-36700b24b8f8" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/d7380ae5-937d-44ab-aebd-e9e443594424" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/313e006a-27a3-49cd-9550-8376c7ab0021" width=200 height=400/>
 
 
 ### 지도
 
+|지도점령지확인|점령지디테일|
+|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/eecddeb7-2ecc-4aca-86be-f0c73a124695" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/d89a0acd-4e3b-4989-9aff-b61e96a5fb59" width=200 height=400/> 
+
 
 ### 게임
+
+
+|게임화면|채점확인|게임결과|게임보상|
+|:---:|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/2158966a-90aa-40f2-a4ce-63f421b32d42" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/3c66f865-c925-4b0f-9302-44e5c2f93c2d" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/816f1381-73fb-4ffd-bda9-10f40895dddf" width=200 height=400/>| <img src="https://github.com/user-attachments/assets/3712a062-b63a-4a5d-b850-4e2644d2b291" width=200 height=400/> | 
+
+
+
+
+
 
 
 ## 📚 기술스택
