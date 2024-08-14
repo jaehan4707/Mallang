@@ -36,6 +36,7 @@ import com.chill.mallang.ui.theme.Typography
 fun GameWinDialog(
     teamId: Long,
     onDismiss: () -> Unit = {},
+    modifier: Modifier = Modifier,
 ) {
     BasicAlertDialog(
         onDismissRequest = onDismiss,
@@ -59,14 +60,17 @@ fun GameWinDialog(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(15.dp),
+                        modifier = modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 90.dp),
                     ) {
                         Text(
                             text = stringResource(id = R.string.game_win_message),
                             style = Typography.displayLarge,
-                            fontSize = 35.sp,
+                            fontSize = 30.sp,
                         )
                         Image(
-                            modifier = Modifier.size(250.dp),
+                            modifier = Modifier.size(200.dp),
                             painter =
                                 painterResource(
                                     id =
@@ -78,11 +82,14 @@ fun GameWinDialog(
                                 ),
                             contentDescription = "",
                         )
-                        LongBlackButton(
-                            onClick = { onDismiss() },
-                            text = stringResource(id = R.string.game_win_confirm_message),
-                        )
                     }
+                    LongBlackButton(
+                        onClick = { onDismiss() },
+                        text = stringResource(id = R.string.game_win_confirm_message),
+                        modifier = modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 15.dp),
+                    )
                 }
             }
         },
