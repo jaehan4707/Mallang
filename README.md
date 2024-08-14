@@ -35,13 +35,9 @@
 
 ### 학습
 
-|단어장|오답노트|학습퀴즈|
-|:---:|:---:|:---:|
-| <img src="./video/단어장화면.gif" width=200 height=400/> | <img src="./video/오답노트.gif" width=200 height=400/> | <img src="./video/학습퀴즈.gif" width=200 height=400/>
 
 ### 지도
-
-
+![](./video/점령지디테일.gif)
 ### 게임
 
 
