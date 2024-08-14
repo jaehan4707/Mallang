@@ -43,6 +43,7 @@ import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.BoldColoredText
 import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.component.LongBlackButton
+import com.chill.mallang.ui.component.experiencebar.ErrorDialog
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.SkyBlue
 import com.chill.mallang.ui.theme.Sub1
@@ -63,6 +64,11 @@ fun SummaryScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isBackPressed = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadSummary()
+    }
+
     BackConfirmHandler(
         isBackPressed = isBackPressed.value,
         onConfirmMessage = stringResource(id = R.string.positive_button_message),
@@ -84,6 +90,7 @@ fun SummaryScreen(
         uiState = uiState,
         navigateToHome = navigateToHome,
         modifier = modifier,
+        onRetry = viewModel::reloadSummary,
         onShowErrorSnackBar = onShowErrorSnackBar,
     )
 }
@@ -92,6 +99,7 @@ fun SummaryScreen(
 fun HandleSummaryUi(
     modifier: Modifier = Modifier,
     navigateToHome: () -> Unit = {},
+    onRetry: () -> Unit = {},
     uiState: SummaryUiState,
     onShowErrorSnackBar: (String) -> Unit,
 ) {
@@ -105,13 +113,12 @@ fun HandleSummaryUi(
         }
     }
     when (uiState) {
-        SummaryUiState.Loading -> {
+        is SummaryUiState.Loading -> {
             LoadingDialog(
                 lottieRes = R.raw.loading_summary,
                 loadingMessage = "결산 로딩중... ",
             )
         }
-
         is SummaryUiState.Success -> {
             SummaryContent(
                 modifier = modifier,
@@ -119,8 +126,13 @@ fun HandleSummaryUi(
                 summaryRecords = uiState.summaryRecords,
             )
         }
-
-        else -> {}
+        is SummaryUiState.Error -> {
+            ErrorDialog(
+                onRetry = {
+                    onRetry()
+                },
+            )
+        }
     }
 }
 
@@ -330,6 +342,17 @@ fun SummaryPreview() {
                         victoryFactionId = 2,
                     ),
                 ),
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SummaryWithErrorPreview(){
+    MallangTheme {
+        HandleSummaryUi(
+            onShowErrorSnackBar = {},
+            uiState = SummaryUiState.Error(errorMessage = "오류가 발생했습니다."),
         )
     }
 }

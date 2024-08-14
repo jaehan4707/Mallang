@@ -23,11 +23,12 @@ class SummaryViewModel
         private val _uiState = MutableStateFlow<SummaryUiState>(SummaryUiState.Loading)
         val uiState = _uiState.asStateFlow()
 
-        init {
+        fun reloadSummary() {
+            _uiState.value = SummaryUiState.Loading
             loadSummary()
         }
 
-        private fun loadSummary() {
+        fun loadSummary() {
             viewModelScope.launch {
                 delay(3000L)
                 areaRepository.getDailySummary().collectLatest { response ->
