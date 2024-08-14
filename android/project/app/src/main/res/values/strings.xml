@@ -1,4 +1,14 @@
 <resources>
-    <string name="app_name">Mallang</string>
+    <string name="app_name">말랑</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="mallang">말랑</string>
+    <string name="positive_button_message">네</string>
+    <string name="nagative_button_message">아니요</string>
+    <string name="app_exit_message">앱을 종료하시겠습니까?</string>
+    <string name="button_decide_message">결정하기</string>
+    <string name="nickname_place_holder">닉네임</string>
+    <string name="select_faction_message">당신의 진영을 선택해 주세요</string>
+    <string name="team_mal">말</string>
+    <string name="team_rang">랑</string>
+    <string name="summary_title">결산</string>
 </resources>

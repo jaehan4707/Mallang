@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setting_title">설정</string>
+    <string name="setting_background_music">배경음</string>
+    <string name="setting_effect_music">효과음</string>
+    <string name="setting_notification">푸시알림</string>
+    <string name="setting_edit_nickname">닉네임 변경</string>
+    <string name="setting_logout">로그아웃</string>
+    <string name="setting_sign_out">회원 탈퇴</string>
+    <string name="edit_nick_name">닉네임 변경</string>
+    <string name="nick_name_validation_info">닉네임은 영어와 한글 조합이며\n 최소 2글자에서, 최대 10자까지 입력가능합니다</string>
+</resources>

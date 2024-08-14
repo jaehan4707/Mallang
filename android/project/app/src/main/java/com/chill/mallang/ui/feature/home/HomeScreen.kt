@@ -1,13 +1,9 @@
 package com.chill.mallang.ui.feature.home
 
-import android.util.Log
-import android.widget.Space
-import android.widget.TextView
-import androidx.collection.mutableObjectIntMapOf
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,155 +14,286 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
-import com.chill.mallang.ui.theme.BackGround
+import com.chill.mallang.ui.component.BackConfirmHandler
+import com.chill.mallang.ui.component.LoadingDialog
+import com.chill.mallang.ui.component.ReloadEffect
+import com.chill.mallang.ui.component.experiencebar.ExperienceState
+import com.chill.mallang.ui.feature.home.layout.BottomButtonHolder
+import com.chill.mallang.ui.feature.home.layout.HomeBackground
+import com.chill.mallang.ui.feature.setting.EditNickNameDialogScreen
+import com.chill.mallang.ui.feature.setting.SettingDialog
+import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
 import com.chill.mallang.ui.theme.Typography
+import com.chill.mallang.ui.util.noRippleClickable
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
+@Composable
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    navigateToWordNote: () -> Unit = {},
+    navigateToGame: () -> Unit = {},
+    popUpBackStack: () -> Unit = {},
+    onShowErrorSnackBar: (String) -> Unit = {},
+    exitApplication: () -> Unit = {},
+    viewModel: HomeViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-object TestData { // 화면 임시 구성할 데이터
-    const val USER_NAME = "짜이한"
-    const val USER_RANK = "다이아"
-    const val USER_ITEM = "15코인"
-    const val RANK_1 = "다이아"
-    const val RANK_2 = "골드"
-    const val RANK_3 = "실버"
-    const val RANK_4 = "브론즈"
+    val (showSettingDialog, setShowSettingDialog) =
+        rememberSaveable {
+            mutableStateOf(false)
+        }
+    val (showEditNickNameDialog, setShowEditNickNameDialog) =
+        rememberSaveable {
+            mutableStateOf(false)
+        }
+
+    ReloadEffect(
+        onLoad = viewModel::getUserInfo,
+    )
+
+    // TopBar
+    TopbarHandler()
+
+    HandleHomeUiEvent(
+        event = viewModel.event,
+        setShowSettingDialog = setShowSettingDialog,
+        setShowEditNickNameDialog = setShowEditNickNameDialog,
+        loadUserInfo = viewModel::getUserInfo,
+        onShowErrorSnackBar = onShowErrorSnackBar,
+        popUpBackStack = popUpBackStack,
+        exitApplication = exitApplication,
+    )
+
+    DisposableEffect(Unit) {
+        viewModel.playBGM()
+        onDispose {
+            viewModel.stopBGM()
+        }
+    }
+
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize(),
+    ) {
+        HomeContent(
+            modifier = modifier,
+            uiState = uiState,
+            navigateToGame = {
+                viewModel.playEffect()
+                navigateToGame()
+            },
+            navigateToWordNote = {
+                viewModel.playEffect()
+                navigateToWordNote()
+            },
+            sendEvent = { viewModel.sendEvent(it) },
+            onShowSettingDialog = showSettingDialog,
+            onShowEditNickNameDialog = showEditNickNameDialog,
+            onSignOut = viewModel::signOut,
+            onLogOut = viewModel::logout,
+            exitApplication = exitApplication,
+        )
+    }
 }
 
 @Composable
-private fun HomeScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(12.dp)
-    ) {
-        Column {
-            Row { // 유저 아이템 수의 따라 LazyColumn
-                UserItem(
-                    icon = R.drawable.ic_stars,
-                    label = TestData.USER_ITEM
-                )
-                Spacer(modifier.width(5.dp))
-                UserItem(
-                    icon = R.drawable.ic_stars,
-                    label = TestData.USER_ITEM
+fun HandleHomeUiEvent(
+    event: SharedFlow<HomeUiEvent>,
+    setShowSettingDialog: (Boolean) -> Unit,
+    setShowEditNickNameDialog: (Boolean) -> Unit,
+    popUpBackStack: () -> Unit,
+    loadUserInfo: () -> Unit,
+    onShowErrorSnackBar: (String) -> Unit,
+    exitApplication: () -> Unit,
+) {
+    LaunchedEffect(Unit) {
+        event.collectLatest { homeUiEvent ->
+            when (homeUiEvent) {
+                HomeUiEvent.CloseEditNickNameDialog -> setShowEditNickNameDialog(false)
+                HomeUiEvent.CloseSettingDialog -> setShowSettingDialog(false)
+                HomeUiEvent.ShowEditNickNameDialog -> setShowEditNickNameDialog(true)
+                HomeUiEvent.ShowSettingDialog -> setShowSettingDialog(true)
+                HomeUiEvent.Refresh -> loadUserInfo()
+                is HomeUiEvent.Error -> onShowErrorSnackBar(homeUiEvent.errorMessage)
+                is HomeUiEvent.SignOut -> {
+                    setShowSettingDialog(false)
+                    onShowErrorSnackBar(homeUiEvent.message)
+                    popUpBackStack()
+                }
+
+                is HomeUiEvent.Logout -> {
+                    onShowErrorSnackBar(homeUiEvent.message)
+                    setShowSettingDialog(false)
+                    popUpBackStack()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeContent(
+    modifier: Modifier = Modifier,
+    uiState: HomeUiState,
+    navigateToWordNote: () -> Unit,
+    navigateToGame: () -> Unit,
+    sendEvent: (HomeUiEvent) -> Unit,
+    onShowSettingDialog: Boolean,
+    onShowEditNickNameDialog: Boolean,
+    onSignOut: () -> Unit,
+    onLogOut: () -> Unit,
+    exitApplication: () -> Unit,
+) {
+    when (uiState) {
+        is HomeUiState.Loading -> LoadingDialog()
+
+        is HomeUiState.LoadUserInfo -> {
+            HomeScreenContent(
+                modifier = modifier,
+                uiState = uiState,
+                navigateToGame = navigateToGame,
+                navigateToWordNote = navigateToWordNote,
+                exitApplication = exitApplication,
+                onClickSetting = { sendEvent(HomeUiEvent.ShowSettingDialog) },
+            )
+            if (onShowSettingDialog) {
+                SettingDialog(
+                    onClose = { sendEvent(HomeUiEvent.CloseSettingDialog) },
+                    onShowEditNickNameDialog = { sendEvent(HomeUiEvent.ShowEditNickNameDialog) },
+                    onLogOut = onLogOut,
+                    onSignOut = onSignOut,
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            SideUserButton() // 사이드 버튼
-            UserCharacter( // 유저 캐릭터 or 프로필
-                modifier = modifier,
-                userName = TestData.USER_NAME,
-                userRank = TestData.USER_RANK
-            )
-            Spacer(modifier.weight(0.1f))
-            ModeButton( // 퀴즈 모드 버튼
-                icon = R.drawable.ic_question,
-                label = stringResource(R.string.mode_quiz),
-                modifier = Modifier.align(Alignment.End),
-                onClick = { }
-            )
-            Spacer(modifier.height(16.dp))
-            ModeButton( // 점령전 모드 버튼
-                icon = R.drawable.ic_location,
-                label = stringResource(R.string.mode_home),
-                modifier = Modifier.align(Alignment.End),
-                onClick = { }
-            )
-            Spacer(modifier.weight(0.1f))
+            if (onShowEditNickNameDialog) {
+                EditNickNameDialogScreen(
+                    onDismiss = { onEditNickName ->
+                        sendEvent(HomeUiEvent.CloseEditNickNameDialog)
+                        if (onEditNickName != uiState.nickName) {
+                            sendEvent(HomeUiEvent.Refresh)
+                        }
+                    },
+                    userNickName = uiState.nickName,
+                )
+            }
         }
     }
 }
 
 @Composable
-fun IconButton(
+fun HomeScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: HomeUiState.LoadUserInfo,
+    navigateToWordNote: () -> Unit = {},
+    navigateToGame: () -> Unit = {},
+    exitApplication: () -> Unit = {},
+    onClickSetting: () -> Unit = {},
+) {
+    val isBackPressed = remember { mutableStateOf(false) }
+    BackConfirmHandler(
+        isBackPressed = isBackPressed.value,
+        onConfirmMessage = stringResource(id = R.string.positive_button_message),
+        onConfirm = {
+            isBackPressed.value = false
+            exitApplication()
+        },
+        onDismissMessage = stringResource(id = R.string.nagative_button_message),
+        onDismiss = {
+            isBackPressed.value = false
+        },
+        title = stringResource(R.string.app_exit_message),
+    )
+    BackHandler(onBack = {
+        isBackPressed.value = true
+    })
+    Column {
+        HomeBackground(
+            modifier = Modifier.weight(1f),
+            nickName = uiState.nickName,
+            factionId = uiState.factionId,
+            experienceState = uiState.experienceState,
+        )
+        BottomButtonHolder(
+            onClickStudy = navigateToWordNote,
+            onClickMap = navigateToGame,
+            onClickSetting = onClickSetting,
+        )
+    }
+}
+
+@Composable
+fun ImageButton(
+    modifier: Modifier = Modifier,
     icon: Int,
     label: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable {
+        modifier =
+            modifier.noRippleClickable {
                 onClick()
-            }, horizontalAlignment = Alignment.End
+            },
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = label
-            )
-            Text(
-                text = label,
-                style = Typography.displayLarge,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
-fun SideUserButton(modifier: Modifier = Modifier) {
-    Column(modifier) {
-        IconButton(
-            icon = R.drawable.ic_setting,
-            label = stringResource(R.string.side_button_setting),
-            onClick = { }
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = label,
         )
-        Spacer(modifier = modifier.size(15.dp))
-        IconButton(
-            icon = R.drawable.ic_quest,
-            label = stringResource(R.string.side_button_quest),
-            onClick = { })
-        Spacer(modifier = modifier.size(15.dp))
-        IconButton(
-            icon = R.drawable.ic_ranking,
-            label = stringResource(R.string.side_button_ranking),
-            onClick = { })
+        Text(
+            text = label,
+            style = Typography.displayLarge,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(modifier = Modifier.height(5.dp))
     }
 }
 
 @Composable
-internal fun UserItem(icon: Int, label: String) {
+internal fun UserItem(
+    icon: Int,
+    label: String,
+) {
     Row(
-        modifier = Modifier
-            .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
-            .padding(5.dp)
-            .height(IntrinsicSize.Min)
+        modifier =
+            Modifier
+                .border(1.dp, Color.Black, shape = RoundedCornerShape(15.dp))
+                .padding(5.dp)
+                .height(IntrinsicSize.Min),
     ) {
         Icon(
             painter = painterResource(id = icon),
             contentDescription = label,
             tint = Color.Yellow,
-            modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp)
+            modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp),
         )
         Text(
             text = label,
@@ -174,35 +301,34 @@ internal fun UserItem(icon: Int, label: String) {
             color = Color.Black,
             textAlign = TextAlign.Center,
             fontSize = 18.sp,
-            modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp)
+            modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp),
         )
     }
 }
 
 @Composable
-fun UserCharacter(modifier: Modifier = Modifier, userName: String, userRank: String) {
-    when (userRank) { // 티어별 이미지 할당
-        TestData.RANK_1 -> {}
-        TestData.RANK_2 -> {}
-        TestData.RANK_3 -> {}
-        TestData.RANK_4 -> {}
-    }
+fun UserCharacter(
+    modifier: Modifier = Modifier,
+    userNickName: String,
+    userFaction: Long,
+) {
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max),
-            horizontalArrangement = Arrangement.Center
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max),
+            horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_stars),
-                contentDescription = userRank,
-                modifier = Modifier.align(Alignment.CenterVertically)
+                contentDescription = "",
+                modifier = Modifier.align(Alignment.CenterVertically),
             )
             Text(
-                text = userName,
+                text = userNickName,
                 style = Typography.headlineLarge,
-                modifier = Modifier.padding(start = 3.dp)
+                modifier = Modifier.padding(start = 3.dp),
             )
         }
         Image(painter = painterResource(id = R.mipmap.malang), contentDescription = "말랑")
@@ -210,16 +336,17 @@ fun UserCharacter(modifier: Modifier = Modifier, userName: String, userRank: Str
             Image(
                 modifier = Modifier.align(Alignment.Center),
                 painter = painterResource(id = R.mipmap.rectangle_message),
-                contentDescription = ""
+                contentDescription = "",
             )
             Text(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .align(Alignment.Center),
+                modifier =
+                    Modifier
+                        .padding(top = 10.dp)
+                        .align(Alignment.Center),
                 text = stringResource(id = R.string.character_message),
                 style = Typography.bodyLarge,
                 color = Sub1,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             )
         }
     }
@@ -230,15 +357,16 @@ fun ModeButton(
     icon: Int,
     label: String,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .width(75.dp)
-            .height(75.dp)
-            .clickable { onClick() }
-            .background(color = Gray2, shape = CircleShape)
-            .border(width = 2.dp, color = Color.Black, shape = CircleShape),
+        modifier =
+            modifier
+                .width(75.dp)
+                .height(75.dp)
+                .noRippleClickable { onClick() }
+                .background(color = Gray2, shape = CircleShape)
+                .border(width = 2.dp, color = Color.Black, shape = CircleShape),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -249,7 +377,7 @@ fun ModeButton(
         Text(
             text = label,
             style = Typography.displayMedium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -258,6 +386,13 @@ fun ModeButton(
 @Composable
 fun HomePreview() {
     MallangTheme {
-        HomeScreen()
+        HomeScreenContent(
+            uiState =
+                HomeUiState.LoadUserInfo(
+                    "짜이한",
+                    1,
+                    ExperienceState.Static(0.5f, 1),
+                ),
+        )
     }
 }

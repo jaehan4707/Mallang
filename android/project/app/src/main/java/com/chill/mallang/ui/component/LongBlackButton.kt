@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
-import com.chill.mallang.ui.theme.Gray4
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.Typography
 
@@ -19,22 +18,25 @@ import com.chill.mallang.ui.theme.Typography
 fun LongBlackButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    text: String) {
+    text: String,
+) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            contentColor = White,
-            containerColor = Gray6
-        ),
+        colors =
+            ButtonDefaults.buttonColors(
+                contentColor = White,
+                containerColor = Gray6,
+            ),
         shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(1.dp, Gray4),
-        modifier = modifier
-            .fillMaxWidth(0.8f)
-            .height(48.dp)
+        border = BorderStroke(1.dp, Gray6),
+        modifier =
+            modifier
+                .fillMaxWidth(0.8f)
+                .height(48.dp),
     ) {
         Text(
             text,
-            style = Typography.displayLarge
+            style = Typography.displayLarge,
         )
     }
 }

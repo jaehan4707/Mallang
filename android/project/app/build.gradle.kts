@@ -4,6 +4,24 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.services) // Google 서비스 플러그인
+    id("kotlin-kapt")
+    alias(libs.plugins.hilt)
+    id(libs.google.maps.secrets.gradle.get().group ?: "")
+    alias(libs.plugins.kotlinx.serialization)
+}
+secrets {
+    // Optionally specify a different file name containing your secrets.
+    // The plugin defaults to "local.properties"
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.defaults.properties"
+
+    // Configure which keys should be ignored by the plugin by providing regular expressions.
+    // "sdk.dir" is ignored by default.
+    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
 }
 
 val properties = Properties()
@@ -20,7 +38,8 @@ android {
         versionCode = 1
         versionName = "1.0"
         buildConfigField("String", "WEB_CLIENT_ID", properties["default_web_client_id"] as String)
-
+        buildConfigField("String", "BASE_URL", properties["BASE_URL"] as String)
+        buildConfigField("String", "API_VERSION", properties["API_VERSION"] as String)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -52,7 +71,7 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/{AL2.0,LGPL2.1,LICENSE.md,LICENSE-notice.md}"
         }
     }
 }
@@ -67,20 +86,56 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //google maps sdk
+    implementation(libs.google.maps.android.compose)
+    implementation(libs.google.maps.util)
 
     // firebase
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth.ktx)
-}
 
-apply(plugin = "com.google.gms.google-services")
+    // hilt
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.hilt.compiler)
+    //implementation(libs.plugins.ksp)
+
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+
+    //retrofit, okhttp, gson
+    implementation(libs.bundles.network)
+
+    //coroutines
+    implementation(libs.bundles.coroutines)
+
+    //preference datastore
+    implementation(libs.datastore.preferences)
+
+    //lottie animation
+    implementation(libs.lottie)
+
+    // immutable dependency
+    implementation(libs.jetbrains.kotlinx.collections.immutable)
+
+    // test Junit
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(libs.junit)
+
+    //mockk
+    testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
+}

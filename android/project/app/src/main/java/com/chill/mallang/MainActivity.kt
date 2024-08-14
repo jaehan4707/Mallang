@@ -1,31 +1,37 @@
 package com.chill.mallang
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import com.chill.mallang.ui.feature.login.LoginScreen
-import com.chill.mallang.ui.feature.login.LoginViewModel
+import com.chill.mallang.ui.MainScreen
+import com.chill.mallang.ui.sound.SoundManager
 import com.chill.mallang.ui.theme.MallangTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val loginViewModel: LoginViewModel by viewModels()
+
+    @Inject lateinit var soundManager: SoundManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MallangTheme {
-                LoginScreen(
-                    viewModel = loginViewModel,
-                    onLoginClick = {
-                        // 로그인 성공 후 처리
-                        Toast.makeText(applicationContext, "로그인 성공", Toast.LENGTH_SHORT).show()
-                    }
-                )
+                MainScreen()
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        soundManager.pauseBackgroundMusic()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        soundManager.resumeBackgroundMusic()
     }
 }
