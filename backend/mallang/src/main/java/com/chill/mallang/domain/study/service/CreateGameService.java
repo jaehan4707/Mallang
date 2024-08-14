@@ -12,6 +12,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CreateGameService {
@@ -42,12 +46,18 @@ public class CreateGameService {
 
     public void addProblemsToQuestion(Question question, JSONObject result) {
         JSONArray jsonArray = result.getJSONArray("options");
-        jsonArray.forEach(item->{
-            JSONObject jsonObject = (JSONObject) item;
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 1; i <= 4; i++) {
+            numbers.add(i);
+        }
+        Collections.shuffle(numbers);
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
             String basic_type = jsonObject.getString("basic_type");
             String option = jsonObject.getString("word");
             String mean = jsonObject.getString("meaning");
-            int idx = jsonObject.getInt("idx");
+            int idx = numbers.get(i); // 섞인 numbers 리스트의 값을 사용
+
             Problem problem = Problem.builder()
                     .question(question)
                     .basic_type(basic_type)
@@ -55,7 +65,8 @@ public class CreateGameService {
                     .mean(mean)
                     .idx(idx)
                     .build();
+
             problemRepository.save(problem);
-                });
+        }
     }
 }
