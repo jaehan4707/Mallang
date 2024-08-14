@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mallang</string>
+    <string name="app_name">말랑</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="mallang">말랑</string>
     <string name="positive_button_message">네</string>
