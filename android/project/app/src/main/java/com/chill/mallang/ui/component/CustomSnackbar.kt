@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chill.mallang.ui.theme.Typography
@@ -27,7 +28,7 @@ fun CustomSnackBar(
     Box(
         modifier =
             modifier
-                .fillMaxSize(),
+                .fillMaxSize().testTag("error_snack_bar"),
     ) {
         Surface(
             modifier =

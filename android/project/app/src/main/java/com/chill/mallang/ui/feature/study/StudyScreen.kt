@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -98,14 +99,30 @@ fun StudyScreen(
         },
     )
 
+    HandleStudyUi(
+        modifier = modifier,
+        studyState = studyState,
+        context = context,
+        studyViewModel = studyViewModel,
+        navigateToStudyResult = navigateToStudyResult
+    )
+}
+
+@Composable
+fun HandleStudyUi(
+    modifier: Modifier = Modifier,
+    studyState: StudyState,
+    context: Context = LocalContext.current,
+    studyViewModel: StudyViewModel = hiltViewModel(),
+    navigateToStudyResult: (Long, Int) -> Unit = { studyId, answer -> }
+) {
     when (studyState) {
         is StudyState.Success -> {
-            // studyId = studyId
             StudyScreenContent(
                 modifier = modifier,
                 context = context,
                 studyViewModel = studyViewModel,
-                studyState = studyState as StudyState.Success,
+                studyState = studyState,
                 navigateToStudyResult = navigateToStudyResult,
             )
         }
@@ -126,7 +143,7 @@ fun StudyScreen(
         // 결과 화면으로
         is StudyState.SubmitSuccess -> {
             navigateToStudyResult(
-                (studyState as StudyState.SubmitSuccess).studyId,
+                studyState.studyId,
                 studyViewModel.selectedAnswer,
             )
         }
@@ -163,10 +180,10 @@ fun StudyScreenContent(
     ) { innerPadding ->
         Box(
             modifier =
-                modifier
-                    .fillMaxSize()
-                    .background(color = Color.White)
-                    .padding(innerPadding),
+            modifier
+                .fillMaxSize()
+                .background(color = Color.White)
+                .padding(innerPadding),
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Box(modifier = Modifier.height(15.dp))
@@ -203,15 +220,15 @@ fun StudyScreenContent(
                     }
                 },
                 modifier =
-                    Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(y = (-30).dp) // 버튼을 20dp 위로 올림
-                        .width(180.dp)
-                        .height(80.dp),
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(y = (-30).dp) // 버튼을 20dp 위로 올림
+                    .width(180.dp)
+                    .height(80.dp).testTag("study_submit_button"),
                 colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = Gray6,
-                    ),
+                ButtonDefaults.buttonColors(
+                    containerColor = Gray6,
+                ),
                 shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
             ) {
                 Row(
@@ -243,10 +260,10 @@ fun QuizBox(
 ) {
     Box(
         modifier =
-            Modifier
-                .padding(12.dp)
-                .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
-                .fillMaxWidth(),
+        Modifier
+            .padding(12.dp)
+            .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(10.dp))
+            .fillMaxWidth(),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 30.dp, vertical = 20.dp),
@@ -262,6 +279,7 @@ fun QuizBox(
                 )
                 Box(modifier = Modifier.width(10.dp))
                 Text(
+                    modifier = Modifier.testTag("study_quiz_title"),
                     text = quizTitle,
                     style = Typography.headlineMedium,
                 )
@@ -269,13 +287,14 @@ fun QuizBox(
             Box(modifier = Modifier.height(15.dp))
             Spacer(
                 modifier =
-                    Modifier
-                        .height(2.dp)
-                        .fillMaxWidth()
-                        .background(Gray3),
+                Modifier
+                    .height(2.dp)
+                    .fillMaxWidth()
+                    .background(Gray3),
             )
             Box(modifier = Modifier.height(15.dp))
             Text(
+                modifier = Modifier.testTag("study_quiz_script"),
                 text = quizScript,
                 style = Typography.headlineSmall,
             )
@@ -295,9 +314,10 @@ fun AnswerList(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
         modifier =
-            Modifier
-                .padding(12.dp)
-                .fillMaxSize(),
+        Modifier
+            .padding(12.dp)
+            .fillMaxSize()
+            .testTag("study_quiz_list"),
     ) {
         items(size) { index ->
             AnswerListItem(
@@ -324,29 +344,31 @@ fun AnswerListItem(
     Column {
         Box(
             modifier =
-                modifier
-                    .shadow(
-                        elevation = 5.dp,
-                        shape = RoundedCornerShape(8.dp),
-                    ),
+            modifier
+                .shadow(
+                    elevation = 5.dp,
+                    shape = RoundedCornerShape(8.dp),
+                ),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier =
-                    modifier
-                        .fillMaxWidth()
-                        .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                        .border(2.dp, color = Gray6, shape = RoundedCornerShape(8.dp))
-                        .clickable { onItemClick(index) },
+                modifier
+                    .fillMaxWidth()
+                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                    .border(2.dp, color = Gray6, shape = RoundedCornerShape(8.dp))
+                    .clickable { onItemClick(index) }
+                    .testTag("study_quiz_$index"),
             ) {
                 Box(
                     modifier =
-                        Modifier
-                            .background(
-                                color = Gray6,
-                                shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp),
-                            ).fillMaxHeight()
-                            .width(50.dp),
+                    Modifier
+                        .background(
+                            color = Gray6,
+                            shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp),
+                        )
+                        .fillMaxHeight()
+                        .width(50.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -366,7 +388,7 @@ fun AnswerListItem(
                     Icon(
                         modifier = Modifier.padding(10.dp),
                         painter = painterResource(id = R.drawable.ic_check),
-                        contentDescription = null,
+                        contentDescription = "study_check_$index",
                     )
                 }
             }
