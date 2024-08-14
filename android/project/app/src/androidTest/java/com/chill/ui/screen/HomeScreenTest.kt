@@ -9,7 +9,7 @@ import com.chill.mallang.R
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.local.DataStoreRepository
 import com.chill.mallang.data.repository.remote.UserRepository
-import com.chill.mallang.ui.feature.home.HomeScreen
+import com.chill.mallang.ui.feature.home.HomeContent
 import com.chill.mallang.ui.feature.home.HomeViewModel
 import com.chill.mallang.ui.sound.SoundManager
 import io.mockk.Runs
@@ -48,10 +48,21 @@ class HomeScreenTest {
     fun `유저_정보_조회_성공시_유저의_닉네임이_표시되어야한다`() =
         runTest {
             coEvery { userRepository.getUserInfo() } returns flowOf(ApiResponse.Success(HomeTestData.user))
-            composeTestRule.setContent {
-                HomeScreen(viewModel = viewModel)
-            }
             viewModel.getUserInfo()
+            composeTestRule.setContent {
+                HomeContent(
+                    uiState = viewModel.uiState.value,
+                    navigateToWordNote = {},
+                    navigateToGame = {},
+                    sendEvent = {},
+                    onShowSettingDialog = false,
+                    onShowEditNickNameDialog = false,
+                    onSignOut = {},
+                    onLogOut = {},
+                    exitApplication = {},
+                )
+            }
+
             composeTestRule
                 .onNodeWithTag("home_nickname")
                 .assertTextEquals(HomeTestData.user.nickName)
@@ -61,10 +72,20 @@ class HomeScreenTest {
     fun `유저_진영에_맞는_캐릭터가_표시되어야한다`() =
         runTest {
             coEvery { userRepository.getUserInfo() } returns flowOf(ApiResponse.Success(HomeTestData.user))
-            composeTestRule.setContent {
-                HomeScreen(viewModel = viewModel)
-            }
             viewModel.getUserInfo()
+            composeTestRule.setContent {
+                HomeContent(
+                    uiState = viewModel.uiState.value,
+                    navigateToWordNote = {},
+                    navigateToGame = {},
+                    sendEvent = {},
+                    onShowSettingDialog = false,
+                    onShowEditNickNameDialog = false,
+                    onSignOut = {},
+                    onLogOut = {},
+                    exitApplication = {},
+                )
+            }
             val imgId =
                 if (HomeTestData.user.factionId == 1L) {
                     R.drawable.img_mal_default_character
@@ -84,10 +105,20 @@ class HomeScreenTest {
                 flowOf(
                     ApiResponse.Success(testUser),
                 )
-            composeTestRule.setContent {
-                HomeScreen(viewModel = viewModel)
-            }
             viewModel.getUserInfo()
+            composeTestRule.setContent {
+                HomeContent(
+                    uiState = viewModel.uiState.value,
+                    navigateToWordNote = {},
+                    navigateToGame = {},
+                    sendEvent = {},
+                    onShowSettingDialog = false,
+                    onShowEditNickNameDialog = false,
+                    onSignOut = {},
+                    onLogOut = {},
+                    exitApplication = {},
+                )
+            }
             composeTestRule
                 .onNodeWithTag("user_exp")
                 .assertTextEquals(testUser.level.toString())
