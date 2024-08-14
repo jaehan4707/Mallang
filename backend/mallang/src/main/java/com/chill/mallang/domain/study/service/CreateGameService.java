@@ -56,7 +56,7 @@ public class CreateGameService {
             String basic_type = jsonObject.getString("basic_type");
             String option = jsonObject.getString("word");
             String mean = jsonObject.getString("meaning");
-            int idx = numbers.get(i); // 섞인 numbers 리스트의 값을 사용
+            int idx = numbers.get(i);
 
             Problem problem = Problem.builder()
                     .question(question)
