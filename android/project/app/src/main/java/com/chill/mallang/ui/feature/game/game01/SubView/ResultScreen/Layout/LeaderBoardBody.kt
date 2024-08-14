@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.chill.mallang.R
 import com.chill.mallang.data.model.entity.GameUserRecord
 import com.chill.mallang.ui.feature.game.game01.Layout.GameRecordListItem
+import com.chill.mallang.ui.feature.game.game01.Layout.GameRecordListItemWithNoRank
 import com.chill.mallang.ui.theme.Gray6
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Typography
@@ -50,20 +51,26 @@ fun LeaderBoardBody(
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
-            if (userPlace < 3) {
+            if (userPlace == 0){
+                delay(2000L)
+                listState.animateScrollBy(
+                    value = px_of_listItem * leaderList.size,
+                    animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+                )
+            } else if (userPlace < 3) {
                 listState.scrollToItem(
                     index = leaderList.size - 1,
                 )
                 delay(2000L)
                 listState.animateScrollBy(
                     value = px_of_listItem * leaderList.size * -1,
-                    animationSpec = tween(durationMillis = 400, easing = LinearEasing),
+                    animationSpec = tween(durationMillis = 800, easing = LinearEasing),
                 )
             } else {
                 delay(2000L)
                 listState.animateScrollBy(
                     value = px_of_listItem * (userPlace - 2),
-                    animationSpec = tween(durationMillis = 400, easing = LinearEasing),
+                    animationSpec = tween(durationMillis = 800, easing = LinearEasing),
                 )
             }
         }
@@ -71,17 +78,17 @@ fun LeaderBoardBody(
 
     Column(
         modifier =
-            modifier
-                .padding(vertical = 10.dp, horizontal = 20.dp)
-                .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(20.dp))
-                .fillMaxWidth()
-                .height(300.dp),
+        modifier
+            .padding(vertical = 10.dp, horizontal = 20.dp)
+            .border(width = 2.dp, color = Gray6, shape = RoundedCornerShape(20.dp))
+            .fillMaxWidth()
+            .height(300.dp),
     ) {
         Box(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 15.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -93,14 +100,14 @@ fun LeaderBoardBody(
         }
         LazyColumn(
             modifier =
-                Modifier
-                    .padding(horizontal = 15.dp, vertical = 10.dp)
-                    .fillMaxWidth(),
+            Modifier
+                .padding(horizontal = 15.dp, vertical = 10.dp)
+                .fillMaxWidth(),
             state = listState,
             userScrollEnabled = false,
         ) {
             itemsIndexed(leaderList) { index, userRecord ->
-                if (userRecord.userName == userName && userRecord.userScore == userScore) {
+                if (index + 1 == userPlace) {
                     GameRecordListItem(
                         userPlace = index + 1,
                         userRecord = userRecord,
@@ -112,6 +119,15 @@ fun LeaderBoardBody(
                         userPlace = index + 1,
                         userRecord = userRecord,
                         teamId = userTeamId,
+                    )
+                }
+            }
+            if (userPlace == 0) {
+                item {
+                    GameRecordListItemWithNoRank(
+                        userRecord = GameUserRecord(userName = userName, userScore = userScore),
+                        teamId = userTeamId,
+                        isUserRecord = true
                     )
                 }
             }
