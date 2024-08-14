@@ -46,7 +46,6 @@ import com.chill.mallang.ui.feature.home.layout.BottomButtonHolder
 import com.chill.mallang.ui.feature.home.layout.HomeBackground
 import com.chill.mallang.ui.feature.setting.EditNickNameDialogScreen
 import com.chill.mallang.ui.feature.setting.SettingDialog
-import com.chill.mallang.ui.feature.topbar.TopbarHandler
 import com.chill.mallang.ui.theme.Gray2
 import com.chill.mallang.ui.theme.MallangTheme
 import com.chill.mallang.ui.theme.Sub1
@@ -63,8 +62,8 @@ fun HomeScreen(
     popUpBackStack: () -> Unit = {},
     onShowErrorSnackBar: (String) -> Unit = {},
     exitApplication: () -> Unit = {},
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val (showSettingDialog, setShowSettingDialog) =
@@ -81,7 +80,7 @@ fun HomeScreen(
     )
 
     // TopBar
-    TopbarHandler()
+    //TopbarHandler()
 
     HandleHomeUiEvent(
         event = viewModel.event,
