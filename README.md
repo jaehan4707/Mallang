@@ -42,7 +42,7 @@
 
 ### 홈
 
-|배경화면onOff|로그아웃|회원탈퇴|
+|배경음 On/Off|로그아웃|회원탈퇴|
 |:---:|:---:|:---:|
 | <img src="https://github.com/user-attachments/assets/bc72b9b3-9a55-44a9-a39c-56be7b57a21b" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/2ceb01ff-4ac0-4141-ab32-6d6336a3786e" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/1a6ad067-3e9e-44d3-8891-ec4fb4f054f8" width=200 height=400/>
 
@@ -65,10 +65,9 @@
 ### 게임
 
 
-|게임화면|채점확인|게임결과|게임보상|
-|:---:|:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/2158966a-90aa-40f2-a4ce-63f421b32d42" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/3c66f865-c925-4b0f-9302-44e5c2f93c2d" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/816f1381-73fb-4ffd-bda9-10f40895dddf" width=200 height=400/>| <img src="https://github.com/user-attachments/assets/3712a062-b63a-4a5d-b850-4e2644d2b291" width=200 height=400/> | 
-
+|게임화면|채점확인|게임결과|게임보상|일일결산|
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/2158966a-90aa-40f2-a4ce-63f421b32d42" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/3c66f865-c925-4b0f-9302-44e5c2f93c2d" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/816f1381-73fb-4ffd-bda9-10f40895dddf" width=200 height=400/>| <img src="https://github.com/user-attachments/assets/3712a062-b63a-4a5d-b850-4e2644d2b291" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/f1615944-49d4-45a3-8cdb-1a53b6b01f8b" width=200 height=400/> | 
 
 
 
