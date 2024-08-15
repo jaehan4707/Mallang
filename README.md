@@ -78,10 +78,27 @@
 ## 📚 기술스택
 
 ### AOS
+- ![Kotlin](https://img.shields.io/badge/Kotlin-0095D5?style=flat-square&logo=kotlin&logoColor=white) `Kotlin` 
+- ![Compose](https://img.shields.io/badge/Compose-4285F4?style=flat-square&logo=Jetpack-Compose&logoColor=white) `Compose` 
+- ![Retrofit](https://img.shields.io/badge/Retrofit-FF6B6B?style=flat-square&logo=retrofit&logoColor=white) `Retrofit` 
+- ![MVVM](https://img.shields.io/badge/MVVM-4CAF50?style=flat-square&logo=android&logoColor=white) `MVVM` 
+- ![OkHttp](https://img.shields.io/badge/OkHttp-4CAF50?style=flat-square&logo=square&logoColor=white) `OkHttp` 
+- ![Datastore](https://img.shields.io/badge/Datastore-1565C0?style=flat-square&logo=datastore&logoColor=white) `Datastore` 
+- ![Hilt](https://img.shields.io/badge/Hilt-FF6F00?style=flat-square&logo=dagger&logoColor=white) `Hilt` 
+- ![Flow](https://img.shields.io/badge/Flow-673AB7?style=flat-square&logo=flow&logoColor=white) `Flow` 
+- ![Jetpack Navigation](https://img.shields.io/badge/Jetpack%20Navigation-3F51B5?style=flat-square&logo=android&logoColor=white) `Jetpack Navigation` 
+- ![Google Oauth](https://img.shields.io/badge/Google%20Oauth-0F9D58?style=flat-square&logo=google&logoColor=white) `Google Oauth` 
+- ![Google Map](https://img.shields.io/badge/Google%20Map-4285F4?style=flat-square&logo=google-maps&logoColor=white) `Google Map` 
+- ![Junit](https://img.shields.io/badge/Junit-25A162?style=flat-square&logo=junit5&logoColor=white) `Junit` 
+- ![lottie](https://img.shields.io/badge/lottie-1DA1F2?style=flat-square&logo=lottie&logoColor=white) `lottie` 
+- ![Compose Ui Test](https://img.shields.io/badge/Compose%20Ui%20Test-03A9F4?style=flat-square&logo=android&logoColor=white) `Compose Ui Test`
 
-- `Kotlin` `Compose` `Retrofit` `MVVM` `OkHttp` `Datastore` `Hilt` `Flow` `Jetpack Navigation` `Google Oatuh` `Google Map` `Junit` `lottie` `Junit4` `Compose Ui Test`
 ### BE
-- `Java(21)` `Spring Boot(3.2.7)` `MariaDB(11.4.2)` `Docker(27.0.3)` `Jenkins(2.452.3)`
+- ![Java](https://img.shields.io/badge/Java-ED8B00?style=flat-square&logo=java&logoColor=white) `Java(21)` 
+- ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat-square&logo=spring-boot&logoColor=white) `Spring Boot(3.2.7)` 
+- ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=flat-square&logo=mariadb&logoColor=white) `MariaDB(11.4.2)` 
+- ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) `Docker(27.0.3)` 
+- ![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=flat-square&logo=jenkins&logoColor=white) `Jenkins(2.452.3)`
 
 
 
