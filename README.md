@@ -19,22 +19,32 @@
 
 ## 👨‍👩‍👧‍👦 팀원 소개
 
+
 ### Backend
-- 김정인, 나혜림, 변서원
+|[김정인](https://github.com/IanToo2) | [나혜림](https://github.com/HyerimNa) | [변서원](https://github.com/byunseowon) 
+|:--------:|:---------:|:---------:|
+| ![](https://github.com/IanToo2.png) | ![](https://github.com/HyerimNa.png) | ![](https://github.com/byunseowon.png) |
 
 ### Android
-- 강승우, 김성수, 이나경, 이재한
+
+| [강승우](https://github.com/pooya98) | [김성수](https://github.com/DrSkele) | [이나경](https://github.com/nakyung128) |[이재한](https://github.com/jaehan4707) |
+|:---------:|:---------:|:---------:|:---------:|
+| ![](https://github.com/pooya98.png) | ![](https://github.com/DrSkele.png) | ![](https://github.com/nakyung128.png) | ![](https://github.com/jaehan4707.png) |
+
 
 ## ⚒️ 기능 소개
 
 ### 로그인
+|로그인|닉네임설정|팀설정|
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/e534bb66-9eca-446f-9940-3fea3c502749" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/419fa310-04b2-41e9-96e5-aba21819c164" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/d6c80bfe-cbc9-4c4a-8682-a172eb20d4a3" width=200 height=400/>
 
 
 ### 홈
 
 |배경화면onOff|로그아웃|회원탈퇴|
 |:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/5aac8485-c8d9-48f7-80ca-36700b24b8f8" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/2ceb01ff-4ac0-4141-ab32-6d6336a3786e" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/313e006a-27a3-49cd-9550-8376c7ab0021" width=200 height=400/>
+| <img src="https://github.com/user-attachments/assets/bc72b9b3-9a55-44a9-a39c-56be7b57a21b" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/2ceb01ff-4ac0-4141-ab32-6d6336a3786e" width=200 height=400/> | <img src="https://github.com/user-attachments/assets/1a6ad067-3e9e-44d3-8891-ec4fb4f054f8" width=200 height=400/>
 
 
 
