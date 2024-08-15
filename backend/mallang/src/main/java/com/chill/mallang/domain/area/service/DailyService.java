@@ -41,10 +41,10 @@ public class DailyService {
             // 말 승
             if(result == 1){
                 mal.put("top score", sliceFloat((float)(malTeamTopUser.get(i)[2])));
-                mal.put("top score user", userRepository.getUserById((Long) malTeamTopUser.get(i)[4]).getNickname());
+                mal.put("top score user", userRepository.getUserById((Long) malTeamTopUser.get(i)[5]).getNickname());
             }else if(result == 2){
                 mal.put("top score", sliceFloat((float)(rangTeamTopUser.get(i)[2])));
-                mal.put("top score user", userRepository.getUserById((Long) rangTeamTopUser.get(i)[4]).getNickname());
+                mal.put("top score user", userRepository.getUserById((Long) rangTeamTopUser.get(i)[5]).getNickname());
             }
             totalMal.add(mal);
         }
