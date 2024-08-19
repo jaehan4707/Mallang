@@ -27,11 +27,11 @@ public class QuizScheduler {
     // Test용 30분 스케쥴링
 //    @Scheduled(fixedRate = 1_800_000)
     // 실 사용 6시간 스케쥴링
-    @Scheduled(cron = "0 0 0,6,12,18 * * *")
-    @Transactional
-    public void assignQuizzesToArea(){
-        logger.info("퀴즈 재배치 시작");
-        quizAssignmentService.assignQuizzesToAreas();
-        logger.info("퀴즈 재배치 완료");
-    }
+    // @Scheduled(cron = "0 0 0,6,12,18 * * *")
+    // @Transactional
+    // public void assignQuizzesToArea(){
+    //     logger.info("퀴즈 재배치 시작");
+    //     quizAssignmentService.assignQuizzesToAreas();
+    //     logger.info("퀴즈 재배치 완료");
+    // }
 }
