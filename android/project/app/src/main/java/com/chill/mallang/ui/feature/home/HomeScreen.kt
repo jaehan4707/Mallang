@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chill.mallang.R
+import com.chill.mallang.ui.component.AppCloseDialog
 import com.chill.mallang.ui.component.BackConfirmHandler
 import com.chill.mallang.ui.component.LoadingDialog
 import com.chill.mallang.ui.component.ReloadEffect
@@ -219,12 +221,17 @@ fun HomeScreenContent(
     onClickSetting: () -> Unit = {},
 ) {
     val isBackPressed = remember { mutableStateOf(false) }
+    var isClosePressed by remember { mutableStateOf(false) }
+
+    if (isClosePressed) {
+        AppCloseDialog()
+    }
     BackConfirmHandler(
         isBackPressed = isBackPressed.value,
         onConfirmMessage = stringResource(id = R.string.positive_button_message),
         onConfirm = {
             isBackPressed.value = false
-            exitApplication()
+            isClosePressed = true
         },
         onDismissMessage = stringResource(id = R.string.nagative_button_message),
         onDismiss = {

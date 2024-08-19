@@ -50,7 +50,7 @@ fun StudyButton(
                 textAlign = TextAlign.Center,
                 style = Typography.headlineLarge.copy(fontSize = 48.sp),
             )
-            Text("학습 퀴즈", style = Typography.displayMedium.copy(fontSize = 32.sp))
+            Text("학습퀴즈", style = Typography.displayMedium.copy(fontSize = 32.sp))
         }
     }
 }
