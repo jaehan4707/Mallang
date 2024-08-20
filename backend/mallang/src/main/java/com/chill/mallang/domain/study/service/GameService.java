@@ -86,15 +86,29 @@ public class GameService {
         }
         throw new RestApiException(CustomStudyErrorCode.WORD_IS_SOLD_OUT);
     }
+    // 발표 위해 랜덤 제거
+//    public Map<String, Object> startGame(Long userId) {
+//        User user = getUserFromRequest(userId);
+//        WordMean selectedWordMean = getRandomUnusedWordMean(userId);
+//        StudyGame studyGame = getOrCreateStudyGame(selectedWordMean);
+//        StudyGameResponseDTO studyGameResponseDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("data", studyGameResponseDTO);
+//        return response;
+//    }
 
     public Map<String, Object> startGame(Long userId) {
         User user = getUserFromRequest(userId);
-        WordMean selectedWordMean = getRandomUnusedWordMean(userId);
-        StudyGame studyGame = getOrCreateStudyGame(selectedWordMean);
-        StudyGameResponseDTO studyGameResponseDTO = createUserStudyLogRequestDTO(user, studyGame, selectedWordMean);
-        Map<String, Object> response = new HashMap<>();
-        response.put("data", studyGameResponseDTO);
-        return response;
+        Optional<StudyGame> studyGame = studyGameRepository.findById(265L);
+        if(studyGame.isPresent()) {
+            StudyGame getStudyGame = studyGame.get();
+            StudyGameResponseDTO studyGameResponseDTO = createUserStudyLogRequestDTO(user, getStudyGame , getStudyGame.getWordMean());
+            Map<String, Object> response = new HashMap<>();
+            response.put("data", studyGameResponseDTO);
+            return response;
+        } else{
+            return null;
+        }
     }
     @Transactional
     public Map<String, Object> submitGame(Long userId, Long studyId, Long answer) {
