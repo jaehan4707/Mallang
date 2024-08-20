@@ -15,6 +15,9 @@ import com.chill.mallang.ui.theme.MallangTheme
 fun Game01ResultScreen(
     viewModel: Game01ViewModel = viewModel(),
     completeCheckResult: () -> Unit = {},
+    playTotalPointSoundEffect: () -> Unit = {},
+    playGameWinSoundEffect: () -> Unit = {},
+    playGameLoseSoundEffect: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Game01ResultContent(
@@ -22,6 +25,10 @@ fun Game01ResultScreen(
         finalResult = viewModel.playResult,
         completeCheckResult = completeCheckResult,
         userTeamId = viewModel.userInfo.factionId,
+        playTotalPointSoundEffect = playTotalPointSoundEffect,
+        playGameWinSoundEffect = playGameWinSoundEffect,
+        playGameLoseSoundEffect = playGameLoseSoundEffect,
+        modifier = modifier,
     )
 }
 

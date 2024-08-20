@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +27,7 @@ import com.chill.mallang.ui.theme.Typography
 
 @Composable
 fun Game01SplashScreen(
+    playGameSplashSoundEffect: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.game_splash_background))
@@ -33,6 +35,10 @@ fun Game01SplashScreen(
         composition,
         iterations = LottieConstants.IterateForever,
     )
+
+    LaunchedEffect(Unit) {
+        playGameSplashSoundEffect()
+    }
 
     Box(
         modifier = modifier.fillMaxSize(),

@@ -30,6 +30,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun Game01CurtainCallScreen(
     finishGame: () -> Unit = {},
+    playGameCurtainCallSoundEffect: () -> Unit = {},
     modifier: Modifier = Modifier,
 ){
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.game_splash_background))
@@ -39,6 +40,7 @@ fun Game01CurtainCallScreen(
     )
 
     LaunchedEffect(Unit) {
+        playGameCurtainCallSoundEffect()
         delay(2000L)
         finishGame()
     }

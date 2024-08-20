@@ -38,13 +38,18 @@ fun RoundResultItem(
     round: Int = 0,
     score: Int = 0,
     delay: Int = 0,
+    playPointIndicatorSoundEffect: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(Unit) {
+        delay(delay.toLong())
+        playPointIndicatorSoundEffect()
+    }
     Box(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp, horizontal = 10.dp),
+        modifier
+            .fillMaxWidth()
+            .padding(vertical = 20.dp, horizontal = 10.dp),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -94,10 +99,10 @@ fun ScoreProgressIndicator(
     Box(
         contentAlignment = Alignment.Center,
         modifier =
-            modifier
-                .size(100.dp)
-                .padding(10.dp)
-                .graphicsLayer(alpha = alpha),
+        modifier
+            .size(100.dp)
+            .padding(10.dp)
+            .graphicsLayer(alpha = alpha),
     ) {
         CircularProgressIndicator(
             progress = { animatedProgress.value },

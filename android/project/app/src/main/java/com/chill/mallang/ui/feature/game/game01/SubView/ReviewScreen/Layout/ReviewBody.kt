@@ -38,6 +38,8 @@ fun ReviewBody(
     reviewUiState: Game01ReviewUiState.Success,
     completeReview: () -> Unit,
     showDialog: () -> Unit,
+    playPointIndicatorSoundEffect: () -> Unit = {},
+    playGradeStampSoundEffect: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -80,14 +82,15 @@ fun ReviewBody(
     LaunchedEffect(Unit) {
         delay(500L)
         isRoundTransparent = true
-        delay(4000L)
+        delay(2500L)
         isGradeStampBoxExpanded = true
-        delay(1500L)
+        delay(1000L)
+        playGradeStampSoundEffect()
         isExpanded = true
         isTransparent = true
-        delay(1000L)
+        delay(500L)
         isFeedbackTransparent = true
-        delay(1000L)
+        delay(500L)
         isButtonTransparent = true
     }
 
@@ -123,7 +126,8 @@ fun ReviewBody(
                         round = index + 1,
                         modifier = modifier.weight(1F),
                         score = score.toInt(),
-                        delay = (index + 1) * 1000,
+                        delay = (index + 1) * 500,
+                        playPointIndicatorSoundEffect = playPointIndicatorSoundEffect,
                     )
                 }
             }
