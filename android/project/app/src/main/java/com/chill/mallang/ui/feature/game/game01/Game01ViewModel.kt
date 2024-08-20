@@ -17,6 +17,7 @@ import com.chill.mallang.data.model.request.GradingUserAnswerRequest
 import com.chill.mallang.data.model.response.ApiResponse
 import com.chill.mallang.data.repository.remote.QuizRepository
 import com.chill.mallang.data.repository.remote.UserRepository
+import com.chill.mallang.ui.sound.SoundManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -40,6 +41,7 @@ class Game01ViewModel
     constructor(
         private val userRepository: UserRepository,
         private val quizRepository: QuizRepository,
+        private val soundManager: SoundManager,
     ) : ViewModel() {
         private val _game01UiEvent = MutableSharedFlow<Game01UiEvent>()
         val gameUiEvent = _game01UiEvent.asSharedFlow()
@@ -277,6 +279,10 @@ class Game01ViewModel
                 delay(1000L)
                 _game01UiEvent.emit(Game01UiEvent.CompleteGameResultLoad)
             }
+        }
+
+        fun playSoundEffect(soundId: Int) {
+            soundManager.playSoundEffect(soundId)
         }
 
         fun getCurrentRound(): Int = gameRound
