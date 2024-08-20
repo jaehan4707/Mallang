@@ -21,6 +21,8 @@ import com.chill.mallang.ui.theme.MallangTheme
 fun Game01ReviewContent(
     reviewUiState: Game01ReviewUiState.Success,
     completeReview: () -> Unit,
+    playPointIndicatorSoundEffect: () -> Unit = {},
+    playGradeStampSoundEffect: () -> Unit = {},
     roundResultList: List<RoundResult>,
     modifier: Modifier = Modifier,
 ) {
@@ -29,6 +31,8 @@ fun Game01ReviewContent(
     ReviewBody(
         reviewUiState = reviewUiState,
         showDialog = { DialogVisibility = true },
+        playPointIndicatorSoundEffect = playPointIndicatorSoundEffect,
+        playGradeStampSoundEffect = playGradeStampSoundEffect,
         completeReview = completeReview,
     )
 

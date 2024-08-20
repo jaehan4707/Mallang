@@ -45,6 +45,8 @@ fun Game01RewardScreen(
     userLevel: Int = 1,
     LevelExp: Float = 100F,
     completeReward: () -> Unit = {},
+    playSealDownSoundEffect: () -> Unit = {},
+    playSealUpSoundEffect: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     // 인장 애니메이션 관련 변수
@@ -93,9 +95,10 @@ fun Game01RewardScreen(
         }
 
         if(isLevelUp) {
-            delay(2000L)
+            delay(1500L)
             isBadgeTransparent = false
             isBadgeSlide = false
+            playSealDownSoundEffect()
             currentUserLevel += 1
             nextUserLevel += 1
             targetExpRate = 0F
@@ -105,6 +108,7 @@ fun Game01RewardScreen(
             isBadgeTransparent = true
             isBadgeSlide = true
             isFanFareTransparent = true
+            playSealUpSoundEffect()
             showingUserLevel += 1
             val newRate = (userExp + userGameScore - LevelExp) / (LevelExp + 200)
             targetExpRate = newRate

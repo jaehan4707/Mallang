@@ -27,7 +27,9 @@ import com.chill.mallang.ui.theme.MallangTheme
 @Composable
 fun Game01ReviewScreen(
     viewModel: Game01ViewModel = viewModel(),
+    playPointIndicatorSoundEffect: () -> Unit = {},
     completeReview: () -> Unit = {},
+    playGradeStampSoundEffect: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val reviewUiState by viewModel.reviewUiState.collectAsStateWithLifecycle()
@@ -51,6 +53,8 @@ fun Game01ReviewScreen(
                 reviewUiState = reviewUiState as Game01ReviewUiState.Success,
                 completeReview = completeReview,
                 roundResultList = roundResultList,
+                playPointIndicatorSoundEffect = playPointIndicatorSoundEffect,
+                playGradeStampSoundEffect = playGradeStampSoundEffect,
                 modifier = modifier,
             )
         }
