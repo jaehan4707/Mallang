@@ -79,6 +79,15 @@ class SoundManager
             soundMap[R.raw.effect_click] = soundPool.load(context, R.raw.effect_click, 1)
             soundMap[R.raw.effect_fail] = soundPool.load(context, R.raw.effect_fail, 1)
             soundMap[R.raw.effect_success] = soundPool.load(context, R.raw.effect_success, 1)
+            soundMap[R.raw.effect_round_load] = soundPool.load(context, R.raw.effect_round_load, 1)
+            soundMap[R.raw.effect_point_indicator] = soundPool.load(context, R.raw.effect_point_indicator, 1)
+            soundMap[R.raw.effect_stamp] = soundPool.load(context, R.raw.effect_stamp, 1)
+            soundMap[R.raw.effect_total_point] = soundPool.load(context, R.raw.effect_total_point, 1)
+            soundMap[R.raw.effect_game_win] = soundPool.load(context, R.raw.effect_game_win, 1)
+            soundMap[R.raw.effect_game_splash] = soundPool.load(context, R.raw.effect_game_splash, 1)
+            soundMap[R.raw.effect_seal_down] = soundPool.load(context, R.raw.effect_seal_down, 1)
+            soundMap[R.raw.effect_seal_up] = soundPool.load(context, R.raw.effect_seal_up, 1)
+            soundMap[R.raw.effect_game_curtain_call] = soundPool.load(context, R.raw.effect_game_curtain_call, 1)
         }
 
         fun playBackgroundMusic(resId: Int) {

@@ -82,7 +82,9 @@ fun Game01Screen(
 
     when (viewModel.game01State) {
         Game01State.INIT ->
-            Game01SplashScreen()
+            Game01SplashScreen(
+                playGameSplashSoundEffect = { viewModel.playSoundEffect(R.raw.effect_game_splash) },
+            )
 
         Game01State.ROUND_LOAD ->
             Game01LoadingScreen(
@@ -92,6 +94,7 @@ fun Game01Screen(
         Game01State.ROUND_READY ->
             Game01RoundScreen(
                 round = viewModel.gameRound,
+                playRoundScreenSoundEffect = { viewModel.playSoundEffect(R.raw.effect_round_load) },
                 completeRoundLoad = { viewModel.completeRoundLoad() },
             )
 
@@ -116,12 +119,17 @@ fun Game01Screen(
         Game01State.REVIEW ->
             Game01ReviewScreen(
                 viewModel = viewModel,
+                playPointIndicatorSoundEffect = { viewModel.playSoundEffect(R.raw.effect_point_indicator) },
+                playGradeStampSoundEffect = { viewModel.playSoundEffect(R.raw.effect_stamp) },
                 completeReview = { viewModel.updateGame01State(Game01State.FINISH) },
             )
 
         Game01State.FINISH ->
             Game01ResultScreen(
                 viewModel = viewModel,
+                playTotalPointSoundEffect = { viewModel.playSoundEffect(R.raw.effect_total_point) },
+                playGameWinSoundEffect = { viewModel.playSoundEffect(R.raw.effect_game_win)},
+                playGameLoseSoundEffect = { viewModel.playSoundEffect(R.raw.effect_fail)},
                 completeCheckResult = { viewModel.updateGame01State(Game01State.REWARD)},
             )
 
@@ -129,6 +137,8 @@ fun Game01Screen(
             Log.d(TAG, "Game01Screen: ${viewModel.userInfo.exp}\n ${viewModel.playResult.userPlayResult.totalScore} \n${viewModel.userInfo.level}\n${(viewModel.userInfo.level) * 200F}")
             Game01RewardScreen(
                 completeReward = { viewModel.updateGame01State(Game01State.CURTAIN_CALL) },
+                playSealDownSoundEffect = { viewModel.playSoundEffect(R.raw.effect_seal_down) },
+                playSealUpSoundEffect = { viewModel.playSoundEffect(R.raw.effect_seal_up) },
                 userExp = viewModel.userExp,
                 userGameScore = viewModel.playResult.userPlayResult.totalScore,
                 userLevel = viewModel.userLevel,
@@ -138,6 +148,7 @@ fun Game01Screen(
 
         Game01State.CURTAIN_CALL ->
             Game01CurtainCallScreen(
+                playGameCurtainCallSoundEffect = { viewModel.playSoundEffect(R.raw.effect_game_curtain_call) },
                 finishGame = popUpBackStack,
             )
     }

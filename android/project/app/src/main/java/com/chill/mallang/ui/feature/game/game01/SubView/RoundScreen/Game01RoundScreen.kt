@@ -32,6 +32,7 @@ import kotlinx.coroutines.delay
 fun Game01RoundScreen(
     round: Int,
     completeRoundLoad: () -> Unit,
+    playRoundScreenSoundEffect: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -50,6 +51,7 @@ fun Game01RoundScreen(
     LaunchedEffect(Unit) {
         isExpanded = true
         isTransparent = true
+        playRoundScreenSoundEffect()
         delay(2000L)
         completeRoundLoad()
     }
