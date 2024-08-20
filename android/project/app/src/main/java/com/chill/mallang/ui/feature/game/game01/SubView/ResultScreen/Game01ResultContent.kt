@@ -40,6 +40,9 @@ fun Game01ResultContent(
     userTeamId: Long,
     finalResult: Game01PlayResult,
     completeCheckResult: () -> Unit,
+    playTotalPointSoundEffect: () -> Unit = {},
+    playGameWinSoundEffect: () -> Unit = {},
+    playGameLoseSoundEffect: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var isScoreBodyTransparent by remember { mutableStateOf(false) }
@@ -64,11 +67,17 @@ fun Game01ResultContent(
         }
 
     LaunchedEffect(Unit) {
-        delay(2000L)
+        playTotalPointSoundEffect()
+        delay(2500L)
         isScoreBodyTransparent = true
         delay(1000L)
+        if (isVictory) {
+            playGameWinSoundEffect()
+        } else {
+            playGameLoseSoundEffect()
+        }
         showTeamResult = true
-        delay(3500L)
+        delay(2500L)
         if (finalResult.teamPlayResult.myTeamTotalScore > finalResult.teamPlayResult.oppoTeamTotalScore) {
             if ((finalResult.teamPlayResult.myTeamTotalScore - finalResult.userPlayResult.totalScore) <=
                 finalResult.teamPlayResult.oppoTeamTotalScore
