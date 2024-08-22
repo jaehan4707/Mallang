@@ -74,7 +74,8 @@ fun BottomButtonHolder(
         Row(
             modifier =
                 Modifier
-                    .align(Alignment.Center),
+                    .align(Alignment.Center)
+                    .padding(top = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             StudyButton(onClick = {

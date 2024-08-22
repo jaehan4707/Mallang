@@ -194,5 +194,5 @@ class MapViewModel
     }
 
 object MapDistance {
-    final val inArea = 50
+    const val inArea = 300
 }
