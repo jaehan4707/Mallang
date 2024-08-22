@@ -61,7 +61,7 @@ fun MapView(
         if (currentLocation is LocationState.Tracking) {
             cameraPositionState.animate(
                 CameraUpdateFactory.newCameraPosition(
-                    CameraPosition(currentLocation.latLng, 17f, 0f, 0f),
+                    CameraPosition(currentLocation.latLng, 13f, 0f, 0f),
                 ),
                 1000,
             )
@@ -80,7 +80,7 @@ fun MapView(
         if (selectedArea != null) {
             cameraPositionState.animate(
                 CameraUpdateFactory.newCameraPosition(
-                    CameraPosition(selectedArea.latLng, 18f, 0f, 0f),
+                    CameraPosition(selectedArea.latLng, 14f, 0f, 0f),
                 ),
                 1000,
             )
